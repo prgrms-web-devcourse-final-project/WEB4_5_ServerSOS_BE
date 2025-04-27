@@ -1,0 +1,26 @@
+name: "💣 Bug"
+description: "버그 개선"
+labels: ["bug"]
+body:
+  - type: textarea
+    attributes:
+      label: 🔍 기능
+      description: 어느 기능에서 버그가 발생했는지 작성해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 📄 설명
+      description: 발생한 버그에 대한 설명을 작성해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✅ 작업할 내용
+      description: 수정할 일을 체크박스 형태로 작성해주세요.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 💡 참고 자료
+      description: 참고 자료가 있다면 작성해 주세요.
