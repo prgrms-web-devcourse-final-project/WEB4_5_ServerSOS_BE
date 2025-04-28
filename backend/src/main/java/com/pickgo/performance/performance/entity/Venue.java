@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Builder
 public class Venue extends BaseEntity {
     @Id
@@ -15,10 +16,8 @@ public class Venue extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    @Setter
     private String name;
 
     @Column(nullable = false)
-    @Setter
     private String address;
 }

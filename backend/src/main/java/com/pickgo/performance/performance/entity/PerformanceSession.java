@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Builder
 public class PerformanceSession extends BaseEntity {
     @Id
@@ -20,12 +21,10 @@ public class PerformanceSession extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    @Setter
     private LocalDateTime performanceTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
-    @Setter
     private Performance performance;
 
     @Builder.Default
