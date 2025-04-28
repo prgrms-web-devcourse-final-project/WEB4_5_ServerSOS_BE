@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    root: WARN
+    org.hibernate: WARN
