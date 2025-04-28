@@ -20,13 +20,16 @@ public class PerformanceArea extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Setter
     private String name;
 
     @Column(nullable = false)
+    @Setter
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
+    @Setter
     private Performance performance;
 
     @Builder.Default
