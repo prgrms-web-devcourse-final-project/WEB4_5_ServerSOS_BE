@@ -36,7 +36,8 @@ public class Performance extends BaseEntity {
     private String poster;
 
     @Column(nullable = false)
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private PerformanceState state;
 
     @Column(nullable = false)
     private Integer minAge;
@@ -48,7 +49,8 @@ public class Performance extends BaseEntity {
     private String productionCompany;
 
     @Column(nullable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private PerformanceType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false)
