@@ -1,0 +1,67 @@
+package com.pickgo.performance.performance.entity;
+
+import com.pickgo.global.entity.BaseEntity;
+import com.pickgo.performance.area.entity.PerformanceArea;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Builder
+public class Performance extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
+
+    @Column(nullable = false)
+    private Integer runtime;
+
+    @Column(nullable = false)
+    private String poster;
+
+    @Column(nullable = false)
+    private String state;
+
+    @Column(nullable = false)
+    private Integer minAge;
+
+    @Column(nullable = false)
+    private String casts;
+
+    @Column(nullable = false)
+    private String productionCompany;
+
+    @Column(nullable = false)
+    private String type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PerformanceIntro> performanceIntros = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PerformanceArea> performanceAreas = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PerformanceSession> performanceSessions = new ArrayList<>();
+}
