@@ -2,7 +2,6 @@ package com.pickgo.example.controller;
 
 import com.pickgo.example.dto.PostSimpleResponse;
 import com.pickgo.example.service.AdminPostService;
-import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,15 +17,14 @@ import java.util.List;
 @RequestMapping("/api/admin/posts")
 @RequiredArgsConstructor
 @Tag(name = "Admin API", description = "Admin API 엔드포인트")
-public class AdminBoardController {
+public class AdminPostController {
 
     private final AdminPostService adminPostService;
 
     @Operation(summary = "admin 게시글 전체 목록 조회")
     @GetMapping
-    public RsData<PageResponse<PostSimpleResponse>> getPostList() {
+    public RsData<List<PostSimpleResponse>> getPostList() {
         List<PostSimpleResponse> responses = adminPostService.getAllPosts();
         return RsData.from(RsCode.SUCCESS,responses);
-
     }
 }
