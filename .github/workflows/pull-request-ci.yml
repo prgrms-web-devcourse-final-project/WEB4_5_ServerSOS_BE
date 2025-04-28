@@ -1,0 +1,65 @@
+name: PR SpringBoot Test
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: ["main", "develop"]
+    types: [opened, reopened, ready_for_review, synchronize]
+
+jobs:
+  springboot-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for changes in backend folder
+        id: check_changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend-changed:
+              - 'backend/**'
+
+      - name: Navigate to backend directory
+        run: cd backend
+
+      - name: Gradle Caching
+        if: steps.check_changes.outputs.backend-changed == 'true'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up JDK 21
+        if: steps.check_changes.outputs.backend-changed == 'true'
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: "temurin"
+
+      - name: Grant execute permission for gradlew
+        if: steps.check_changes.outputs.backend-changed == 'true'
+        run: chmod +x gradlew
+        working-directory: backend
+
+      - name: Test with Gradle
+        if: steps.check_changes.outputs.backend-changed == 'true'
+        run: ./gradlew test
+        working-directory: backend
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: "backend/**/build/test-results/test/TEST-*.xml"
+
+      - name: Skip backend tests (no changes)
+        if: steps.check_changes.outputs.backend-changed == 'false'
+        run: echo "No backend changes, skipping tests."

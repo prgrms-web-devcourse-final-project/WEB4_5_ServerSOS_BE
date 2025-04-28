@@ -1,0 +1,21 @@
+name: Assign Reviewers on PR
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  add_reviewers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign reviewers if target is develop or main
+        if: github.base_ref == 'main' || github.base_ref == 'develop'
+        uses: hkusu/review-assign-action@v1
+        with:
+          assignees: ${{ github.actor }}
+          reviewers: min429, asungkim, jin214930, JunKiBeom, chohyunwoo
+          draft-keyword: wip
