@@ -1,4 +1,4 @@
-package com.pickgo.performance.performance.entity;
+package com.pickgo.domain.performance.entity;
 
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;

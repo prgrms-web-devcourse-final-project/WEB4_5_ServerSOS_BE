@@ -1,7 +1,7 @@
-package com.pickgo.performance.performance.entity;
+package com.pickgo.domain.performance.entity;
 
 import com.pickgo.global.entity.BaseEntity;
-import com.pickgo.performance.area.entity.PerformanceArea;
+import com.pickgo.domain.area.area.entity.PerformanceArea;
 import jakarta.persistence.*;
 import lombok.*;
 

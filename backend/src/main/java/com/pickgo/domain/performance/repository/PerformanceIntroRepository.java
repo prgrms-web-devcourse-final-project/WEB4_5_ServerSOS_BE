@@ -1,6 +1,6 @@
-package com.pickgo.performance.performance.repository;
+package com.pickgo.domain.performance.repository;
 
-import com.pickgo.performance.performance.entity.PerformanceIntro;
+import com.pickgo.domain.performance.entity.PerformanceIntro;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PerformanceIntroRepository extends JpaRepository<PerformanceIntro, Long> {

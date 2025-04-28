@@ -1,4 +1,4 @@
-package com.pickgo.performance.seat.entity;
+package com.pickgo.domain.area.seat.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
