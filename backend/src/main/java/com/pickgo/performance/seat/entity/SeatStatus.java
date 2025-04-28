@@ -1,12 +1,14 @@
 package com.pickgo.performance.seat.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum SeatStatus {
-    AVAILABLE("예약 가능"),
-    PENDING("예약 중"),
-    RESERVED("예약 완료");
+    AVAILABLE("예약가능"),
+    PENDING("예약중"),
+    RESERVED("예약완료");
 
     private final String value;
 }
