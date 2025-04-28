@@ -15,9 +15,11 @@ public class PerformanceIntro extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Setter
     private String intro_image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
+    @Setter
     private Performance performance;
 }

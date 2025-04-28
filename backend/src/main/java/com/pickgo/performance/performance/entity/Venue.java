@@ -15,8 +15,10 @@ public class Venue extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Setter
     private String name;
 
     @Column(nullable = false)
+    @Setter
     private String address;
 }
