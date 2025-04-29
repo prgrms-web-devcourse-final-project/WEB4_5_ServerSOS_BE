@@ -5,7 +5,7 @@ spring:
   application:
     name: pickgo
   profiles:
-    active: ${SPRING_ACTIVE_PROFILES:dev}
+    active: dev
   config:
     import:
       - optional:file:./.env[.properties]
