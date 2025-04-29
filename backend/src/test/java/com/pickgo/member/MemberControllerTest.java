@@ -24,9 +24,11 @@ import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.jwt.JwtProvider;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class MemberControllerTest {
 
 	@Autowired
