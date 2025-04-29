@@ -40,3 +40,18 @@ custom:
     domain: localhost
     backUrl: "http://${custom.dev.domain}:${server.port}"
     frontUrl: "http://${custom.dev.domain}:3000"
+
+  jwt:
+    issuer: ${JWT_ISSUER}
+    secret_key: ${JWT_SECRET_KEY}
+    access_token:
+      expiration_minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:30}
+    refresh_token:
+      expiration_minutes: ${JWT_REFRESH_TOKEN_EXPIRATION_MINUTES:86400}
+
+    http:
+      secure: ${HTTP_SECURE:false}
+
+    member:
+      profile: ${MEMBER_PROFILE:https://url.kr/estdgi}
+
