@@ -1,5 +1,7 @@
 package com.pickgo.member;
 
+import static com.pickgo.domain.member.entity.enums.Authority.*;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
 import static com.pickgo.global.response.RsCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

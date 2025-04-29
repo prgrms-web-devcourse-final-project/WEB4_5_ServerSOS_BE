@@ -1,5 +1,7 @@
 package com.pickgo.admin;
 
+import static com.pickgo.domain.member.entity.enums.Authority.*;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
