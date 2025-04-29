@@ -2,15 +2,17 @@ package com.pickgo.domain.admin.service;
 
 import com.pickgo.domain.admin.dto.PostReviewCreateRequest;
 import com.pickgo.domain.admin.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.post.entity.Post;
-import com.pickgo.domain.review.entity.Review;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.post.repository.PostRepository;
+import com.pickgo.domain.admin.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.admin.repository.AdminReviewRepository;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.repository.PostRepository;
+import com.pickgo.domain.review.entity.Review;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,5 +57,19 @@ public class AdminReviewService {
 
         // 4. 응답 반환
         return PostReviewSimpleResponse.fromEntity(savedReview);
+    }
+
+    @Transactional
+    public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, PostReviewUpdateRequest request) {
+        Review review = adminreviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
+
+        if (!review.getPost().getId().equals(postId)) {
+            throw new IllegalArgumentException("리뷰가 해당 게시글에 속해있지 않습니다.");
+        }
+
+        review.setContent(request.getContent());
+
+        return PostReviewSimpleResponse.fromEntity(review);
     }
 }

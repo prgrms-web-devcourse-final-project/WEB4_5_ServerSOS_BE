@@ -2,6 +2,7 @@ package com.pickgo.domain.admin.controller;
 
 import com.pickgo.domain.admin.dto.PostReviewCreateRequest;
 import com.pickgo.domain.admin.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.admin.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.admin.service.AdminReviewService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
@@ -37,6 +38,17 @@ public class AdminReviewController {
     ) {
         PostReviewSimpleResponse response = adminReviewService.createReview(id, request);
         return RsData.from(RsCode.CREATED, response);
+    }
+
+    @Operation(summary = "게시글 리뷰 수정")
+    @PutMapping("/{reviewId}")
+    public RsData<PostReviewSimpleResponse> updateReview(
+            @PathVariable Long id,
+            @PathVariable Long reviewId,
+            @RequestBody PostReviewUpdateRequest request
+    ) {
+        PostReviewSimpleResponse response = adminReviewService.updateReview(id, reviewId, request);
+        return RsData.from(RsCode.SUCCESS, response);
     }
 
 }
