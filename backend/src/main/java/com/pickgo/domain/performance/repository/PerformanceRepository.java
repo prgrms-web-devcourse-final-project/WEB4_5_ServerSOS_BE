@@ -1,6 +1,6 @@
-package com.pickgo.example.repository;
+package com.pickgo.domain.performance.repository;
 
-import com.pickgo.example.entity.Performance;
+import com.pickgo.domain.performance.entity.Performance;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PerformanceRepository extends JpaRepository<Performance, Long> {

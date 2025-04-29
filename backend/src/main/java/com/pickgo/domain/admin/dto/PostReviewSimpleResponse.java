@@ -1,6 +1,6 @@
-package com.pickgo.example.dto;
+package com.pickgo.domain.admin.dto;
 
-import com.pickgo.example.entity.Review;
+import com.pickgo.domain.review.entity.Review;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class PostReviewSimpleResponse {
         return PostReviewSimpleResponse.builder()
                 .reviewId(review.getId())
                 .userId(review.getMember().getId())
-                .profile(review.getMember().getProfile())
+                .profile(review.getMember().getProfileImageUrl())
                 .nickname(review.getMember().getNickname())
                 .content(review.getContent())
                 .build();

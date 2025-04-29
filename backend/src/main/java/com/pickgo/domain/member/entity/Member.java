@@ -1,4 +1,4 @@
-package com.pickgo.example.entity;
+package com.pickgo.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +13,7 @@ public class Member {
     private Long id;
 
     @Column(name = "profile")
-    private String profile;
+    private String profileImageUrl;
 
     @Column(name = "nickname")
     private String nickname;

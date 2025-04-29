@@ -1,4 +1,4 @@
-package com.pickgo.example.dto;
+package com.pickgo.domain.admin.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,5 +1,7 @@
-package com.pickgo.example.entity;
+package com.pickgo.domain.performance.entity;
 
+import com.pickgo.example.entity.PerformanceType;
+import com.pickgo.domain.venue.entity.Venue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

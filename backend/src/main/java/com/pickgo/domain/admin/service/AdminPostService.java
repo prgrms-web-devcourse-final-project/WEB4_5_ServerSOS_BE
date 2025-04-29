@@ -1,15 +1,15 @@
-package com.pickgo.example.service;
+package com.pickgo.domain.admin.service;
 
-import com.pickgo.example.dto.PostCreateRequest;
-import com.pickgo.example.dto.PostDetailResponse;
-import com.pickgo.example.dto.PostSimpleResponse;
-import com.pickgo.example.dto.PostUpdateRequest;
-import com.pickgo.example.entity.Performance;
-import com.pickgo.example.entity.Post;
-import com.pickgo.example.entity.Venue;
-import com.pickgo.example.repository.AdminPostRepository;
-import com.pickgo.example.repository.PerformanceRepository;
-import com.pickgo.example.repository.VenueRepository;
+import com.pickgo.domain.admin.dto.PostCreateRequest;
+import com.pickgo.domain.admin.dto.PostDetailResponse;
+import com.pickgo.domain.admin.dto.PostSimpleResponse;
+import com.pickgo.domain.admin.dto.PostUpdateRequest;
+import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.venue.entity.Venue;
+import com.pickgo.domain.admin.repository.AdminPostRepository;
+import com.pickgo.domain.performance.repository.PerformanceRepository;
+import com.pickgo.domain.venue.repository.VenueRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

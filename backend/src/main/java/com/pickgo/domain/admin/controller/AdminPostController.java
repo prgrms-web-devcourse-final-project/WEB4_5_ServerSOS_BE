@@ -1,10 +1,10 @@
-package com.pickgo.example.controller;
+package com.pickgo.domain.admin.controller;
 
-import com.pickgo.example.dto.PostCreateRequest;
-import com.pickgo.example.dto.PostDetailResponse;
-import com.pickgo.example.dto.PostSimpleResponse;
-import com.pickgo.example.dto.PostUpdateRequest;
-import com.pickgo.example.service.AdminPostService;
+import com.pickgo.domain.admin.dto.PostCreateRequest;
+import com.pickgo.domain.admin.dto.PostDetailResponse;
+import com.pickgo.domain.admin.dto.PostSimpleResponse;
+import com.pickgo.domain.admin.dto.PostUpdateRequest;
+import com.pickgo.domain.admin.service.AdminPostService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;

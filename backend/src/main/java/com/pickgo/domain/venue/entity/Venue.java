@@ -1,4 +1,4 @@
-package com.pickgo.example.entity;
+package com.pickgo.domain.venue.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

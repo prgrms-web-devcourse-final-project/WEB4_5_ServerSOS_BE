@@ -1,5 +1,6 @@
-package com.pickgo.example.entity;
+package com.pickgo.domain.post.entity;
 
+import com.pickgo.domain.performance.entity.Performance;
 import jakarta.persistence.*;
 import lombok.*;
 
