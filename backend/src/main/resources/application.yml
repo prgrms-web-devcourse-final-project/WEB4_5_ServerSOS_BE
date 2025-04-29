@@ -35,6 +35,9 @@ custom:
       expiration_minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:30}
     refresh_token:
       expiration_minutes: ${JWT_REFRESH_TOKEN_EXPIRATION_MINUTES:86400}
+    admin_token: ${ADMIN_TOKEN}
+    user_token: ${USER_TOKEN}
+    expired_token: ${EXPIRED_TOKEN}
 
   http:
     secure: ${HTTP_SECURE:false}
