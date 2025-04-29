@@ -183,22 +183,35 @@ resource "aws_iam_instance_profile" "instance_profile_1" {
 locals {
   ec2_user_data_base = <<-END_OF_FILE
 #!/bin/bash
-# 가상 메모리 4GB 설정
+# 1. 스왑 메모리 설정
 sudo dd if=/dev/zero of=/swapfile bs=128M count=32
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 sudo sh -c 'echo "/swapfile swap swap defaults 0 0" >> /etc/fstab'
 
-# 도커 설치 및 실행/활성화
+# 2. Docker 설치
 yum install docker -y
 systemctl enable docker
 systemctl start docker
 
+# 3. Docker Compose 설치
 curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
+# 4. Git 설치
 yum install git -y
+
+# 5. 작업 디렉토리 생성 및 레포지토리 클론
+mkdir -p /app/pickgo
+cd /app/pickgo
+git clone https://github.com/prgrms-web-devcourse-final-project/WEB4_5_ServerSOS_BE.git .
+
+# 6. Backend 디렉토리 이동
+cd backend
+
+# 7. DockerHub 또는 GHCR 로그인
+echo "${var.github_token}" | docker login ghcr.io -u ${var.github_username} --password-stdin
 
 END_OF_FILE
 }
