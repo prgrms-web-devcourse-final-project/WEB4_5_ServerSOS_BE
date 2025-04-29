@@ -1,8 +1,8 @@
 package com.pickgo.domain.post.controller;
 
-import com.pickgo.domain.admin.dto.PostReviewCreateRequest;
-import com.pickgo.domain.admin.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.admin.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.post.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;

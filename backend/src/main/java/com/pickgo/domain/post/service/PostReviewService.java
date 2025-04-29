@@ -1,8 +1,8 @@
 package com.pickgo.domain.post.service;
 
-import com.pickgo.domain.admin.dto.PostReviewCreateRequest;
-import com.pickgo.domain.admin.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.admin.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.post.repository.PostReviewRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;

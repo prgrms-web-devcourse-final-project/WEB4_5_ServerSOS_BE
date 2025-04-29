@@ -1,7 +1,6 @@
 package com.pickgo.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.admin.controller.AdminPostController;
 import com.pickgo.domain.admin.dto.PostCreateRequest;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AdminPostController.class)
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 class AdminPostControllerTest {
 
@@ -86,10 +85,10 @@ class AdminPostControllerTest {
 
         mockMvc.perform(post("/api/admin/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                )
-                .andExpect(status().isOk())
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(RsCode.CREATED.getCode()))
+                .andExpect(jsonPath("$.data.id").value(1)) // 추가
                 .andDo(print());
     }
 
