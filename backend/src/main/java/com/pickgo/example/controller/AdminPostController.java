@@ -30,9 +30,10 @@ public class AdminPostController {
 
     @Operation(summary = "admin 게시글 작성")
     @PostMapping
-    public RsData<Long> createPost(@RequestBody PostCreateRequest request) {
+    public RsData<PostCreateRequest> createPost(@RequestBody PostCreateRequest request) {
         Long postId = adminPostService.createPost(request);
-        return RsData.from(RsCode.CREATED, postId);
+        request.setId(postId);
+        return RsData.from(RsCode.CREATED, request);
     }
 
     @Operation(summary = "admin 게시글 수정")
