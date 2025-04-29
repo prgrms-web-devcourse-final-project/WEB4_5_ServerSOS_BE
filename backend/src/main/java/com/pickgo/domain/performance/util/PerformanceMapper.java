@@ -160,7 +160,10 @@ public class PerformanceMapper {
                 days.add(DayOfWeek.of(i));
             }
         } else {
-            days.add(koreanDayOfWeek(daysPart));
+            DayOfWeek dayOfWeek = koreanDayOfWeek(daysPart);
+            if (dayOfWeek != null) {
+                days.add(koreanDayOfWeek(daysPart));
+            }
         }
 
         return days;
@@ -176,6 +179,7 @@ public class PerformanceMapper {
             case "금요일" -> DayOfWeek.FRIDAY;
             case "토요일" -> DayOfWeek.SATURDAY;
             case "일요일" -> DayOfWeek.SUNDAY;
+            case "HOL" -> null;
             default -> throw new IllegalArgumentException("Unknown day: " + korean);
         };
     }
