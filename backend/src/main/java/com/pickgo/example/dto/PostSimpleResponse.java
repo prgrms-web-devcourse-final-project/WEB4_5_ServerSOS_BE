@@ -20,9 +20,9 @@ public class PostSimpleResponse {
         return PostSimpleResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
-                .venue(post.getPerformanceId().getVenueId().getName())
-                .startDate(post.getPerformanceId().getEndDate())
-                .poster(post.getPerformanceId().getPoster())
+                .venue(post.getPerformance().getVenueId().getName())
+                .startDate(post.getPerformance().getEndDate())
+                .poster(post.getPerformance().getPoster())
                 .build();
     }
 }

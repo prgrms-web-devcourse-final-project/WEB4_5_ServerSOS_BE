@@ -24,7 +24,7 @@ public class AdminPostService {
 
     /*게시물 전체 목록 조회*/
     public List<PostSimpleResponse> getAllPosts() {
-        List<Post> posts = adminPostRepository.findAll();
+        List<Post> posts = adminPostRepository.findAllWithPerformance();
 
         return posts.stream()
                 .map(PostSimpleResponse::from)
@@ -50,7 +50,7 @@ public class AdminPostService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .isPublished(false)
-                .performanceId(performance)
+                .performance(performance)
                 .build();
         Post savedPost = adminPostRepository.save(post);
 

@@ -22,7 +22,7 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
-    private Performance performanceId;
+    private Performance performance;
 
     @Column(nullable = false)
     private String title; // 제목
