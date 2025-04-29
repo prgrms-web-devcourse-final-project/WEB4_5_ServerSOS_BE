@@ -48,7 +48,7 @@ public class AdminReviewController {
             @RequestBody PostReviewUpdateRequest request
     ) {
         PostReviewSimpleResponse response = adminReviewService.updateReview(id, reviewId, request);
-        return RsData.from(RsCode.SUCCESS, response);
+        return new RsData<>(200, "리뷰 등록 완료",response);
     }
 
 }
