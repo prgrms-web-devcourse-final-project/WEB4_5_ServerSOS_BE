@@ -1,4 +1,4 @@
-package com.pickgo.domain.admin.repository;
+package com.pickgo.domain.post.repository;
 
 import com.pickgo.domain.review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface AdminReviewRepository extends JpaRepository<Review, Long> {
+public interface PostReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review>findByPostId(Long postId);
 

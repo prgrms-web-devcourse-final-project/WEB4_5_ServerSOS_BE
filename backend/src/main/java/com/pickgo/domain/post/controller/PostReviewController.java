@@ -1,9 +1,9 @@
-package com.pickgo.domain.admin.controller;
+package com.pickgo.domain.post.controller;
 
 import com.pickgo.domain.admin.dto.PostReviewCreateRequest;
 import com.pickgo.domain.admin.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.admin.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.admin.service.AdminReviewService;
+import com.pickgo.domain.post.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/posts/{id}/reviews")
+@RequestMapping("/api/posts/{id}/reviews")
 @RequiredArgsConstructor
 @Tag(name = "Admin API", description = " 리뷰 관련 API 엔드포인트")
-public class AdminReviewController {
+public class PostReviewController {
 
-    private final AdminReviewService adminReviewService;
+    private final PostReviewService postReviewService;
 
     @Operation(summary = "게시글 리뷰 목록 조회")
     @GetMapping
     public RsData<List<PostReviewSimpleResponse>> getReviews(
             @PathVariable Long id
     ) {
-        List<PostReviewSimpleResponse> reviews = adminReviewService.getReviewsByPostId(id);
+        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(id);
         return RsData.from(RsCode.SUCCESS, reviews);
     }
 
@@ -36,7 +36,7 @@ public class AdminReviewController {
             @PathVariable Long id,
             @RequestBody PostReviewCreateRequest request
     ) {
-        PostReviewSimpleResponse response = adminReviewService.createReview(id, request);
+        PostReviewSimpleResponse response = postReviewService.createReview(id, request);
         return RsData.from(RsCode.CREATED, response);
     }
 
@@ -47,7 +47,7 @@ public class AdminReviewController {
             @PathVariable Long reviewId,
             @RequestBody PostReviewUpdateRequest request
     ) {
-        PostReviewSimpleResponse response = adminReviewService.updateReview(id, reviewId, request);
+        PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request);
         return new RsData<>(200, "리뷰 등록 완료",response);
     }
 
@@ -57,7 +57,7 @@ public class AdminReviewController {
             @PathVariable Long id,
             @PathVariable Long reviewId
     ) {
-        adminReviewService.deleteReview(id, reviewId);
+        postReviewService.deleteReview(id, reviewId);
         return new RsData<>(200, "리뷰 삭제 완료", null);
     }
 }
