@@ -7,9 +7,7 @@ spring:
   profiles:
     active: ${SPRING_ACTIVE_PROFILES:dev}
   config:
-    import:
-      - optional:file:./.env[.properties]
-      - optional:file:./.env.prod[.properties]
+    import: optional:file:./.env[.properties]
   output:
     ansi:
       enabled: always
@@ -30,17 +28,6 @@ spring:
         default_batch_fetch_size: 100
 
 custom:
-  appName: final
-  prod:
-    domain: pick-go.shop
-    backUrl: "https://api.${custom.appName}.${custom.prod.domain}"
-    frontUrl: "https://www.${custom.appName}.${custom.prod.domain}"
-
-  dev:
-    domain: localhost
-    backUrl: "http://${custom.dev.domain}:${server.port}"
-    frontUrl: "http://${custom.dev.domain}:3000"
-
   jwt:
     issuer: ${JWT_ISSUER}
     secret_key: ${JWT_SECRET_KEY}
@@ -48,10 +35,12 @@ custom:
       expiration_minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:30}
     refresh_token:
       expiration_minutes: ${JWT_REFRESH_TOKEN_EXPIRATION_MINUTES:86400}
+    admin_token: ${ADMIN_TOKEN}
+    user_token: ${USER_TOKEN}
+    expired_token: ${EXPIRED_TOKEN}
 
-    http:
-      secure: ${HTTP_SECURE:false}
+  http:
+    secure: ${HTTP_SECURE:false}
 
-    member:
-      profile: ${MEMBER_PROFILE:https://url.kr/estdgi}
-
+  member:
+    profile: ${MEMBER_PROFILE:https://url.kr/estdgi}
