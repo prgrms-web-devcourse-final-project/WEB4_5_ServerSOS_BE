@@ -198,6 +198,8 @@ systemctl start docker
 curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
+yum install git -y
+
 END_OF_FILE
 }
 
