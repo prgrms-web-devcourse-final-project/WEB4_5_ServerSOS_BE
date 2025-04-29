@@ -30,7 +30,7 @@ public class Performance extends BaseEntity {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private Integer runtime;
+    private String runtime;
 
     @Column(nullable = false)
     private String poster;
@@ -40,7 +40,7 @@ public class Performance extends BaseEntity {
     private PerformanceState state;
 
     @Column(nullable = false)
-    private Integer minAge;
+    private String minAge;
 
     @Column(nullable = false)
     private String casts;
@@ -53,7 +53,7 @@ public class Performance extends BaseEntity {
     private PerformanceType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venue_id", nullable = false)
+    @JoinColumn(name = "venue_id")
     private Venue venue;
 
     @Builder.Default
