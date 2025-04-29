@@ -2,15 +2,19 @@ package com.pickgo.example.service;
 
 import com.pickgo.example.dto.PostCreateRequest;
 import com.pickgo.example.dto.PostSimpleResponse;
+import com.pickgo.example.dto.PostUpdateRequest;
 import com.pickgo.example.entity.Performance;
 import com.pickgo.example.entity.Post;
 import com.pickgo.example.entity.Venue;
 import com.pickgo.example.repository.AdminPostRepository;
 import com.pickgo.example.repository.PerformanceRepository;
 import com.pickgo.example.repository.VenueRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,4 +61,21 @@ public class AdminPostService {
         return savedPost.getId();
 
     }
+
+    @Transactional
+    public void updatePost(Long id, PostUpdateRequest request) {
+    Post post = adminPostRepository.findById(id)
+            .orElseThrow(()-> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+    Performance performance = performanceRepository.findById(request.getPerformanceId())
+            .orElseThrow(()-> new IllegalArgumentException("공연이 존재하지 않습니다."));
+
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setIsPublished(request.getIsPublished());
+        post.setPerformance(performance);
+        post.setModifiedAt(LocalDateTime.now());
+    }
 }
+
+

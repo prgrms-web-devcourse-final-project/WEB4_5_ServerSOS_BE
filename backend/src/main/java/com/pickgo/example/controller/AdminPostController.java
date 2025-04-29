@@ -2,6 +2,7 @@ package com.pickgo.example.controller;
 
 import com.pickgo.example.dto.PostCreateRequest;
 import com.pickgo.example.dto.PostSimpleResponse;
+import com.pickgo.example.dto.PostUpdateRequest;
 import com.pickgo.example.service.AdminPostService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
@@ -32,5 +33,15 @@ public class AdminPostController {
     public RsData<Long> createPost(@RequestBody PostCreateRequest request) {
         Long postId = adminPostService.createPost(request);
         return RsData.from(RsCode.CREATED, postId);
+    }
+
+    @Operation(summary = "admin 게시글 수정")
+    @PutMapping("/{id}")
+    public RsData<PostUpdateRequest> updatePost(
+            @PathVariable Long id,
+            @RequestBody PostUpdateRequest request
+    ){
+        adminPostService.updatePost(id,request);
+        return RsData.from(RsCode.SUCCESS,request);
     }
 }
