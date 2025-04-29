@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum PerformanceState {
     SCHEDULED("공연예정"),
-    ONGROIN("공연중"),
+    ONGOING("공연중"),
     COMPLETED("공연완료");
 
     private final String value;
