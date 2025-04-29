@@ -1,12 +1,14 @@
 package com.pickgo.domain.admin.dto;
 
 import com.pickgo.domain.post.entity.Post;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 @Builder
 public class PostSimpleResponse {
     private Long id;
