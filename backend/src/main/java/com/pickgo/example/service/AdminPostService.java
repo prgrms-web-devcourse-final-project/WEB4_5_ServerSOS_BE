@@ -1,6 +1,7 @@
 package com.pickgo.example.service;
 
 import com.pickgo.example.dto.PostCreateRequest;
+import com.pickgo.example.dto.PostDetailResponse;
 import com.pickgo.example.dto.PostSimpleResponse;
 import com.pickgo.example.dto.PostUpdateRequest;
 import com.pickgo.example.entity.Performance;
@@ -33,6 +34,12 @@ public class AdminPostService {
         return posts.stream()
                 .map(PostSimpleResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    public PostDetailResponse getPostDetail(Long id) {
+        Post post = adminPostRepository.findByIdWithPerformance(id)
+                .orElseThrow(() -> new EntityNotFoundException("요청하신 게시글을 찾을 수 없습니다."));
+        return PostDetailResponse.from(post);
     }
 
     /*게시글 작성*/
@@ -85,6 +92,8 @@ public class AdminPostService {
 
     adminPostRepository.delete(post);
     }
+
+
 }
 
 
