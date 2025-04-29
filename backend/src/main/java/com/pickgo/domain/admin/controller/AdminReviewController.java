@@ -51,4 +51,13 @@ public class AdminReviewController {
         return new RsData<>(200, "리뷰 등록 완료",response);
     }
 
+    @Operation(summary = "게시글 리뷰 삭제")
+    @DeleteMapping("/{reviewId}")
+    public RsData<String> deleteReview(
+            @PathVariable Long id,
+            @PathVariable Long reviewId
+    ) {
+        adminReviewService.deleteReview(id, reviewId);
+        return new RsData<>(200, "리뷰 삭제 완료", null);
+    }
 }

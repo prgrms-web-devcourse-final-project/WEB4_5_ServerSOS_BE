@@ -72,4 +72,16 @@ public class AdminReviewService {
 
         return PostReviewSimpleResponse.fromEntity(review);
     }
+
+    @Transactional
+    public void deleteReview(Long postId, Long reviewId) {
+        Review review = adminreviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
+
+        if (!review.getPost().getId().equals(postId)) {
+            throw new IllegalArgumentException("리뷰가 해당 게시글에 속하지 않습니다.");
+        }
+
+        adminreviewRepository.delete(review);
+    }
 }
