@@ -42,8 +42,20 @@ class PostReviewControllerTest {
         // given
         Long postId = 1L;
         List<PostReviewSimpleResponse> mockReviews = List.of(
-                new PostReviewSimpleResponse(1L, 10L, "좋아요", "작성자1", "2025-04-29T10:00:00"),
-                new PostReviewSimpleResponse(2L, 20L, "별로에요", "작성자2", "2025-04-29T11:00:00")
+                PostReviewSimpleResponse.builder()
+                        .reviewId(1L)
+                        .userId(10L)
+                        .profile("profile1.jpg")
+                        .nickname("작성자1")
+                        .content("좋아요")
+                        .build(),
+                PostReviewSimpleResponse.builder()
+                        .reviewId(2L)
+                        .userId(20L)
+                        .profile("profile2.jpg")
+                        .nickname("작성자2")
+                        .content("별로에요")
+                        .build()
         );
 
         Mockito.when(postReviewService.getReviewsByPostId(postId))
@@ -71,9 +83,13 @@ class PostReviewControllerTest {
                 "2025-04-29T10:00:00"
         );
 
-        PostReviewSimpleResponse mockResponse = new PostReviewSimpleResponse(
-                1L, 10L, "좋은 글입니다.", "작성자1", "2025-04-29T10:00:00"
-        );
+        PostReviewSimpleResponse mockResponse = PostReviewSimpleResponse.builder()
+                .reviewId(1L)
+                .userId(10L)
+                .profile("profile.jpg")
+                .nickname("작성자1")
+                .content("좋은 글입니다.")
+                .build();
 
         Mockito.when(postReviewService.createReview(eq(postId), any(PostReviewCreateRequest.class)))
                 .thenReturn(mockResponse);
@@ -82,8 +98,8 @@ class PostReviewControllerTest {
         mockMvc.perform(post("/api/posts/{id}/reviews", postId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(201))  // 생성 응답은 201 코드 기대
+                .andExpect(status().isCreated())  // ✅ 201 Created
+                .andExpect(jsonPath("$.code").value(201))
                 .andExpect(jsonPath("$.data.content").value("좋은 글입니다."));
     }
 
@@ -96,13 +112,13 @@ class PostReviewControllerTest {
 
         PostReviewUpdateRequest request = new PostReviewUpdateRequest("수정된 리뷰 내용");
 
-        PostReviewSimpleResponse mockResponse = new PostReviewSimpleResponse(
-                reviewId,
-                10L,
-                "수정된 리뷰 내용",
-                "작성자1",
-                "2025-04-29T11:00:00"
-        );
+        PostReviewSimpleResponse mockResponse = PostReviewSimpleResponse.builder()
+                .reviewId(reviewId)
+                .userId(10L)
+                .profile("profile.jpg")
+                .nickname("작성자1")
+                .content("수정된 리뷰 내용")
+                .build();
 
         Mockito.when(postReviewService.updateReview(eq(postId), eq(reviewId), any(PostReviewUpdateRequest.class)))
                 .thenReturn(mockResponse);
