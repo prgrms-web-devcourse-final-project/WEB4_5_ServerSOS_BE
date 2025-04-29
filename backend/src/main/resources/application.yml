@@ -7,7 +7,9 @@ spring:
   profiles:
     active: ${SPRING_ACTIVE_PROFILES:dev}
   config:
-    import: optional:file:./.env[.properties]
+    import:
+      - optional:file:./.env[.properties]
+      - optional:file:./.env.prod[.properties]
   output:
     ansi:
       enabled: always
@@ -26,3 +28,15 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 100
+
+custom:
+  appName: final
+  prod:
+    domain: pick-go.shop
+    backUrl: "https://api.${custom.appName}.${custom.prod.domain}"
+    frontUrl: "https://www.${custom.appName}.${custom.prod.domain}"
+
+  dev:
+    domain: localhost
+    backUrl: "http://${custom.dev.domain}:${server.port}"
+    frontUrl: "http://${custom.dev.domain}:3000"
