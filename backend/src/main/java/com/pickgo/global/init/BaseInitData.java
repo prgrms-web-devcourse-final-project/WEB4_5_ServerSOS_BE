@@ -20,8 +20,8 @@ public class BaseInitData {
                 return;
             }
 
-            performanceService.fetchAndSavePerformances();
-            System.out.println("초기 데이터 세팅이 완료되었습니다.");
+//            performanceService.fetchAndSavePerformances();
+//            System.out.println("초기 데이터 세팅이 완료되었습니다.");
         };
     }
 }
