@@ -3,6 +3,8 @@ package com.pickgo.member.dto;
 import static com.pickgo.member.entity.enums.Authority.*;
 import static com.pickgo.member.entity.enums.SocialProvider.*;
 
+import java.util.UUID;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.pickgo.member.entity.Member;
@@ -17,6 +19,7 @@ public record MemberCreateRequest(
 ) {
 	public Member toEntity(PasswordEncoder passwordEncoder, String profile) {
 		return Member.builder()
+			.id(UUID.randomUUID())
 			.email(email)
 			.password(passwordEncoder.encode(password)) // 암호화한 비밀번호 저장
 			.nickname(nickname)
