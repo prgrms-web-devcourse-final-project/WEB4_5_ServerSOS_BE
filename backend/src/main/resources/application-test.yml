@@ -8,3 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+custom:
+  jwt:
+    admin_token: ${ADMIN_TOKEN}
+    user_token: ${USER_TOKEN}
+    expired_token: ${EXPIRED_TOKEN}
