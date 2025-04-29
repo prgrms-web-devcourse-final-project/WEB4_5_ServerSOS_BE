@@ -1,9 +1,6 @@
 package com.pickgo.example.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,7 +11,8 @@ public class Venue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long venue_id;
+    @Column(name = "venue_id")
+    private Long venueId;
 
     private String name;
 

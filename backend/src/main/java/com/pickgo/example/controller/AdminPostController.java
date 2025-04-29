@@ -1,5 +1,6 @@
 package com.pickgo.example.controller;
 
+import com.pickgo.example.dto.PostCreateRequest;
 import com.pickgo.example.dto.PostSimpleResponse;
 import com.pickgo.example.service.AdminPostService;
 import com.pickgo.global.response.RsCode;
@@ -7,9 +8,7 @@ import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +25,12 @@ public class AdminPostController {
     public RsData<List<PostSimpleResponse>> getPostList() {
         List<PostSimpleResponse> responses = adminPostService.getAllPosts();
         return RsData.from(RsCode.SUCCESS,responses);
+    }
+
+    @Operation(summary = "admin 게시글 작성")
+    @PostMapping
+    public RsData<Long> createPost(@RequestBody PostCreateRequest request) {
+        Long postId = adminPostService.createPost(request);
+        return RsData.from(RsCode.CREATED, postId);
     }
 }
