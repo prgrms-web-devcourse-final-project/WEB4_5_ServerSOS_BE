@@ -61,7 +61,7 @@ public class AdminPostService {
         return savedPost.getId();
 
     }
-
+    /*게시글 수정*/
     @Transactional
     public void updatePost(Long id, PostUpdateRequest request) {
     Post post = adminPostRepository.findById(id)
@@ -75,6 +75,15 @@ public class AdminPostService {
         post.setIsPublished(request.getIsPublished());
         post.setPerformance(performance);
         post.setModifiedAt(LocalDateTime.now());
+    }
+
+    /*게시글 삭제*/
+    @Transactional
+    public void deletePost(Long id) {
+    Post post = adminPostRepository.findById(id)
+            .orElseThrow(()-> new EntityNotFoundException("게시글을 찾을 수 업습니다."));
+
+    adminPostRepository.delete(post);
     }
 }
 

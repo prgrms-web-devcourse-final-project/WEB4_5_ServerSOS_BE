@@ -45,4 +45,13 @@ public class AdminPostController {
         adminPostService.updatePost(id,request);
         return RsData.from(RsCode.SUCCESS,request);
     }
+
+    @Operation(summary = "admin 게시글 삭제")
+    @DeleteMapping("/{id}")
+    public RsData<Long> deletePost(
+            @PathVariable Long id
+    ) {
+        adminPostService.deletePost(id);
+        return RsData.from(RsCode.SUCCESS,id);
+    }
 }
