@@ -15,9 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.pickgo.admin.TestToken;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.entity.enums.Authority;
+import com.pickgo.domain.member.entity.enums.SocialProvider;
+import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.member.entity.Member;
-import com.pickgo.member.repository.MemberRepository;
 
 import jakarta.servlet.http.Cookie;
 
@@ -48,8 +50,8 @@ public class TokenControllerTest {
 			.email(testEmail)
 			.password(testPassword)
 			.nickname(testNickname)
-			.authority(com.pickgo.member.entity.enums.Authority.USER)
-			.socialProvider(com.pickgo.member.entity.enums.SocialProvider.NONE)
+			.authority(Authority.USER)
+			.socialProvider(SocialProvider.NONE)
 			.build();
 	}
 

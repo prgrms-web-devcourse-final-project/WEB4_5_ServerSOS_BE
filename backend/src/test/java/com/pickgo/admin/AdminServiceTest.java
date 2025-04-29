@@ -11,10 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
-import com.pickgo.admin.service.AdminService;
+import com.pickgo.domain.admin.service.AdminService;
+import com.pickgo.domain.member.dto.MemberSimpleResponse;
+import com.pickgo.domain.member.service.MemberService;
 import com.pickgo.global.dto.PageResponse;
-import com.pickgo.member.dto.MemberSimpleResponse;
-import com.pickgo.member.service.MemberService;
 
 @ExtendWith(MockitoExtension.class)
 class AdminServiceTest {

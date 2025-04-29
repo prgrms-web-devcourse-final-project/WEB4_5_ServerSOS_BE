@@ -1,8 +1,6 @@
 package com.pickgo.member;
 
 import static com.pickgo.global.response.RsCode.*;
-import static com.pickgo.member.entity.enums.Authority.*;
-import static com.pickgo.member.entity.enums.SocialProvider.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -21,16 +19,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.pickgo.auth.service.TokenService;
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.member.dto.LoginRequest;
+import com.pickgo.domain.member.dto.LoginResponse;
+import com.pickgo.domain.member.dto.MemberDetailResponse;
+import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.dto.MemberSimpleResponse;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.member.service.MemberService;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
-import com.pickgo.member.dto.LoginRequest;
-import com.pickgo.member.dto.LoginResponse;
-import com.pickgo.member.dto.MemberDetailResponse;
-import com.pickgo.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.member.dto.MemberSimpleResponse;
-import com.pickgo.member.entity.Member;
-import com.pickgo.member.repository.MemberRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -50,7 +49,7 @@ class MemberServiceTest {
 	private HttpServletResponse response;
 
 	@InjectMocks
-	private com.pickgo.member.service.MemberService memberService;
+	private MemberService memberService;
 
 	private final String email = "test@example.com";
 	private final String password = "test_password";

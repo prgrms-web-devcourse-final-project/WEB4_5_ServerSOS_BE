@@ -16,12 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.pickgo.auth.dto.CreateTokenResponse;
-import com.pickgo.auth.service.TokenService;
+import com.pickgo.domain.auth.dto.CreateTokenResponse;
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.member.entity.Member;
-import com.pickgo.member.repository.MemberRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
 

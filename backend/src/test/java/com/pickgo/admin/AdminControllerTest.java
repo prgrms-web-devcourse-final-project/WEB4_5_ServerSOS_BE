@@ -1,7 +1,5 @@
 package com.pickgo.admin;
 
-import static com.pickgo.member.entity.enums.Authority.*;
-import static com.pickgo.member.entity.enums.SocialProvider.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -19,9 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.response.RsCode;
-import com.pickgo.member.entity.Member;
-import com.pickgo.member.repository.MemberRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
