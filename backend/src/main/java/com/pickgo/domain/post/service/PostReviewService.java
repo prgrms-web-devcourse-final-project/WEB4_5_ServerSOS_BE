@@ -28,7 +28,7 @@ public class PostReviewService {
 
     // 게시글에 달린 리뷰 목록 조회
     public List<PostReviewSimpleResponse> getReviewsByPostId(Long postId) {
-        List<Review> reviews = postreviewRepository.findAllByPostIdWithMember(postId);
+        List<Review> reviews = postreviewRepository.findAllByPostId(postId);
         return reviews.stream()
                 .map(PostReviewSimpleResponse::fromEntity)
                 .collect(Collectors.toList());
