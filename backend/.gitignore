@@ -37,5 +37,7 @@ out/
 .vscode/
 
 ### Custom ###
+.env.prod
 .env
 mysql_logs/
+src/main/java/resources/application-secret.yml
