@@ -15,7 +15,7 @@ public interface AdminPostRepository extends JpaRepository<Post, Long> {
     @Query("""
     SELECT p FROM Post p
     JOIN FETCH p.performance perf
-    JOIN FETCH perf.venueId
+    JOIN FETCH perf.venue
     """)
     List<Post> findAllWithPerformance();
 

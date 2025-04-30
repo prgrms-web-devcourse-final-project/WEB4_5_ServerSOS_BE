@@ -1,25 +1,27 @@
 package com.pickgo.domain.venue.entity;
 
+import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Venue {
-
+@Setter
+@Builder
+public class Venue extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "venue_id")
-    private Long venueId;
+    private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String address;
 
-    private LocalDateTime created_At;
-
-    private LocalDateTime modified_At;
-
 }
+
+
+
