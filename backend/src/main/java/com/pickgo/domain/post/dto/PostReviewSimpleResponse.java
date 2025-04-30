@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @AllArgsConstructor
 @Builder
 public class PostReviewSimpleResponse {
 
     private Long reviewId;
-    private Long userId;
+    private UUID userId;
     private String profile;
     private String nickname;
     private String content;
@@ -20,7 +22,7 @@ public class PostReviewSimpleResponse {
         return PostReviewSimpleResponse.builder()
                 .reviewId(review.getId())
                 .userId(review.getMember().getId())
-                .profile(review.getMember().getProfileImageUrl())
+                .profile(review.getMember().getProfile())
                 .nickname(review.getMember().getNickname())
                 .content(review.getContent())
                 .build();

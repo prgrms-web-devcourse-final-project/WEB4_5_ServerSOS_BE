@@ -4,11 +4,11 @@ import com.pickgo.domain.admin.dto.PostCreateRequest;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
+import com.pickgo.domain.admin.repository.AdminPostRepository;
 import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.post.entity.Post;
 import com.pickgo.domain.venue.entity.Venue;
-import com.pickgo.domain.admin.repository.AdminPostRepository;
-import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.venue.repository.VenueRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class AdminPostService {
                 .orElseThrow(() -> new RuntimeException("공연장 정보를 찾을 수 없습니다."));
 
         Performance performance = Performance.builder()
-                .venueId(venue)
+                .venue(venue)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .poster(request.getPoster())
