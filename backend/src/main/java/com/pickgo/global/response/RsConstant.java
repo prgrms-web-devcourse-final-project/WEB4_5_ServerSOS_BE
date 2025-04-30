@@ -41,5 +41,10 @@ public class RsConstant {
 
 	public static final int PERFORMANCE_NOT_FOUND = 4101;
 
+	/*게시물 관련*/
 	public static final int POST_NOT_FOUND = 4201;
+
+	/*리뷰 관련*/
+	public static final int REVIEW_CREATED = 4301;
+	public static final int REVIEW_DELETED = 4302;
 }

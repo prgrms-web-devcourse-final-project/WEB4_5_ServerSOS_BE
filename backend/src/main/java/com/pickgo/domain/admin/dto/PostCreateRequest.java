@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Setter
 public class PostCreateRequest {
 
-    private Long id;
     private String title;
     private Long venueId;
     private String content;
