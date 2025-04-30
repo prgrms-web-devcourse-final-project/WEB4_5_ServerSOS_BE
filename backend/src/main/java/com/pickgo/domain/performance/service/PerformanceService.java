@@ -8,6 +8,7 @@ import com.pickgo.domain.performance.entity.Venue;
 import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.performance.repository.VenueRepository;
 import com.pickgo.domain.performance.util.PerformanceMapper;
+import com.pickgo.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PerformanceService {
     private final KopisService kopisService;
+    private final PostService postService;
     private final PerformanceRepository performanceRepository;
     private final VenueRepository venueRepository;
 
@@ -51,11 +53,19 @@ public class PerformanceService {
                 System.out.println(e.getMessage());
             }
 
+            // 중복 체크
+            if (performanceRepository.existsByNameAndPoster(performanceDetail.getName(), performanceDetail.getPoster())) {
+                continue;
+            }
+
             // 공연 생성
             Performance performance = PerformanceMapper.toPerformance(performanceDetail, venue);
 
             // 공연 저장
-            performanceRepository.save(performance);
+            Performance savedPerformance = performanceRepository.save(performance);
+
+            // 임시 게시글 생성
+            postService.createPost(savedPerformance);
         }
     }
 }
