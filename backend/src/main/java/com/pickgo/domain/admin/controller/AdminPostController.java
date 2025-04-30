@@ -1,6 +1,5 @@
 package com.pickgo.domain.admin.controller;
 
-import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
 import com.pickgo.domain.admin.service.AdminPostService;
@@ -31,15 +30,6 @@ public class AdminPostController {
         List<PostSimpleResponse> responses = adminPostService.getAllPosts(isPublished);
         return RsData.from(RsCode.SUCCESS,responses);
     }
-
-    @Operation(summary = "admin 게시글 상세 조회")
-    @GetMapping("/{id}")
-    public RsData<PostDetailResponse> getPostDetail(@PathVariable("id") Long id) {
-        PostDetailResponse response = adminPostService.getPostDetail(id);
-        return RsData.from(RsCode.SUCCESS, response);
-    }
-
-
 
     @Operation(summary = "admin 게시글 수정")
     @PutMapping("/{id}")

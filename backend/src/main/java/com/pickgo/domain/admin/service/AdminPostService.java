@@ -7,7 +7,6 @@ import com.pickgo.domain.admin.repository.AdminPostRepository;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.post.entity.Post;
-import com.pickgo.domain.venue.repository.VenueRepository;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ public class AdminPostService {
 
     private final AdminPostRepository adminPostRepository;
     private final PerformanceRepository performanceRepository;
-    private final VenueRepository venueRepository;
 
     /*게시물 전체 목록 조회*/
     public List<PostSimpleResponse> getAllPosts(Boolean isPublished) {

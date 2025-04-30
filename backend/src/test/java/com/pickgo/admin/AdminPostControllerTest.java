@@ -1,7 +1,6 @@
 package com.pickgo.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
 import com.pickgo.domain.admin.service.AdminPostService;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -63,32 +61,6 @@ class AdminPostControllerTest {
                 .andExpect(jsonPath("$.data[1].id").value(2L))
                 .andDo(print());
     }
-
-    @Test
-    @DisplayName("게시글 상세 조회 성공")
-    void getPostDetail() throws Exception {
-        when(adminPostService.getPostDetail(anyLong())).thenReturn(
-                new PostDetailResponse(
-                        1L,
-                        "게시글1",
-                        "내용",
-                        true,
-                        10L,
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        "공연장"
-                )
-        );
-
-        mockMvc.perform(get("/api/admin/posts/{id}", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.title").value("게시글1"))
-                .andExpect(jsonPath("$.data.content").value("내용"))
-                .andDo(print());
-    }
-
 
     @Test
     @DisplayName("게시글 수정 성공")
