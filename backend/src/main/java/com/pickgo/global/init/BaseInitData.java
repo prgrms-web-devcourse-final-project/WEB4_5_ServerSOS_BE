@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 @RequiredArgsConstructor
+@Profile("!test") // 테스트 환경에서는 동작 X
 public class BaseInitData {
     private final PerformanceService performanceService;
     private final PerformanceRepository performanceRepository;
