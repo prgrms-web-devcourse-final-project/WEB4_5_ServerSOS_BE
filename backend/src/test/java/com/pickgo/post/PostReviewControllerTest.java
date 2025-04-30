@@ -5,6 +5,7 @@ import com.pickgo.domain.post.dto.PostReviewCreateRequest;
 import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.post.service.PostReviewService;
+import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -101,7 +102,7 @@ class PostReviewControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.code").value(201))
+                .andExpect(jsonPath("$.code").value(RsCode.REVIEW_CREATED.getCode()))
                 .andExpect(jsonPath("$.data.content").value("좋은 글입니다."));
     }
 
@@ -131,7 +132,7 @@ class PostReviewControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.code").value(RsCode.REVIEW_UPDATED.getCode()))
                 .andExpect(jsonPath("$.data.content").value("수정된 리뷰 내용"));
     }
 
@@ -147,7 +148,7 @@ class PostReviewControllerTest {
         // when & then
         mockMvc.perform(delete("/api/posts/{id}/reviews/{reviewId}", postId, reviewId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("리뷰 삭제 완료"));
+                .andExpect(jsonPath("$.code").value(RsCode.REVIEW_DELETED.getCode()))
+                .andExpect(jsonPath("$.message").value("리뷰가 삭제되었습니다."));
     }
 }
