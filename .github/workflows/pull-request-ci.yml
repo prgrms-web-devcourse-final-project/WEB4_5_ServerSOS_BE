@@ -59,6 +59,7 @@ jobs:
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
           USER_TOKEN: ${{ secrets.USER_TOKEN }}
           EXPIRED_TOKEN: ${{ secrets.EXPIRED_TOKEN }}
+          KOPIS_APIKEY: ${{ secrets.KOPIS_APIKEY }}
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
