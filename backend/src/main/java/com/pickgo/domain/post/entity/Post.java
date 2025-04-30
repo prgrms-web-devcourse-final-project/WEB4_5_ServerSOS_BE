@@ -27,7 +27,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Long views;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
     private Performance performance;
 }
