@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Builder
 public class Performance extends BaseEntity {
     @Id
@@ -37,6 +36,7 @@ public class Performance extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Setter
     private PerformanceState state;
 
     @Column(nullable = false)
@@ -62,9 +62,11 @@ public class Performance extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private List<PerformanceArea> performanceAreas = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private List<PerformanceSession> performanceSessions = new ArrayList<>();
 }

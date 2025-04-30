@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Builder
 public class PerformanceIntro extends BaseEntity {
     @Id
@@ -20,5 +19,6 @@ public class PerformanceIntro extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
+    @Setter
     private Performance performance;
 }
