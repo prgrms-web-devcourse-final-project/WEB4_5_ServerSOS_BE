@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,8 +47,8 @@ class AdminPostControllerTest {
     void getPostList() throws Exception {
         when(adminPostService.getAllPosts()).thenReturn(
                 List.of(
-                        new PostSimpleResponse(1L, "게시글1", "공연장1", LocalDateTime.now(), LocalDateTime.now(), "poster1.jpg"),
-                        new PostSimpleResponse(2L, "게시글2", "공연장2", LocalDateTime.now(), LocalDateTime.now(), "poster2.jpg")
+                        new PostSimpleResponse(1L, "게시글1", "공연장1", LocalDate.now(), LocalDate.now(), "poster1.jpg"),
+                        new PostSimpleResponse(2L, "게시글2", "공연장2", LocalDate.now(), LocalDate.now(), "poster2.jpg")
                 )
         );
 

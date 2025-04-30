@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,14 +45,14 @@ class PostReviewControllerTest {
         List<PostReviewSimpleResponse> mockReviews = List.of(
                 PostReviewSimpleResponse.builder()
                         .reviewId(1L)
-                        .userId(10L)
+                        .userId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
                         .profile("profile1.jpg")
                         .nickname("작성자1")
                         .content("좋아요")
                         .build(),
                 PostReviewSimpleResponse.builder()
                         .reviewId(2L)
-                        .userId(20L)
+                        .userId(UUID.fromString("22222222-2222-2222-2222-222222222222"))
                         .profile("profile2.jpg")
                         .nickname("작성자2")
                         .content("별로에요")
@@ -74,18 +75,19 @@ class PostReviewControllerTest {
     void createReview() throws Exception {
         // given
         Long postId = 1L;
+        UUID memberId = UUID.fromString("33333333-3333-3333-3333-333333333333");
 
         PostReviewCreateRequest request = new PostReviewCreateRequest(
                 postId,
                 "좋은 글입니다.",
                 "작성자1",
-                10L,
+                memberId,
                 "2025-04-29T10:00:00"
         );
 
         PostReviewSimpleResponse mockResponse = PostReviewSimpleResponse.builder()
                 .reviewId(1L)
-                .userId(10L)
+                .userId(memberId)
                 .profile("profile.jpg")
                 .nickname("작성자1")
                 .content("좋은 글입니다.")
@@ -98,7 +100,7 @@ class PostReviewControllerTest {
         mockMvc.perform(post("/api/posts/{id}/reviews", postId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())  // ✅ 201 Created
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(201))
                 .andExpect(jsonPath("$.data.content").value("좋은 글입니다."));
     }
@@ -109,12 +111,13 @@ class PostReviewControllerTest {
         // given
         Long postId = 1L;
         Long reviewId = 1L;
+        UUID memberId = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
         PostReviewUpdateRequest request = new PostReviewUpdateRequest("수정된 리뷰 내용");
 
         PostReviewSimpleResponse mockResponse = PostReviewSimpleResponse.builder()
                 .reviewId(reviewId)
-                .userId(10L)
+                .userId(memberId)
                 .profile("profile.jpg")
                 .nickname("작성자1")
                 .content("수정된 리뷰 내용")
