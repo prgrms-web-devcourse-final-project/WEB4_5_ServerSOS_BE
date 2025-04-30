@@ -37,7 +37,7 @@ public class PostReviewController {
             @RequestBody PostReviewCreateRequest request
     ) {
         PostReviewSimpleResponse response = postReviewService.createReview(id, request);
-        return RsData.from(RsCode.CREATED, response);
+        return RsData.from(RsCode.REVIEW_CREATED, response);
     }
 
     @Operation(summary = "게시글 리뷰 수정")
@@ -48,7 +48,7 @@ public class PostReviewController {
             @RequestBody PostReviewUpdateRequest request
     ) {
         PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request);
-        return new RsData<>(200, "리뷰 등록 완료",response);
+        return RsData.from(RsCode.REVIEW_UPDATED,response);
     }
 
     @Operation(summary = "게시글 리뷰 삭제")
@@ -58,6 +58,6 @@ public class PostReviewController {
             @PathVariable Long reviewId
     ) {
         postReviewService.deleteReview(id, reviewId);
-        return new RsData<>(200, "리뷰 삭제 완료", null);
+        return RsData.from(RsCode.REVIEW_DELETED, null);
     }
 }
