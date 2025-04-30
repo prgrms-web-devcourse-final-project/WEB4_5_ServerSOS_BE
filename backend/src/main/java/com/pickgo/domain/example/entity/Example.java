@@ -1,15 +1,13 @@
-package com.pickgo.domain.member.entity;
+package com.pickgo.domain.example.entity;
 
-import java.util.UUID;
-
-import com.pickgo.domain.member.entity.enums.Authority;
-import com.pickgo.domain.member.entity.enums.SocialProvider;
 import com.pickgo.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -17,38 +15,32 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
-@Table(name = "member")
-public class Member extends BaseEntity {
+@Table(name = "example")
+public class Example extends BaseEntity {
 
 	@Id
-	@Column(updatable = false, nullable = false)
-	private UUID id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@Column(nullable = false)
-	private String email;
-
-	@Setter
-	@Column(nullable = false)
-	private String password;
+	private String title;
 
 	@Column(nullable = false)
-	private String nickname;
+	private String body;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private Authority authority;
+	private ExampleType type;
 
-	private String profile;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private SocialProvider socialProvider;
-
+	public void updateExample(String title, String body, ExampleType type) {
+		this.title = title;
+		this.body = body;
+		this.type = type;
+	}
 }

@@ -1,52 +1,70 @@
 package com.pickgo.domain.performance.entity;
 
-import com.pickgo.example.entity.PerformanceType;
-import com.pickgo.domain.venue.entity.Venue;
+import com.pickgo.global.entity.BaseEntity;
+import com.pickgo.domain.area.area.entity.PerformanceArea;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter
 @Builder
-public class Performance {
-
+public class Performance extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long performanceId;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venue_id")
-    private Venue venueId;
-
+    @Column(nullable = false)
     private String name;
 
-    private LocalDateTime startDate;
+    @Column(nullable = false)
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    @Column(nullable = false)
+    private LocalDate endDate;
 
-    private int runtime;
+    @Column(nullable = false)
+    private Integer runtime;
 
+    @Column(nullable = false)
     private String poster;
 
-    private String state;
-
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private PerformanceType type; //ENUM 타입
+    private PerformanceState state;
 
-    private int minAge;
+    @Column(nullable = false)
+    private Integer minAge;
 
+    @Column(nullable = false)
     private String casts;
 
+    @Column(nullable = false)
     private String productionCompany;
 
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PerformanceType type;
 
-    private LocalDateTime updatedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PerformanceIntro> performanceIntros = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PerformanceArea> performanceAreas = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PerformanceSession> performanceSessions = new ArrayList<>();
 }

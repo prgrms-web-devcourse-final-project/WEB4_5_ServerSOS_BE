@@ -3,6 +3,7 @@ package com.pickgo.global.exception;
 import static com.pickgo.global.response.RsCode.*;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,6 +25,12 @@ public class GlobalExceptionHandler {
 		final BusinessException exception
 	) {
 		return RsData.from(exception.getRsCode());
+	}
+
+	@ExceptionHandler(MissingRequestCookieException.class)
+	public RsData<?> handleMissingRequestCookieException(MissingRequestCookieException exception) {
+		logWarn(exception);
+		return RsData.from(UNAUTHENTICATED);
 	}
 
 	@ExceptionHandler(MissingServletRequestParameterException.class)
