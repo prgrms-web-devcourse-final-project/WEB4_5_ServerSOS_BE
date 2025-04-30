@@ -18,6 +18,23 @@ jobs:
           path: .
           fetch-depth: 0
 
+      - name: 확인 - src 폴더 있는지 출력
+        run: |
+          echo "✅ 현재 디렉토리:"
+          pwd
+
+          echo "✅ 루트 디렉토리 목록:"
+          ls -al
+
+          echo "✅ backend 디렉토리:"
+          ls -al backend || echo "❌ backend 없음"
+
+          echo "✅ backend/src 디렉토리:"
+          ls -al backend/src || echo "❌ backend/src 없음"
+
+          echo "✅ backend/src 내부 전체 구조:"
+          ls -R backend/src || echo "❌ backend/src 내부 없음"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
