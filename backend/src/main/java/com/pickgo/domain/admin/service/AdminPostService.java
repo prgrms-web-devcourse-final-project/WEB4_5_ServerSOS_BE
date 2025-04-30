@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,14 @@ public class AdminPostService {
     private final VenueRepository venueRepository;
 
     /*게시물 전체 목록 조회*/
-    public List<PostSimpleResponse> getAllPosts() {
-        List<Post> posts = adminPostRepository.findAllWithPerformance();
+    public List<PostSimpleResponse> getAllPosts(Boolean isPublished) {
+        List<Post> posts;
+
+              if(isPublished ==null) {
+                  posts = adminPostRepository.findAll(); //전체 조회
+              }else{
+                  posts = adminPostRepository.findByIsPublished(isPublished); //상태별 필터링
+              }
 
         return posts.stream()
                 .map(PostSimpleResponse::from)
@@ -53,7 +58,6 @@ public class AdminPostService {
         post.setContent(request.getContent());
         post.setIsPublished(request.getIsPublished());
         post.setPerformance(performance);
-        post.setModifiedAt(LocalDate.now());
     }
 
     /*게시글 삭제*/

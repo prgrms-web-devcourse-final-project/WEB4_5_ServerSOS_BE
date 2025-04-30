@@ -25,8 +25,10 @@ public class AdminPostController {
 
     @Operation(summary = "admin 게시글 전체 목록 조회")
     @GetMapping
-    public RsData<List<PostSimpleResponse>> getPostList() {
-        List<PostSimpleResponse> responses = adminPostService.getAllPosts();
+    public RsData<List<PostSimpleResponse>> getPostList(
+            @RequestParam(required = false) Boolean isPublished
+    ) {
+        List<PostSimpleResponse> responses = adminPostService.getAllPosts(isPublished);
         return RsData.from(RsCode.SUCCESS,responses);
     }
 

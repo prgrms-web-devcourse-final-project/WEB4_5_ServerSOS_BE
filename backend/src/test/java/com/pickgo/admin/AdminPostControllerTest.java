@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -47,14 +48,15 @@ class AdminPostControllerTest {
     @Test
     @DisplayName("게시글 전체 목록 조회 성공")
     void getPostList() throws Exception {
-        when(adminPostService.getAllPosts()).thenReturn(
+        when(adminPostService.getAllPosts(true)).thenReturn(
                 List.of(
                         new PostSimpleResponse(1L, "게시글1", "공연장1", LocalDate.now(), LocalDate.now(), "poster1.jpg"),
                         new PostSimpleResponse(2L, "게시글2", "공연장2", LocalDate.now(), LocalDate.now(), "poster2.jpg")
                 )
         );
 
-        mockMvc.perform(get("/api/admin/posts"))
+        mockMvc.perform(get("/api/admin/posts")
+                .param("isPublished", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
                 .andExpect(jsonPath("$.data[0].id").value(1L))
@@ -72,8 +74,8 @@ class AdminPostControllerTest {
                         "내용",
                         true,
                         10L,
-                        LocalDate.of(2024, 1, 1),
-                        LocalDate.of(2024, 1, 2),
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
                         "공연장"
                 )
         );
