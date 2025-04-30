@@ -51,7 +51,7 @@ jobs:
       - name: Get EC2 instance ID
         id: get_instance_id
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=dev-ec2-1" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=team02-ec2-1" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
 
       - name: Create .env file on EC2
