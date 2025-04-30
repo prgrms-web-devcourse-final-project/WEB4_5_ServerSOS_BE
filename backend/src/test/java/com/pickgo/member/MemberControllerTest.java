@@ -1,11 +1,12 @@
 package com.pickgo.member;
 
-import static com.pickgo.domain.member.entity.enums.Authority.*;
-import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
-import static com.pickgo.global.response.RsCode.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.admin.TestToken;
+import com.pickgo.domain.member.dto.MemberCreateRequest;
+import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.jwt.JwtProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,18 +16,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.admin.TestToken;
-import com.pickgo.domain.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.jwt.JwtProvider;
+import static com.pickgo.domain.member.entity.enums.Authority.USER;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
+import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class MemberControllerTest {
 
 	@Autowired

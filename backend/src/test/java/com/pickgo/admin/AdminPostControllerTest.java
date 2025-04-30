@@ -5,7 +5,11 @@ import com.pickgo.domain.admin.dto.PostCreateRequest;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
+import com.pickgo.domain.admin.repository.AdminPostRepository;
 import com.pickgo.domain.admin.service.AdminPostService;
+import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.performance.repository.PerformanceRepository;
+import com.pickgo.domain.post.entity.Post;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,7 +39,12 @@ class AdminPostControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private PerformanceRepository performanceRepository;
+
+    @MockBean
     private AdminPostService adminPostService;
+    @MockBean
+    private AdminPostRepository adminPostRepository;
 
     @MockBean
     private org.springframework.data.jpa.mapping.JpaMetamodelMappingContext jpaMetamodelMappingContext;
@@ -96,16 +106,24 @@ class AdminPostControllerTest {
     @Test
     @DisplayName("게시글 수정 성공")
     void updatePost() throws Exception {
+        // given
         PostUpdateRequest request = new PostUpdateRequest();
         request.setTitle("수정된 제목");
         request.setContent("수정된 내용");
+        request.setPerformanceId(1L);
+        request.setIsPublished(true);
 
-        doNothing().when(adminPostService).updatePost(eq(1L), any(PostUpdateRequest.class));
+        // ✅ mocking
+        Performance performance = mock(Performance.class);
+        Post post = mock(Post.class);
 
+        when(performanceRepository.findById(1L)).thenReturn(Optional.of(performance));
+        when(adminPostRepository.findById(1L)).thenReturn(Optional.of(post));
+
+        // when & then
         mockMvc.perform(put("/api/admin/posts/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                )
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
                 .andDo(print());
