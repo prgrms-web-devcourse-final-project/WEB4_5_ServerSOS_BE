@@ -1,10 +1,9 @@
 package com.pickgo.domain.post.entity;
 
 import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +33,5 @@ public class Post {
 
     @Column(name = "views")
     private Long views; //조회수
-
-    @Column(name = "created_at")
-    private LocalDate createdAt; //생성
-
-    @Column(name = "modified_at")
-    private LocalDate modifiedAt; //수정
-
 
 }
