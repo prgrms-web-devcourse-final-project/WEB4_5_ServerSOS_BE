@@ -49,6 +49,8 @@ services:
     image: ghcr.io/prgrms-web-devcourse-final-project/pick-go-app:latest
     container_name: pick-go-app
     restart: always
+    env_file:
+      - .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
