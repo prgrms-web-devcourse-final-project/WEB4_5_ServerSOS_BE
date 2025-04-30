@@ -46,7 +46,7 @@ services:
       - npm_letsencrypt:/etc/letsencrypt
 
   app:
-    image: ghcr.io/asungkim/pick-go-app:latest
+    image: ghcr.io/prgrms-web-devcourse-final-project/pick-go-app:latest
     container_name: pick-go-app
     restart: always
     environment:
