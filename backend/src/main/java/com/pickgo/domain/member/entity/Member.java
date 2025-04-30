@@ -50,4 +50,8 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private SocialProvider socialProvider;
+
+	public void update(String nickname) {
+		this.nickname = nickname;
+	}
 }

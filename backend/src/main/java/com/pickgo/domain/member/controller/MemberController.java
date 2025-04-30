@@ -17,6 +17,7 @@ import com.pickgo.domain.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.dto.MemberDetailResponse;
 import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.dto.MemberUpdateRequest;
 import com.pickgo.domain.member.service.MemberService;
 import com.pickgo.global.response.RsData;
 
@@ -69,6 +70,15 @@ public class MemberController {
 	@GetMapping("/me")
 	public RsData<MemberDetailResponse> myInfo(@AuthenticationPrincipal MemberPrincipal principal) {
 		return RsData.from(SUCCESS, memberService.getDetail(principal.id()));
+	}
+
+	@Operation(summary = "내 정보 수정")
+	@PutMapping("/me")
+	public RsData<MemberDetailResponse> updateMyInfo(
+		@AuthenticationPrincipal MemberPrincipal principal,
+		@RequestBody MemberUpdateRequest request
+	) {
+		return RsData.from(SUCCESS, memberService.updateMyInfo(principal.id(), request));
 	}
 
 	@Operation(summary = "비밀번호 변경")
