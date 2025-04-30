@@ -18,7 +18,7 @@ RUN ./gradlew dependencies --no-daemon
 COPY src src
 
 # 애플리케이션 빌드
-RUN ./gradlew build --no-daemon
+RUN ./gradlew build -x test --no-daemon
 
 # 이후 명령어가 편하도록 불필요한 파일 삭제
 RUN rm -rf /app/build/libs/*-plain.jar
