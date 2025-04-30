@@ -92,7 +92,8 @@ jobs:
           working-directory: /
           command: |
             cd /app/pickgo/backend && \
-            docker-compose stop app && \
-            docker-compose rm -f app && \
+            docker-compose stop app || true && \
+            docker-compose rm -f app || true && \
+            docker rmi ghcr.io/${{ github.repository_owner }}/pick-go-app:latest || true && \
             docker-compose pull app && \
             docker-compose up -d app
