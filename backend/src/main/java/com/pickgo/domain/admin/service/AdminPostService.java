@@ -1,6 +1,5 @@
 package com.pickgo.domain.admin.service;
 
-import com.pickgo.domain.admin.dto.PostCreateRequest;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
@@ -8,9 +7,8 @@ import com.pickgo.domain.admin.repository.AdminPostRepository;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.post.entity.Post;
-import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,44 +36,18 @@ public class AdminPostService {
 
     public PostDetailResponse getPostDetail(Long id) {
         Post post = adminPostRepository.findByIdWithPerformance(id)
-                .orElseThrow(() -> new EntityNotFoundException("요청하신 게시글을 찾을 수 없습니다."));
+                .orElseThrow(RsCode.POST_NOT_FOUND::toException);
         return PostDetailResponse.from(post);
     }
 
-    /*게시글 작성*/
-    public Long createPost(PostCreateRequest request) {
-
-        Venue venue = venueRepository.findById(request.getVenueId())
-                .orElseThrow(() -> new RuntimeException("공연장 정보를 찾을 수 없습니다."));
-
-        Performance performance = Performance.builder()
-                .venue(venue)
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .poster(request.getPoster())
-                .build();
-        performanceRepository.save(performance);
-
-
-        Post post = Post.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .isPublished(false)
-                .performance(performance)
-                .build();
-        Post savedPost = adminPostRepository.save(post);
-
-        return savedPost.getId();
-
-    }
     /*게시글 수정*/
     @Transactional
     public void updatePost(Long id, PostUpdateRequest request) {
     Post post = adminPostRepository.findById(id)
-            .orElseThrow(()-> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+            .orElseThrow(RsCode.POST_NOT_FOUND::toException);
 
     Performance performance = performanceRepository.findById(request.getPerformanceId())
-            .orElseThrow(()-> new IllegalArgumentException("공연이 존재하지 않습니다."));
+            .orElseThrow(RsCode.PERFORMANCE_NOT_FOUND::toException);
 
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
@@ -88,7 +60,7 @@ public class AdminPostService {
     @Transactional
     public void deletePost(Long id) {
     Post post = adminPostRepository.findById(id)
-            .orElseThrow(()-> new EntityNotFoundException("게시글을 찾을 수 업습니다."));
+            .orElseThrow(RsCode.POST_NOT_FOUND::toException);
 
     adminPostRepository.delete(post);
     }

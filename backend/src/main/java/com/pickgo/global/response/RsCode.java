@@ -1,5 +1,6 @@
 package com.pickgo.global.response;
 
+import com.pickgo.global.exception.BusinessException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,9 @@ public enum RsCode {
 	UNAUTHENTICATED(RsConstant.UNAUTHORIZED, "인증이 실패했습니다."),
 	UNAUTHORIZED(RsConstant.FORBIDDEN, "접근 권한이 없습니다."),
 
+	PERFORMANCE_NOT_FOUND(RsConstant.PERFORMANCE_NOT_FOUND, "공연 정보가 없습니다."),
+
+	POST_NOT_FOUND(RsConstant.POST_NOT_FOUND, "게시글을 찾을 수 없습니다."),
 	// Member
 	MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
 	MEMBER_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 유저입니다."),
@@ -23,4 +27,8 @@ public enum RsCode {
 
 	private final Integer code;
 	private final String message;
+
+	public BusinessException toException() {
+		return  new BusinessException(this);
+	}
 }
