@@ -4,7 +4,7 @@ import com.pickgo.domain.performance.entity.Performance;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -36,10 +36,10 @@ public class Post {
     private Long views; //조회수
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt; //생성
+    private LocalDate createdAt; //생성
 
     @Column(name = "modified_at")
-    private LocalDateTime modifiedAt; //수정
+    private LocalDate modifiedAt; //수정
 
 
 }

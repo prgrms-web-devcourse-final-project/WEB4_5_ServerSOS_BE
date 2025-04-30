@@ -31,7 +31,7 @@ public class AdminPostController {
 
     @Operation(summary = "admin 게시글 상세 조회")
     @GetMapping("/{id}")
-    public RsData<PostDetailResponse> getPostDetail(@PathVariable Long id) {
+    public RsData<PostDetailResponse> getPostDetail(@PathVariable("id") Long id) {
         PostDetailResponse response = adminPostService.getPostDetail(id);
         return RsData.from(RsCode.SUCCESS, response);
     }
@@ -47,7 +47,7 @@ public class AdminPostController {
     @Operation(summary = "admin 게시글 수정")
     @PutMapping("/{id}")
     public RsData<PostUpdateRequest> updatePost(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody PostUpdateRequest request
     ){
         adminPostService.updatePost(id,request);
@@ -57,7 +57,7 @@ public class AdminPostController {
     @Operation(summary = "admin 게시글 삭제")
     @DeleteMapping("/{id}")
     public RsData<Long> deletePost(
-            @PathVariable Long id
+            @PathVariable("id") Long id
     ) {
         adminPostService.deletePost(id);
         return RsData.from(RsCode.SUCCESS,id);

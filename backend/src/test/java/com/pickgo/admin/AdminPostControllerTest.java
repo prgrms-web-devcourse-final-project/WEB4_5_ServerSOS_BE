@@ -5,11 +5,7 @@ import com.pickgo.domain.admin.dto.PostCreateRequest;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
-import com.pickgo.domain.admin.repository.AdminPostRepository;
 import com.pickgo.domain.admin.service.AdminPostService;
-import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.performance.repository.PerformanceRepository;
-import com.pickgo.domain.post.entity.Post;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,12 +14,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,18 +28,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class AdminPostControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private PerformanceRepository performanceRepository;
-
-    @MockBean
     private AdminPostService adminPostService;
-    @MockBean
-    private AdminPostRepository adminPostRepository;
 
     @MockBean
     private org.springframework.data.jpa.mapping.JpaMetamodelMappingContext jpaMetamodelMappingContext;
@@ -73,17 +64,29 @@ class AdminPostControllerTest {
     @Test
     @DisplayName("게시글 상세 조회 성공")
     void getPostDetail() throws Exception {
-        when(adminPostService.getPostDetail(1L)).thenReturn(
-                new PostDetailResponse(1L, "게시글1", "내용", true, 10L,
-                        LocalDateTime.now(), LocalDateTime.now(), "공연장")
+        when(adminPostService.getPostDetail(anyLong())).thenReturn(
+                new PostDetailResponse(
+                        1L,
+                        "게시글1",
+                        "내용",
+                        true,
+                        10L,
+                        LocalDate.of(2024, 1, 1),
+                        LocalDate.of(2024, 1, 2),
+                        "공연장"
+                )
         );
 
         mockMvc.perform(get("/api/admin/posts/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("게시글1"))
+                .andExpect(jsonPath("$.data.content").value("내용"))
                 .andDo(print());
     }
+
+
 
     @Test
     @DisplayName("게시글 작성 성공")
@@ -99,28 +102,22 @@ class AdminPostControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(RsCode.CREATED.getCode()))
-                .andExpect(jsonPath("$.data.id").value(1)) // 추가
+                .andExpect(jsonPath("$.data.id").value(1)) // ← 단순 Long 값이면 이렇게
                 .andDo(print());
     }
 
     @Test
     @DisplayName("게시글 수정 성공")
     void updatePost() throws Exception {
-        // given
+        Long performanceId = 1L;
         PostUpdateRequest request = new PostUpdateRequest();
+        request.setPerformanceId(performanceId);
         request.setTitle("수정된 제목");
         request.setContent("수정된 내용");
-        request.setPerformanceId(1L);
         request.setIsPublished(true);
 
-        // ✅ mocking
-        Performance performance = mock(Performance.class);
-        Post post = mock(Post.class);
+        doNothing().when(adminPostService).updatePost(eq(1L), any(PostUpdateRequest.class));
 
-        when(performanceRepository.findById(1L)).thenReturn(Optional.of(performance));
-        when(adminPostRepository.findById(1L)).thenReturn(Optional.of(post));
-
-        // when & then
         mockMvc.perform(put("/api/admin/posts/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -137,7 +134,7 @@ class AdminPostControllerTest {
         mockMvc.perform(delete("/api/admin/posts/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.data").value(1L))
+                .andExpect(jsonPath("$.data").value(1)) // ← 단순 값일 경우
                 .andDo(print());
     }
 }

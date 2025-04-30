@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +81,7 @@ public class AdminPostService {
         post.setContent(request.getContent());
         post.setIsPublished(request.getIsPublished());
         post.setPerformance(performance);
-        post.setModifiedAt(LocalDateTime.now());
+        post.setModifiedAt(LocalDate.now());
     }
 
     /*게시글 삭제*/

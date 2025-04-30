@@ -6,7 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +19,8 @@ public class PostDetailResponse {
     private String content;
     private Boolean isPublished;
     private Long views;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private LocalDate createdAt;
+    private LocalDate modifiedAt;
     private String performanceName;
 
     public static PostDetailResponse from(Post post) {
