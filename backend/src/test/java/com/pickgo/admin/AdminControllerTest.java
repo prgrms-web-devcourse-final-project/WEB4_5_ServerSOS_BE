@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.response.RsCode;
+import com.pickgo.token.TestToken;
 
 @SpringBootTest
 @AutoConfigureMockMvc

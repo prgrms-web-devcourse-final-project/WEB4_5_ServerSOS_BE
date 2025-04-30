@@ -1,4 +1,4 @@
-package com.pickgo.domain.auth.dto;
+package com.pickgo.domain.member.dto;
 
 import java.util.UUID;
 

@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pickgo.domain.auth.dto.MemberPrincipal;
 import com.pickgo.domain.member.dto.LoginRequest;
 import com.pickgo.domain.member.dto.LoginResponse;
 import com.pickgo.domain.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.dto.MemberDetailResponse;
 import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.dto.MemberPrincipal;
 import com.pickgo.domain.member.service.MemberService;
 import com.pickgo.global.response.RsData;
 
