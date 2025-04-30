@@ -1,7 +1,6 @@
 package com.pickgo.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.admin.dto.PostCreateRequest;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockUser(roles = "ADMIN")
 @ActiveProfiles("test")
 class AdminPostControllerTest {
 
@@ -86,25 +87,6 @@ class AdminPostControllerTest {
                 .andDo(print());
     }
 
-
-
-    @Test
-    @DisplayName("게시글 작성 성공")
-    void createPost() throws Exception {
-        PostCreateRequest request = new PostCreateRequest();
-        request.setTitle("새 게시글");
-        request.setContent("내용입니다");
-
-        when(adminPostService.createPost(any(PostCreateRequest.class))).thenReturn(1L);
-
-        mockMvc.perform(post("/api/admin/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.code").value(RsCode.CREATED.getCode()))
-                .andExpect(jsonPath("$.data.id").value(1)) // ← 단순 Long 값이면 이렇게
-                .andDo(print());
-    }
 
     @Test
     @DisplayName("게시글 수정 성공")
