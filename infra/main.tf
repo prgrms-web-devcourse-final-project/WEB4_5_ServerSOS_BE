@@ -10,6 +10,12 @@ terraform {
 # AWS 설정 시작
 provider "aws" {
   region = var.region
+  profile = "my-new-account"
+  default_tags {
+    tags = {
+      Team = "devcos5-team02"
+    }
+  }
 }
 # AWS 설정 끝
 
@@ -205,7 +211,7 @@ yum install git -y
 # 5. 작업 디렉토리 생성 및 레포지토리 클론
 mkdir -p /app/pickgo
 cd /app/pickgo
-git clone https://github.com/prgrms-web-devcourse-final-project/WEB4_5_ServerSOS_BE.git .
+git clone https://${var.github_username}:${var.github_token}@github.com/prgrms-web-devcourse-final-project/WEB4_5_ServerSOS_BE.git .
 
 # 6. Backend 디렉토리 이동
 cd backend
