@@ -54,7 +54,7 @@ class SeatControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
-                .andExpect(jsonPath("$.message").value(RsCode.SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.message").value("좌석 목록을 조회하였습니다."))
                 .andExpect(jsonPath("$.data[0].seatId").value(1))
                 .andExpect(jsonPath("$.data[1].seatId").value(2));
     }
