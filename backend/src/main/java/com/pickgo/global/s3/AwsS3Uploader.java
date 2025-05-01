@@ -1,5 +1,7 @@
 package com.pickgo.global.s3;
 
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -39,7 +41,7 @@ public class AwsS3Uploader implements S3Uploader {
         try {
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
         } catch (Exception e) {
-            throw new RuntimeException("파일 업로드 실패", e);
+            throw new BusinessException(RsCode.FILE_UPLOAD_FAILED);
         }
 
         return "https://%s.s3.%s.amazonaws.com/%s".formatted(bucketName, region, fileName);
@@ -56,7 +58,7 @@ public class AwsS3Uploader implements S3Uploader {
         try {
             s3Client.deleteObject(deleteRequest);
         } catch (Exception e) {
-            throw new RuntimeException("파일 삭제 실패", e);
+            throw new BusinessException(RsCode.FILE_DELETE_FAILED);
         }
     }
 }
