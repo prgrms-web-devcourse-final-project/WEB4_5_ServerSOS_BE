@@ -44,6 +44,7 @@ public class Member extends BaseEntity {
     private SocialProvider socialProvider;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Reservation> reservations = new ArrayList<>();
 
     public void update(String nickname) {

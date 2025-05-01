@@ -34,6 +34,7 @@ public class Reservation extends BaseEntity {
     private PerformanceSession performanceSession;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<PendingSeat> pendingSeats = new ArrayList<>();
 
     public void updatePendingSeats(List<PendingSeat> seats) {
