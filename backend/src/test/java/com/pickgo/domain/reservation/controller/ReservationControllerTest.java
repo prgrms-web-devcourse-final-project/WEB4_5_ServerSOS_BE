@@ -1,6 +1,7 @@
 package com.pickgo.domain.reservation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.pickgo.domain.area.seat.entity.Seat;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -140,6 +141,80 @@ class ReservationControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
                 .andExpect(jsonPath("$.message").value("요청하신 리소스를 찾을 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("예약 상세 조회 성공")
+    void getReservation_success() throws Exception {
+        // given: 예약 생성
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                session.getId(),
+                seats.stream().map(Seat::getId).toList()
+        );
+
+        String reservationId = mvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token.userToken)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // reservationId 파싱
+        Long id = ((Integer) JsonPath.read(reservationId, "$.data.id")).longValue();
+
+        // when & then: 상세 조회
+        mvc.perform(get("/api/reservations/{id}", id)
+                        .header("Authorization", "Bearer " + token.userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.data.id").value(id))
+                .andExpect(jsonPath("$.data.memberId").value(member.getId().toString()))
+                .andExpect(jsonPath("$.data.seats").isArray())
+                .andExpect(jsonPath("$.data.performance.name").value(session.getPerformance().getName()));
+    }
+
+    @Test
+    @DisplayName("예약 상세 조회 실패 - 존재하지 않는 예약")
+    void getReservation_notFound() throws Exception {
+        // given
+        Long nonexistentId = 9999L;
+
+        // when & then
+        mvc.perform(get("/api/reservations/{id}", nonexistentId)
+                        .header("Authorization", "Bearer " + token.userToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("예약 상세 조회 실패 - 다른 유저의 예약")
+    void getReservation_forbidden() throws Exception {
+        // given: 예약 생성
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                session.getId(),
+                seats.stream().map(Seat::getId).toList()
+        );
+
+        String responseBody = mvc.perform(post("/api/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token.userToken)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Long reservationId = ((Integer) JsonPath.read(responseBody, "$.data.id")).longValue();
+
+        // when & then: 다른 사용자 토큰으로 요청
+        mvc.perform(get("/api/reservations/{id}", reservationId)
+                        .header("Authorization", "Bearer " + token.adminToken)) // 다른 유저
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("403"))
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }

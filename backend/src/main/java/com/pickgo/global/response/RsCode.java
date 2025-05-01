@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum RsCode {
 
 	// Common
+	FORBIDDEN(RsConstant.FORBIDDEN,"접근 권한이 없습니다."),
 	SUCCESS(RsConstant.SUCCESS, "요청이 성공했습니다."),
 	CREATED(RsConstant.CREATED, "새로운 리소스를 생성했습니다."),
 	NOT_FOUND(RsConstant.NOT_FOUND, "요청하신 리소스를 찾을 수 없습니다."),
@@ -22,7 +23,10 @@ public enum RsCode {
 	MEMBER_ALREADY_EXISTS(RsConstant.BAD_REQUEST, "이미 존재하는 유저입니다."),
 
 	// Performance
-	PERFORMANCE_SESSION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 공연 회차입니다.");
+	PERFORMANCE_SESSION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 공연 회차입니다."),
+
+	// RESERVATION
+	RESERVATION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 예약 내역입니다.");
 
 	private final Integer code;
 	private final String message;

@@ -4,6 +4,7 @@ import com.pickgo.domain.area.seat.entity.Seat;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
+import com.pickgo.domain.reservation.dto.response.ReservationDetailResponse;
 import com.pickgo.domain.reservation.dto.response.ReservationSimpleResponse;
 import com.pickgo.global.init.TestDataInit;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +76,29 @@ class ReservationServiceTest {
         assertThat(response.performance_session_id()).isEqualTo(session.getId());
         assertThat(response.seats()).hasSize(seatIds.size());
         assertThat(response.status().name()).isEqualTo("RESERVED");
+    }
+
+    @Test
+    void getReservation() {
+        // given
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                session.getId(),
+                seats.stream().map(Seat::getId).toList()
+        );
+        ReservationSimpleResponse simpleResponse = reservationService.createReservation(member.getId(), request);
+        Long reservationId = simpleResponse.id();
+
+        // when
+        ReservationDetailResponse response = reservationService.getReservation(reservationId, member.getId());
+
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(reservationId);
+        assertThat(response.memberId()).isEqualTo(member.getId());
+        assertThat(response.performance().name()).isEqualTo(session.getPerformance().getName());
+        assertThat(response.venue().name()).isEqualTo(session.getPerformance().getVenue().getName());
+        assertThat(response.seats()).hasSize(seats.size());
     }
 
 }

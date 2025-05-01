@@ -7,12 +7,14 @@ import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
+import com.pickgo.domain.reservation.dto.response.ReservationDetailResponse;
 import com.pickgo.domain.reservation.dto.response.ReservationSimpleResponse;
 import com.pickgo.domain.reservation.entity.PendingSeat;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,5 +93,18 @@ public class ReservationService {
         reservationRepository.save(reservation);
 
         return ReservationSimpleResponse.from(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationDetailResponse getReservation(Long id,UUID memberId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(RESERVATION_NOT_FOUND));
+
+        // 본인 예약인지 확인
+        if (!reservation.getMember().getId().equals(memberId)) {
+            throw new BusinessException(RsCode.FORBIDDEN);
+        }
+
+        return ReservationDetailResponse.from(reservation);
     }
 }
