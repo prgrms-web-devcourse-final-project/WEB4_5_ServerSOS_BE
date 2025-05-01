@@ -1,7 +1,9 @@
 package com.pickgo.seat;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pickgo.domain.area.seat.dto.SeatResponse;
+import com.pickgo.domain.area.seat.dto.SeatUpdateRequest;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.service.SeatService;
 import com.pickgo.global.response.RsCode;
@@ -18,7 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,6 +57,19 @@ class SeatControllerTest {
                 .andExpect(jsonPath("$.message").value(RsCode.SUCCESS.getMessage()))
                 .andExpect(jsonPath("$.data[0].seatId").value(1))
                 .andExpect(jsonPath("$.data[1].seatId").value(2));
+    }
+    @Test
+    @DisplayName("좌석 상태 변경 - 성공")
+    void updateSeatStatus_success() throws Exception {
+        SeatUpdateRequest request = new SeatUpdateRequest(1L, SeatStatus.RESERVED);
+        doNothing().when(seatService).updateSeatStatus(1L, SeatStatus.RESERVED);
+
+        mockMvc.perform(post("/api/areas/update-status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.message").value(RsCode.SUCCESS.getMessage()));
     }
 }
 
