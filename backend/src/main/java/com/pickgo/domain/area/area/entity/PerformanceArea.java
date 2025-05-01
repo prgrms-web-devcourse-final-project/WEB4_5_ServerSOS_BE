@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Builder
 public class PerformanceArea extends BaseEntity {
     @Id
@@ -24,6 +23,7 @@ public class PerformanceArea extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
+    @Setter
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,5 +32,6 @@ public class PerformanceArea extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "performanceArea", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private List<Seat> seats = new ArrayList<>();
 }
