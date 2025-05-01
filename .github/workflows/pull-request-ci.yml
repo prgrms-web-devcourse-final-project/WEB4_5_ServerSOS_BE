@@ -60,6 +60,7 @@ jobs:
           USER_TOKEN: ${{ secrets.USER_TOKEN }}
           EXPIRED_TOKEN: ${{ secrets.EXPIRED_TOKEN }}
           KOPIS_APIKEY: ${{ secrets.KOPIS_APIKEY }}
+          KAKAO_API_KEY: ${{ secrets.KAKAO_API_KEY }}
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
