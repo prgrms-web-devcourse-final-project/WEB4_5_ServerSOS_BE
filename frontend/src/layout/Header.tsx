@@ -1,0 +1,20 @@
+import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
+
+export const Header = () => {
+  return (
+    <header className="border-b">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <Link href="/" className="text-xl font-bold">
+          티켓 예매 사이트
+        </Link>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            로그인
+          </Button>
+          <Button size="sm">회원가입</Button>
+        </div>
+      </div>
+    </header>
+  )
+}
