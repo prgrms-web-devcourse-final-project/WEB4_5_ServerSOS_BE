@@ -1,6 +1,5 @@
 package com.pickgo.token;
 
-import com.pickgo.admin.TestToken;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
@@ -18,13 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.entity.enums.Authority;
-import com.pickgo.domain.member.entity.enums.SocialProvider;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.jwt.JwtProvider;
-
-import jakarta.servlet.http.Cookie;
+import static com.pickgo.global.response.RsCode.CREATED;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest

@@ -1,12 +1,12 @@
 package com.pickgo.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.admin.TestToken;
 import com.pickgo.domain.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,13 +19,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.token.TestToken;
+import static com.pickgo.domain.member.entity.enums.Authority.USER;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
+import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
