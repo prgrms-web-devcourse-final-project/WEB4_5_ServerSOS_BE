@@ -57,6 +57,7 @@ class MemberServiceTest {
 	private final String password = "test_password";
 	private final String encodedPassword = "encoded_password";
 	private final String nickname = "test_user";
+	private final String accessToken = "access-token";
 
 	private final UUID userId = UUID.randomUUID();
 
@@ -85,11 +86,11 @@ class MemberServiceTest {
 
 		when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 		when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
-		when(tokenService.genAccessToken(member)).thenReturn("access-token");
+		when(tokenService.genAccessToken(member)).thenReturn(accessToken);
 
 		LoginResponse result = memberService.login(request, response);
 
-		assertThat(result.accessToken()).isEqualTo("access-token");
+		assertThat(result.accessToken()).isEqualTo(accessToken);
 		verify(tokenService).createRefreshToken(member, response);
 	}
 

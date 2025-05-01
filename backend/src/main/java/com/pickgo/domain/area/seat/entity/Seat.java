@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Builder
 public class Seat extends BaseEntity {
     @Id
@@ -25,10 +24,12 @@ public class Seat extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Setter
     private SeatStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_session_id", nullable = false)
+    @Setter
     private PerformanceSession performanceSession;
 
     @ManyToOne(fetch = FetchType.LAZY)

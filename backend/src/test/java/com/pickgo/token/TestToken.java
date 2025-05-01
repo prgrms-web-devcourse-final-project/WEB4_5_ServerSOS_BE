@@ -1,4 +1,4 @@
-package com.pickgo.admin;
+package com.pickgo.token;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
