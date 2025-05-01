@@ -119,8 +119,8 @@ public class MemberService {
         }
 
         String imageUrl;
-        // 이미지 파일이 null이면 기본 이미지로 설정하고 null이 아니면 s3에 저장
-        if (image == null) {
+        // 이미지 파일이 비었으면 기본 이미지로 설정하고 아니면 s3에 저장
+        if (image.isEmpty()) {
             imageUrl = profile;
         } else {
             imageUrl = s3Uploader.upload(image, "profile");

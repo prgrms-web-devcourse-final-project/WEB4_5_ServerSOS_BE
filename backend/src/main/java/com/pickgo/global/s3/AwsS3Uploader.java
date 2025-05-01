@@ -31,16 +31,17 @@ public class AwsS3Uploader implements S3Uploader {
     @Override
     public String upload(MultipartFile file, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        System.out.println(fileName);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
                 .contentType(file.getContentType())
-                .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
         try {
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BusinessException(RsCode.FILE_UPLOAD_FAILED);
         }
 
