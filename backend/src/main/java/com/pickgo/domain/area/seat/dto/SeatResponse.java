@@ -1,6 +1,7 @@
 package com.pickgo.domain.area.seat.dto;
 
 import com.pickgo.domain.area.seat.entity.Seat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ public record SeatResponse(
         Long performanceSeesionId,
         String row,
         Integer number,
-        String status,
+        SeatStatus status,
         LocalDateTime createdAt
 ) {
     public static SeatResponse from(Seat seat) {
@@ -20,7 +21,7 @@ public record SeatResponse(
                 seat.getPerformanceSession().getId(),
                 seat.getRow(),
                 seat.getNumber(),
-                seat.getStatus().name(),
+                seat.getStatus(),
                 seat.getCreatedAt()
         );
     }
