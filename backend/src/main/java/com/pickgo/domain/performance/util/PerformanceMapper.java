@@ -5,6 +5,7 @@ import com.pickgo.domain.area.seat.entity.Seat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.kopis.dto.KopisPerformanceDetailResponse;
 import com.pickgo.domain.performance.entity.*;
+import com.pickgo.domain.venue.entity.Venue;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
