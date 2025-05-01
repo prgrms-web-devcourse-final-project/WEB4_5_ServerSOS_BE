@@ -6,22 +6,26 @@ import { Login } from "./pages/Login"
 import { My } from "./pages/My"
 import { PerformanceDetail } from "./pages/PerformanceDetail"
 import { PerformanceReservation } from "./pages/PerformanceReservation"
+import { Footer } from "./layout/Footer"
 
 function App() {
   return (
     <BrowserRouter>
-      <div>
+      <div className="flex flex-col min-h-screen">
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/my" element={<My />} />
-          <Route path="/performance/:id" element={<PerformanceDetail />} />
-          <Route
-            path="/performance/:id/reservation"
-            element={<PerformanceReservation />}
-          />
-        </Routes>
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/my" element={<My />} />
+            <Route path="/performance/:id" element={<PerformanceDetail />} />
+            <Route
+              path="/performance/:id/reservation"
+              element={<PerformanceReservation />}
+            />
+          </Routes>
+        </div>
+        <Footer />
       </div>
     </BrowserRouter>
   )
