@@ -44,3 +44,6 @@ custom:
 
   member:
     profile: ${MEMBER_PROFILE:https://url.kr/estdgi}
+
+kopis:
+  apikey: ${KOPIS_APIKEY}
