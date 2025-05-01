@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.pickgo.domain.auth.dto.CreateTokenResponse;
+import com.pickgo.domain.auth.dto.TokenDetailResponse;
 import com.pickgo.domain.auth.service.TokenService;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -55,7 +55,7 @@ class TokenServiceTest {
 		given(jwtProvider.generateToken(eq(mockMember), any())).willReturn(accessToken);
 
 		// when
-		CreateTokenResponse response = tokenService.createAccessToken(refreshToken);
+		TokenDetailResponse response = tokenService.createAccessToken(refreshToken);
 
 		// then
 		assertThat(response.accessToken()).isEqualTo(accessToken);

@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.pickgo.admin.TestToken;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
