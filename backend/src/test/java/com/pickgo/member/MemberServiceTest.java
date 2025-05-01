@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -207,12 +208,12 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("이미지 파일이 null일 경우 기본 이미지로 설정")
+    @DisplayName("이미지 파일이 비어있을 경우 기본 이미지로 설정")
     void updateProfileImage_defaultImage() {
         ReflectionTestUtils.setField(memberService, "profile", "https://url.kr/estdgi");
 
         Member member = getMockMember();
-        MultipartFile mockFile = null;
+        MultipartFile mockFile = new MockMultipartFile("image", "image.jpg", "image/jpeg", new byte[0]);
 
         when(memberRepository.findById(userId)).thenReturn(Optional.of(member));
 
