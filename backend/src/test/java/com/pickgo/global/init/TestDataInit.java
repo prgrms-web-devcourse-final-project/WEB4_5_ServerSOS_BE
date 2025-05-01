@@ -13,7 +13,10 @@ import com.pickgo.domain.performance.entity.*;
 import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.performance.repository.VenueRepository;
+import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.token.TestToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,15 @@ public class TestDataInit {
     private final PerformanceSessionRepository sessionRepository;
     private final PerformanceAreaRepository areaRepository;
     private final SeatRepository seatRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @Autowired
+    private TestToken token;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public TestDataInit(
@@ -51,17 +63,18 @@ public class TestDataInit {
 
     @Transactional
     public TestData create() {
-        // 1. 회원
-        Member member = memberRepository.save(
-                Member.builder()
-                        .id(UUID.randomUUID())
-                        .email("test@example.com")
-                        .password("1234")
-                        .nickname("테스트")
-                        .authority(Authority.USER)
-                        .socialProvider(SocialProvider.NONE)
-                        .build()
-        );
+        // 1. 토큰에서 userId 추출
+        UUID userId = jwtProvider.getUserId(token.userToken);
+
+        // 2. Member 저장
+        Member member = memberRepository.save(Member.builder()
+                .id(userId)
+                .email("test@example.com")
+                .password(passwordEncoder.encode("test_password"))
+                .nickname("test_user")
+                .authority(Authority.USER)
+                .socialProvider(SocialProvider.NONE)
+                .build());
 
         // 2. 공연장
         Venue venue = venueRepository.save(
@@ -128,5 +141,6 @@ public class TestDataInit {
         return new TestData(member, session, List.of(seat1, seat2));
     }
 
-    public record TestData(Member member, PerformanceSession session, List<Seat> seats) {}
+    public record TestData(Member member, PerformanceSession session, List<Seat> seats) {
+    }
 }

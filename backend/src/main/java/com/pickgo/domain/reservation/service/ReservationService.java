@@ -51,7 +51,7 @@ public class ReservationService {
         // 2. 좌석 조회 및 검증
         List<Seat> seats = seatRepository.findAllById(request.seatIds());
         if (seats.size() != request.seatIds().size()) {
-            throw new BusinessException(BAD_REQUEST);
+            throw new BusinessException(NOT_FOUND);
         }
 
         // 3. 좌석 상태 확인 후 상태 변경(예약이 가능하다는 것이므로 예약 절차 진행)
