@@ -5,10 +5,15 @@ import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Builder
 public class Reservation extends BaseEntity {
 
     @Id

@@ -3,8 +3,13 @@ package com.pickgo.domain.reservation.entity;
 import com.pickgo.domain.area.seat.entity.Seat;
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Builder
 public class PendingSeat extends BaseEntity {
 
     @Id
