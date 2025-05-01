@@ -3,6 +3,7 @@ package com.pickgo.admin;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.response.RsCode;
+import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,10 +15,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.response.RsCode;
-import com.pickgo.token.TestToken;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static com.pickgo.domain.member.entity.enums.Authority.USER;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
