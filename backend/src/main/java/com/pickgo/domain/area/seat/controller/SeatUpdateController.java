@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/seats")
 @RequiredArgsConstructor
-public class SeatUpdateController { //Post맨으로 확인하기위해 임시로 만든 컨트롤러 , 이부분 컨트롤러는 프론트 단에서 만들어지면 삭제할 예정
+public class SeatUpdateController { //Post맨으로 테스트 확인하기위해 임시로 만든 컨트롤러 , 이부분 컨트롤러는 프론트 단에서 만들어지면 삭제할 예정
 
     private final SeatService seatService;
 
