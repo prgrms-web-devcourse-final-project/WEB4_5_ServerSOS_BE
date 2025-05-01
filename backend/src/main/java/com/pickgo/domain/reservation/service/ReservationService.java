@@ -13,9 +13,14 @@ import com.pickgo.domain.reservation.entity.PendingSeat;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,7 +101,7 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public ReservationDetailResponse getReservation(Long id,UUID memberId) {
+    public ReservationDetailResponse getReservation(Long id, UUID memberId) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(RESERVATION_NOT_FOUND));
 
@@ -106,5 +111,13 @@ public class ReservationService {
         }
 
         return ReservationDetailResponse.from(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ReservationSimpleResponse> getMyReservationList(UUID memberId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Page<Reservation> reservations = reservationRepository.findByMemberId(memberId, pageable);
+
+        return PageResponse.from(reservations, ReservationSimpleResponse::from);
     }
 }

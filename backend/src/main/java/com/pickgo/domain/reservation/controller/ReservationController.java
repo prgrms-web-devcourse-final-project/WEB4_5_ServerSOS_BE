@@ -5,6 +5,7 @@ import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.dto.response.ReservationDetailResponse;
 import com.pickgo.domain.reservation.dto.response.ReservationSimpleResponse;
 import com.pickgo.domain.reservation.service.ReservationService;
+import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,7 +39,17 @@ public class ReservationController {
             @PathVariable Long id,
             @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        ReservationDetailResponse response = reservationService.getReservation(id,principal.id());
+        ReservationDetailResponse response = reservationService.getReservation(id, principal.id());
+        return RsData.from(SUCCESS, response);
+    }
+
+    @GetMapping("/me")
+    public RsData<PageResponse<ReservationSimpleResponse>> getMyReservationList(
+            @AuthenticationPrincipal MemberPrincipal principal,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<ReservationSimpleResponse> response = reservationService.getMyReservationList(principal.id(),page,size);
         return RsData.from(SUCCESS, response);
     }
 

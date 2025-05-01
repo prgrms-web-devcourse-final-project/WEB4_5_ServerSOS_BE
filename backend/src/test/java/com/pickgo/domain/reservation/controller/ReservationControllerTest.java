@@ -217,4 +217,31 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").exists());
     }
 
+    @Test
+    @DisplayName("내 예약 목록 조회 성공")
+    void getMyReservations_success() throws Exception {
+        // given: 예약 1건 생성
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                session.getId(),
+                seats.stream().map(Seat::getId).toList()
+        );
+
+        mvc.perform(post("/api/reservations")
+                        .header("Authorization", "Bearer " + token.userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        // when & then: 예약 목록 조회
+        mvc.perform(get("/api/reservations/me")
+                        .header("Authorization", "Bearer " + token.userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.data.items.length()").value(1)) // 예약 2건
+                .andExpect(jsonPath("$.data.page").value(1))
+                .andExpect(jsonPath("$.data.size").value(10))
+                .andExpect(jsonPath("$.data.totalElements").value(1));
+    }
+
+
 }
