@@ -18,5 +18,5 @@ logging:
 
 aws:
   s3:
-    bucket: pickgo-prod-bucket
+    bucket: team02-pickgo-prod-bucket
   region: ${AWS_REGION}

@@ -19,7 +19,7 @@ logging:
 
 aws:
   s3:
-    bucket: pickgo-dev-bucket
+    bucket: team02-pickgo-dev-bucket
   region: ${AWS_REGION}
   credentials:
     access_key: ${AWS_ACCESS_KEY_ID}
