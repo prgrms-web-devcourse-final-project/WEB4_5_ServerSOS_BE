@@ -29,14 +29,16 @@ public class SeatController {
     public SseEmitter subscribe(@RequestParam Long sessionId) {
         return seatService.subscribe(sessionId);
     }
+
     @Operation(summary = "좌석 목록 조회")
     @GetMapping("/{areaId}/seats")
     public RsData<List<SeatResponse>> getSeats(
             @PathVariable Long areaId,
             @RequestParam Long sessionId ){
         List<SeatResponse> seats = seatService.getSeats(areaId, sessionId);
-        return RsData.from(RsCode.SUCCESS, seats);
+        return new RsData<>(RsCode.SUCCESS.getCode(), "좌석 목록을 조회하였습니다.", seats);
     }
+
     @Operation(summary = "좌석 상태 변경")
     @PostMapping("/update-status")
     public RsData<?> updateSeatStatus(
