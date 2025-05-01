@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Builder
 public class PerformanceSession extends BaseEntity {
     @Id
@@ -29,5 +28,6 @@ public class PerformanceSession extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "performanceSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private List<Seat> seats = new ArrayList<>();
 }

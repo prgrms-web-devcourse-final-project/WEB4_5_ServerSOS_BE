@@ -22,65 +22,66 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.response.RsCode;
+import com.pickgo.token.TestToken;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class AdminControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Autowired
-	private MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
-	@Autowired
-	private TestToken token;
+    @Autowired
+    private TestToken token;
 
-	@BeforeEach
-	void setUp() {
-		memberRepository.saveAll(getTestMembers());
-	}
+    @BeforeEach
+    void setUp() {
+        memberRepository.saveAll(getTestMembers());
+    }
 
-	@AfterEach
-	void tearDown() {
-		memberRepository.deleteAll();
-	}
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAll();
+    }
 
-	private List<Member> getTestMembers() {
-		List<Member> members = new ArrayList<>();
-		for (int i = 1; i <= 5; i++) {
-			Member member = Member.builder()
-				.id(UUID.randomUUID())
-				.email("test" + i + "@example.com")
-				.password("password" + i)
-				.nickname("testUser" + i)
-				.authority(USER)
-				.socialProvider(NONE)
-				.build();
-			members.add(member);
-		}
-		return members;
-	}
+    private List<Member> getTestMembers() {
+        List<Member> members = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Member member = Member.builder()
+                    .id(UUID.randomUUID())
+                    .email("test" + i + "@example.com")
+                    .password("password" + i)
+                    .nickname("testUser" + i)
+                    .authority(USER)
+                    .socialProvider(NONE)
+                    .build();
+            members.add(member);
+        }
+        return members;
+    }
 
-	@Test
-	@DisplayName("ADMIN 권한이 있으면 유저 정보 조회 가능")
-	void getMembers_권한있음_성공() throws Exception {
-		// when & then
-		mockMvc.perform(get("/api/admin/members")
-				.header("Authorization", "Bearer " + token.adminToken)
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
-			.andExpect(jsonPath("$.data.totalElements").value(getTestMembers().size()));
-	}
+    @Test
+    @DisplayName("ADMIN 권한이 있으면 유저 정보 조회 가능")
+    void getMembers_권한있음_성공() throws Exception {
+        // when & then
+        mockMvc.perform(get("/api/admin/members")
+                        .header("Authorization", "Bearer " + token.adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.totalElements").value(getTestMembers().size()));
+    }
 
-	@Test
-	@DisplayName("ADMIN 권한이 없으면 유저 정보 조회 불가")
-	void getMembers_권한없음_실패() throws Exception {
-		// when & then
-		mockMvc.perform(get("/api/admin/members")
-				.header("Authorization", "Bearer " + token.userToken)
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isForbidden());
-	}
+    @Test
+    @DisplayName("ADMIN 권한이 없으면 유저 정보 조회 불가")
+    void getMembers_권한없음_실패() throws Exception {
+        // when & then
+        mockMvc.perform(get("/api/admin/members")
+                        .header("Authorization", "Bearer " + token.userToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
 }

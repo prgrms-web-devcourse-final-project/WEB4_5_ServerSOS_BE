@@ -10,7 +10,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pickgo.domain.auth.dto.CreateTokenResponse;
+import com.pickgo.domain.auth.dto.TokenDetailResponse;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
@@ -36,14 +36,14 @@ public class TokenService {
 	private final JwtProvider jwtProvider;
 	private final MemberRepository memberRepository;
 
-	public CreateTokenResponse createAccessToken(String refreshToken) {
+	public TokenDetailResponse createAccessToken(String refreshToken) {
 		jwtProvider.validateToken(refreshToken);
 
 		UUID userId = jwtProvider.getUserId(refreshToken);
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BusinessException(NOT_FOUND));
 
-		return CreateTokenResponse.of(genAccessToken(member));
+		return TokenDetailResponse.of(genAccessToken(member));
 	}
 
 	public void createRefreshToken(Member member, HttpServletResponse response) {

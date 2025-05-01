@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Builder
 public class Performance extends BaseEntity {
     @Id
@@ -30,17 +29,18 @@ public class Performance extends BaseEntity {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private Integer runtime;
+    private String runtime;
 
     @Column(nullable = false)
     private String poster;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Setter
     private PerformanceState state;
 
     @Column(nullable = false)
-    private Integer minAge;
+    private String minAge;
 
     @Column(nullable = false)
     private String casts;
@@ -53,7 +53,7 @@ public class Performance extends BaseEntity {
     private PerformanceType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venue_id", nullable = false)
+    @JoinColumn(name = "venue_id")
     private Venue venue;
 
     @Builder.Default
@@ -62,9 +62,11 @@ public class Performance extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private List<PerformanceArea> performanceAreas = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private List<PerformanceSession> performanceSessions = new ArrayList<>();
 }

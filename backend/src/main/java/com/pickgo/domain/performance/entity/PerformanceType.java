@@ -11,7 +11,8 @@ public enum PerformanceType {
     KOREAN("국악"),
     CONCERT("콘서트"),
     CLASSIC("클래식"),
-    MUSICAL("뮤지컬");
+    MUSICAL("뮤지컬"),
+    ETC("기타");
 
     private final String value;
 }
