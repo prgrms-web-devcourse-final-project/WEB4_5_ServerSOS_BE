@@ -7,6 +7,7 @@ import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,9 +27,18 @@ public class Reservation extends BaseEntity {
     private Integer totalPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private PerformanceSession performanceSession;
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PendingSeat> pendingSeats = new ArrayList<>();
+
+    public void updatePendingSeats(List<PendingSeat> seats) {
+        this.pendingSeats.clear();
+        this.pendingSeats.addAll(seats);
+    }
 
 }
