@@ -7,11 +7,6 @@ services:
     restart: always
     env_file:
       - .env
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_PORT}:3306"
     command: --general-log=1 --general-log-file=/etc/mysql/conf.d/general.log
@@ -25,6 +20,8 @@ services:
       retries: 5
 
   redis:
+    env_file:
+      - .env
     image: redis:7
     container_name: redis
     restart: always
@@ -46,15 +43,11 @@ services:
       - npm_letsencrypt:/etc/letsencrypt
 
   app:
-    image: ghcr.io/asungkim/pick-go-app:latest
+    image: ghcr.io/prgrms-web-devcourse-final-project/pick-go-app:latest
     container_name: pick-go-app
     restart: always
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SPRING_REDIS_HOST: redis
-      SPRING_PROFILES_ACTIVE: ${SPRING_ACTIVE_PROFILES}
+    env_file:
+      - .env
     ports:
       - "${SERVER_PORT}:8080"
     depends_on:

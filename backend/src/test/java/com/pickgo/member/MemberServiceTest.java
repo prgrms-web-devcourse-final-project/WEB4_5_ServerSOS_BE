@@ -39,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
-
     @Mock
     private MemberRepository memberRepository;
 
