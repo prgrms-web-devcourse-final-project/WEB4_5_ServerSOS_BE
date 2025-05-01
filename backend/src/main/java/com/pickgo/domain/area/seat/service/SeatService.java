@@ -1,5 +1,8 @@
 package com.pickgo.domain.area.seat.service;
 
+import com.pickgo.domain.area.seat.dto.SeatResponse;
+import com.pickgo.domain.area.seat.repository.SeatRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -9,10 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SeatService {
+
+    private final SeatRepository seatRepository;
 
     // 공연 세션별 구독자 목록
     private final Map<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
@@ -80,5 +87,14 @@ public class SeatService {
         if (sessionEmitters != null) {
             sessionEmitters.remove(emitter);
         }
+    }
+
+    public List<SeatResponse> getSeats(Long areaId, Long seesionId) {
+        return seatRepository.findByPerformanceAreaIdAndPerformanceSessionId(areaId, seesionId)
+                .stream()
+                .map(SeatResponse::from)
+                .collect(Collectors.toList());
+
+
     }
 }

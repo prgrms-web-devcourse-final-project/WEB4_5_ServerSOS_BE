@@ -1,17 +1,20 @@
 package com.pickgo.domain.area.seat.controller;
 
 
+import com.pickgo.domain.area.seat.dto.SeatResponse;
 import com.pickgo.domain.area.seat.service.SeatService;
+import com.pickgo.global.response.RsCode;
+import com.pickgo.global.response.RsData;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/seats")
+@RequestMapping("/api/areas")
 @RequiredArgsConstructor
 public class SeatController {
 
@@ -24,5 +27,13 @@ public class SeatController {
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@RequestParam Long sessionId) {
         return seatService.subscribe(sessionId);
+    }
+    @Operation(summary = "좌석 목록 조회")
+    @GetMapping("/{areaId}/seats")
+    public RsData<List<SeatResponse>> getSeats(
+            @PathVariable Long areaId,
+            @RequestParam Long sessionId ){
+        List<SeatResponse> seats = seatService.getSeats(areaId, sessionId);
+        return RsData.from(RsCode.SUCCESS, seats);
     }
 }
