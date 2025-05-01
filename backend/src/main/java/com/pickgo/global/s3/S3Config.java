@@ -3,6 +3,7 @@ package com.pickgo.global.s3;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -12,14 +13,15 @@ import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import java.util.Optional;
 
 @Configuration
+@Profile("!test")
 public class S3Config {
-    @Value("${aws.s3.accessKey}")
+    @Value("${aws.credentials.access_key}")
     private Optional<String> accessKey;
 
-    @Value("${aws.s3.secretKey}")
+    @Value("${aws.credentials.secret_key}")
     private Optional<String> secretKey;
 
-    @Value("${aws.s3.region}")
+    @Value("${aws.region}")
     private String region;
 
     @Bean

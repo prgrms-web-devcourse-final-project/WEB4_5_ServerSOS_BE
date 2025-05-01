@@ -2,6 +2,7 @@ package com.pickgo.global.s3;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -10,19 +11,19 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Profile("!test")
 public class AwsS3Uploader implements S3Uploader {
     private final S3Client s3Client;
 
     @Value("${aws.s3.bucket}")
     private String bucketName;
 
-    @Value("${aws.s3.region}")
+    @Value("${aws.region}")
     private String region;
 
     @Override
