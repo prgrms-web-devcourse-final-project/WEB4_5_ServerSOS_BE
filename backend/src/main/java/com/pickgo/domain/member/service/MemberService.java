@@ -18,6 +18,7 @@ import com.pickgo.domain.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.dto.MemberDetailResponse;
 import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.dto.MemberSimpleResponse;
+import com.pickgo.domain.member.dto.MemberUpdateRequest;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.dto.PageResponse;
@@ -45,7 +46,7 @@ public class MemberService {
 		}
 
 		Member member = request.toEntity(passwordEncoder, profile);
-		memberRepository.save(member);
+		member = memberRepository.save(member);
 
 		return MemberDetailResponse.from(member);
 	}
@@ -76,9 +77,7 @@ public class MemberService {
 	@Transactional
 	public void delete(UUID id, HttpServletResponse response) {
 		Member member = getEntity(id);
-
 		tokenService.removeRefreshTokenCookie(response);
-
 		memberRepository.delete(member);
 	}
 
@@ -97,6 +96,13 @@ public class MemberService {
 	public void updatePassword(UUID id, MemberPasswordUpdateRequest request) {
 		Member member = getEntity(id);
 		member.setPassword(passwordEncoder.encode(request.password()));
+	}
+
+	@Transactional
+	public MemberDetailResponse updateMyInfo(UUID id, MemberUpdateRequest request) {
+		Member member = getEntity(id);
+		member.update(request.nickname());
+		return MemberDetailResponse.from(member);
 	}
 
 	private Member getEntity(UUID id) {
