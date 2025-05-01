@@ -27,31 +27,32 @@ import lombok.Setter;
 @Table(name = "member")
 public class Member extends BaseEntity {
 
-	@Id
-	@Column(updatable = false, nullable = false)
-	private UUID id;
+    @Id
+    @Column(updatable = false, nullable = false)
+    private UUID id;
 
-	@Column(nullable = false)
-	private String email;
+    @Column(nullable = false)
+    private String email;
 
-	@Setter
-	@Column(nullable = false)
-	private String password;
+    @Setter
+    @Column(nullable = false)
+    private String password;
 
-	@Column(nullable = false)
-	private String nickname;
+    @Column(nullable = false)
+    private String nickname;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private Authority authority;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 
-	private String profile;
+    @Setter
+    private String profile;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private SocialProvider socialProvider;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SocialProvider socialProvider;
 
-	public void update(String nickname) {
-		this.nickname = nickname;
-	}
+    public void update(String nickname) {
+        this.nickname = nickname;
+    }
 }
