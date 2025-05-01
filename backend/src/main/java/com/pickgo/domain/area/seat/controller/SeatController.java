@@ -2,6 +2,7 @@ package com.pickgo.domain.area.seat.controller;
 
 
 import com.pickgo.domain.area.seat.dto.SeatResponse;
+import com.pickgo.domain.area.seat.dto.SeatUpdateRequest;
 import com.pickgo.domain.area.seat.service.SeatService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
@@ -35,5 +36,13 @@ public class SeatController {
             @RequestParam Long sessionId ){
         List<SeatResponse> seats = seatService.getSeats(areaId, sessionId);
         return RsData.from(RsCode.SUCCESS, seats);
+    }
+    @Operation(summary = "좌석 상태 변경")
+    @PostMapping("/update-status")
+    public RsData<?> updateSeatStatus(
+            @RequestBody SeatUpdateRequest request
+    ) {
+        seatService.updateSeatStatus(request.seatId(), request.status());
+        return RsData.from(RsCode.SUCCESS);
     }
 }

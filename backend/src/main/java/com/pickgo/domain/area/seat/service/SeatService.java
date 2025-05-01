@@ -1,10 +1,13 @@
 package com.pickgo.domain.area.seat.service;
 
 import com.pickgo.domain.area.seat.dto.SeatResponse;
+import com.pickgo.domain.area.seat.entity.Seat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -94,7 +97,17 @@ public class SeatService {
                 .stream()
                 .map(SeatResponse::from)
                 .collect(Collectors.toList());
+    }
+    /*좌석 상태 변경*/
+    @Transactional
+    public void updateSeatStatus(Long seatId, SeatStatus status) {
+        Seat seat = seatRepository.findById(seatId)
+                        .orElseThrow();
+        seat.setStatus(status);
+        seatRepository.save(seat);
 
-
+        //세션 ID 기반으로  SSE 알림 발송
+        Long sessionId = seat.getPerformanceSession().getId();
+        notifySeatUpdate(sessionId, SeatResponse.from(seat));
     }
 }
