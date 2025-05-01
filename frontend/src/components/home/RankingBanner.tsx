@@ -9,20 +9,21 @@ const bannerData = {
   subtitle: "음악으로 기억될 사랑의 순간",
   venue: "coex 신한카드 artium",
   period: "2025.2.19 - 2025.5.31",
-  imageUrl: "/musical-banner.png",
+  imageUrl:
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/musical-banner-LWuOqgyzauuTGlndSxbL5kC0knOqtP.png",
 }
 
 const smallPosters = [
-  "/musical-poster-1.png",
-  "/musical-poster-2.png",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/musical-poster-4-BXwzKJUWbbPZmGdzqAFNOp2E6KqLrQ.png",
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/musical-poster-2-190WWCpx1Jf1HQ2WwIuN2ARnhtLoGY.png",
   "/musical-poster-3.png",
   "/musical-poster-4.png",
-  "/placeholder.svg?height=80&width=80&query=musical poster 5",
-  "/placeholder.svg?height=80&width=80&query=musical poster 6",
-  "/placeholder.svg?height=80&width=80&query=musical poster 7",
-  "/placeholder.svg?height=80&width=80&query=musical poster 8",
-  "/placeholder.svg?height=80&width=80&query=musical poster 9",
-  "/placeholder.svg?height=80&width=80&query=musical poster 10",
+  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 5",
+  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 6",
+  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 7",
+  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 8",
+  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 9",
+  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 10",
 ]
 
 export default function RankingBanner() {
