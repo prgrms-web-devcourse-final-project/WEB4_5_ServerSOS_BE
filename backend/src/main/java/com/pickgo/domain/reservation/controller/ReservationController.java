@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.pickgo.global.response.RsCode.RESERVATION_CANCEL;
 import static com.pickgo.global.response.RsCode.SUCCESS;
 
 @RestController
@@ -49,8 +50,14 @@ public class ReservationController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        PageResponse<ReservationSimpleResponse> response = reservationService.getMyReservationList(principal.id(),page,size);
+        PageResponse<ReservationSimpleResponse> response = reservationService.getMyReservationList(principal.id(), page, size);
         return RsData.from(SUCCESS, response);
+    }
+
+    @PostMapping("/{id}/cancel")
+    public RsData<?> cancelReservation(@PathVariable Long id) {
+        reservationService.cancelReservation(id);
+        return RsData.from(RESERVATION_CANCEL);
     }
 
 }

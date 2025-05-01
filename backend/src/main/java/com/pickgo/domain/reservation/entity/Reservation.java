@@ -42,4 +42,13 @@ public class Reservation extends BaseEntity {
         this.pendingSeats.addAll(seats);
     }
 
+    public void cancel() {
+        this.status = ReservationStatus.CANCELED;
+    }
+
+    public void clearPendingSeats() {
+        if (this.pendingSeats != null) {
+            this.pendingSeats.clear();
+        }
+    }
 }

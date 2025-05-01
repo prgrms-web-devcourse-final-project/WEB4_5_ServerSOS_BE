@@ -1,6 +1,7 @@
 package com.pickgo.domain.reservation.service;
 
 import com.pickgo.domain.area.seat.entity.Seat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.repository.SeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -119,5 +120,25 @@ public class ReservationService {
         Page<Reservation> reservations = reservationRepository.findByMemberId(memberId, pageable);
 
         return PageResponse.from(reservations, ReservationSimpleResponse::from);
+    }
+
+    public void cancelReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+                () -> new BusinessException(RESERVATION_NOT_FOUND)
+        );
+
+        // 1. 예약 상태 취소
+        // TODO : 추후에 리펙토링 필요 -> 현재는 예약 도중 취소하면 db에 계속 쌓임
+        reservation.cancel();
+
+        // 2. Seat 상태 복구
+        for (PendingSeat pendingSeat : reservation.getPendingSeats()) {
+            pendingSeat.getSeat().setStatus(SeatStatus.AVAILABLE);
+        }
+
+        // 3. 대기 Seat 삭제
+        reservation.clearPendingSeats();
+
+        // 실제 DB에서 삭제되지는 않음
     }
 }
