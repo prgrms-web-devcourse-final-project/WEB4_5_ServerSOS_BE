@@ -5,6 +5,7 @@ import static com.pickgo.global.response.RsCode.*;
 import java.util.UUID;
 
 import com.pickgo.global.s3.AwsS3Uploader;
+import com.pickgo.global.s3.S3Uploader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
-    private final AwsS3Uploader awsS3Uploader;
+    private final S3Uploader s3Uploader;
 
     @Transactional
     public MemberDetailResponse save(MemberCreateRequest request) {
@@ -114,7 +115,7 @@ public class MemberService {
 
         // 기존 프로필이 기본 이미지가 아니면 s3에서 삭제
         if (!member.getProfile().equals(profile)) {
-            awsS3Uploader.delete(member.getProfile());
+            s3Uploader.delete(member.getProfile());
         }
 
         String imageUrl;
@@ -122,7 +123,7 @@ public class MemberService {
         if (image == null) {
             imageUrl = profile;
         } else {
-            imageUrl = awsS3Uploader.upload(image, "profile");
+            imageUrl = s3Uploader.upload(image, "profile");
         }
 
         member.setProfile(imageUrl);
