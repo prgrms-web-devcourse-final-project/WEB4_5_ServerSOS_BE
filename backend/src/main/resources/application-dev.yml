@@ -16,3 +16,11 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
+
+aws:
+  s3:
+    bucket: pickgo-dev-bucket
+  region: ${AWS_REGION}
+  credentials:
+    access_key: ${AWS_ACCESS_KEY_ID}
+    secret_key: ${AWS_SECRET_ACCESS_KEY}
