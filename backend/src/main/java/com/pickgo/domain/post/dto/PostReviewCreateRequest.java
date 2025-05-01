@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.dto;
 
-import com.pickgo.domain.review.entity.Review;
+import com.pickgo.domain.post.entity.Review;
 import lombok.*;
 
 import java.util.UUID;

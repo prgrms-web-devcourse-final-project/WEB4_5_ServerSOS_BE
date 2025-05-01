@@ -1,12 +1,12 @@
-package com.pickgo.domain.review.entity;
+package com.pickgo.domain.post.entity;
 
 import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.post.entity.Post;
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -30,14 +30,8 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
 
     public void setContent(String content) {
         this.content = content;
-        this.modifiedAt = LocalDateTime.now();
     }
 }

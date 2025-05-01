@@ -1,20 +1,19 @@
 package com.pickgo.domain.post.service;
 
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.post.dto.PostReviewCreateRequest;
 import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.post.repository.PostReviewRepository;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.entity.Review;
 import com.pickgo.domain.post.repository.PostRepository;
-import com.pickgo.domain.review.entity.Review;
+import com.pickgo.domain.post.repository.PostReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +48,6 @@ public class PostReviewService {
                 .post(post)
                 .member(member)
                 .content(request.getContent())
-                .createdAt(LocalDateTime.now())
-                .modifiedAt(LocalDateTime.now())
                 .build();
 
        Review savedReview = postreviewRepository.save(review);
