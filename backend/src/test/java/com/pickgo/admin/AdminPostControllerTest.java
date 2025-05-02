@@ -130,7 +130,6 @@ class AdminPostControllerTest {
                 .minAge("10")
                 .startDate(LocalDate.of(2025, 4, 29))
                 .endDate(LocalDate.of(2025, 4, 30))
-
                 .venue(venue)
                 .performanceIntros(List.of(intro1, intro1, intro1))
                 .performanceAreas(List.of(area))
@@ -143,8 +142,6 @@ class AdminPostControllerTest {
                 .content("수정된 게시글 내용")
                 .isPublished(true)
                 .views(1000L)
-                .createdAt(LocalDateTime.of(2025, 4, 24, 14, 30, 45))
-                .modifiedAt(LocalDateTime.of(2025, 5, 2, 11, 55, 28))
                 .performance(performance)
                 .build();
 
