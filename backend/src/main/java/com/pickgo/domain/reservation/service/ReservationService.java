@@ -127,18 +127,26 @@ public class ReservationService {
                 () -> new BusinessException(RESERVATION_NOT_FOUND)
         );
 
+        // 0. 스케쥴러가 이미 취소했으면 패스
+        if (reservation.getStatus() == ReservationStatus.CANCELED) {
+            return;
+        }
+
         // 1. 예약 상태 취소
         // TODO : 추후에 리펙토링 필요 -> 현재는 예약 도중 취소하면 db에 계속 쌓임
         reservation.cancel();
 
         // 2. Seat 상태 복구
         for (PendingSeat pendingSeat : reservation.getPendingSeats()) {
-            pendingSeat.getSeat().setStatus(SeatStatus.AVAILABLE);
+            Seat seat = pendingSeat.getSeat();
+            if (seat.getStatus() == PENDING) {
+                seat.setStatus(SeatStatus.AVAILABLE);
+            }
         }
 
         // 3. 대기 Seat 삭제
         reservation.clearPendingSeats();
 
-        // 실제 DB에서 삭제되지는 않음
+        // 실제 reservation은 DB에서 삭제되지는 않음
     }
 }
