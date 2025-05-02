@@ -46,7 +46,7 @@ public class MemberService {
 		}
 
 		Member member = request.toEntity(passwordEncoder, profile);
-		member = memberRepository.save(member);
+		saveEntity(member);
 
 		return MemberDetailResponse.from(member);
 	}
@@ -105,12 +105,16 @@ public class MemberService {
 		return MemberDetailResponse.from(member);
 	}
 
-	private Member getEntity(UUID id) {
+	public Member saveEntity(Member member) {
+		return memberRepository.save(member);
+	}
+
+	public Member getEntity(UUID id) {
 		return memberRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
 	}
 
-	private Member getEntity(String email) {
+	public Member getEntity(String email) {
 		return memberRepository.findByEmail(email)
 			.orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
 	}

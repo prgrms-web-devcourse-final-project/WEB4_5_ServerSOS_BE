@@ -19,26 +19,27 @@ import java.util.UUID;
 @Table(name = "member")
 public class Member extends BaseEntity {
 
-    @Id
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+	@Id
+	@Column(updatable = false, nullable = false)
+	private UUID id;
 
-    @Column(nullable = false)
-    private String email;
+	@Column(nullable = false)
+	private String email;
+
+	@Setter
+	@Column(nullable = false)
+	private String password;
+
+	@Column(nullable = false)
+	private String nickname;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Authority authority;
+
+	private String profile;
 
     @Setter
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String nickname;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
-
-    private String profile;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SocialProvider socialProvider;
@@ -55,4 +56,5 @@ public class Member extends BaseEntity {
         this.reservations.add(reservation);
         reservation.setMember(this);
     }
+
 }
