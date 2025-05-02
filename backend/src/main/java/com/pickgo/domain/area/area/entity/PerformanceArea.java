@@ -31,6 +31,7 @@ public class PerformanceArea extends BaseEntity {
     @Setter
     private Integer price;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
     private Performance performance;

@@ -1,6 +1,6 @@
-package com.pickgo.domain.performance.repository;
+package com.pickgo.domain.venue.repository;
 
-import com.pickgo.domain.performance.entity.Venue;
+import com.pickgo.domain.venue.entity.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

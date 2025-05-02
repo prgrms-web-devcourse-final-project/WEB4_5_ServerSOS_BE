@@ -9,4 +9,5 @@ import com.pickgo.domain.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, UUID> {
 	Optional<Member> findByEmail(String email);
+
 }
