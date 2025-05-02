@@ -1,6 +1,8 @@
 package com.pickgo.domain.admin.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pickgo.domain.area.area.entity.AreaGrade;
+import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceIntro;
@@ -73,7 +75,7 @@ public class PerformanceDetailResponse {
     }
     public record VenueResponse(String name, String address) {}
 
-    public record PerformanceAreaResponse(Long id, String name, String grade, int price) {
+    public record PerformanceAreaResponse(Long id, AreaName name, AreaGrade grade, int price) {
         public static PerformanceAreaResponse from(PerformanceArea a) {
             return new PerformanceAreaResponse(a.getId(), a.getName(), a.getGrade(), a.getPrice());
         }

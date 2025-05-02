@@ -3,9 +3,9 @@ package com.pickgo.domain.reservation.dto.response;
 import com.pickgo.domain.area.seat.dto.SeatSimpleResponse;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceSession;
-import com.pickgo.domain.performance.entity.Venue;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
+import com.pickgo.domain.venue.entity.Venue;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

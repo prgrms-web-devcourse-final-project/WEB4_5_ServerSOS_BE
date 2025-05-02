@@ -3,6 +3,8 @@ package com.pickgo.admin;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.service.AdminPostService;
+import com.pickgo.domain.area.area.entity.AreaGrade;
+import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.performance.entity.*;
 import com.pickgo.domain.post.entity.Post;
@@ -109,8 +111,8 @@ class AdminPostControllerTest {
 
         PerformanceArea area = PerformanceArea.builder()
                 .id(1L)
-                .name("VIP")
-                .grade("P")
+                .name(AreaName.VIP)
+                .grade(AreaGrade.NORMAL)
                 .price(100000)
                 .build();
 
