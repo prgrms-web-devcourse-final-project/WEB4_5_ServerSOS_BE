@@ -11,9 +11,17 @@ import com.pickgo.domain.payment.dto.PaymentCreateRequest;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
+import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.performance.entity.PerformanceState;
+import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.performance.repository.PerformanceRepository;
+import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
-import com.pickgo.domain.reservation.entity.ReservationStatus;
+import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.domain.venue.entity.Venue;
+import com.pickgo.domain.venue.repository.VenueRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +35,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.pickgo.global.response.RsCode.CREATED;
@@ -39,6 +49,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class PaymentControllerTest {
+
+    private final String testEmail = "test@example.com";
+    private final String testPassword = "test_password";
+    private final String testNickname = "test_user";
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,12 +70,16 @@ public class PaymentControllerTest {
     private MemberRepository memberRepository;
 
     @Autowired
+    private VenueRepository venueRepository;
+
+    @Autowired
+    private PerformanceRepository performanceRepository;
+
+    @Autowired
+    private PerformanceSessionRepository performanceSessionRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
-
-    private final String testEmail = "test@example.com";
-    private final String testPassword = "test_password";
-    private final String testNickname = "test_user";
-
     private UUID testMemberId;
     private String userToken;
 
@@ -81,11 +99,11 @@ public class PaymentControllerTest {
 
         // 로그인 요청 (실제 로그인 API)
         String loginPayload = """
-            {
-              "email": "%s",
-              "password": "%s"
-            }
-            """.formatted(testEmail, testPassword);
+                {
+                  "email": "%s",
+                  "password": "%s"
+                }
+                """.formatted(testEmail, testPassword);
 
         MvcResult result = mockMvc.perform(post("/api/members/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,11 +130,41 @@ public class PaymentControllerTest {
         // Given: 예약이 먼저 필요함
         Member member = memberRepository.findByEmail(testEmail).orElseThrow();
 
+        Venue venue = venueRepository.save(
+                Venue.builder()
+                        .name("테스트 공연장")
+                        .address("서울시 테스트구")
+                        .build()
+        );
+
+        Performance performance = performanceRepository.save(
+                Performance.builder()
+                        .name("테스트 공연")
+                        .startDate(LocalDate.now())
+                        .endDate(LocalDate.now().plusDays(1))
+                        .runtime("120분")
+                        .poster("test.jpg")
+                        .state(PerformanceState.SCHEDULED)
+                        .minAge("전체관람가")
+                        .casts("홍길동 외")
+                        .productionCompany("테스트컴퍼니")
+                        .type(PerformanceType.MUSICAL)
+                        .venue(venue)
+                        .build()
+        );
+
+        PerformanceSession session = performanceSessionRepository.save(
+                PerformanceSession.builder()
+                        .performance(performance)
+                        .performanceTime(LocalDateTime.now().plusDays(1))
+                        .build()
+        );
+
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSessionId(1L)
+                .performanceSession(session)
                 .totalPrice(10000)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.RESERVED)
                 .build()
         );
 
@@ -141,29 +189,59 @@ public class PaymentControllerTest {
 
         Member member = memberRepository.findByEmail(testEmail).orElseThrow();
 
+        Venue venue = venueRepository.save(
+                Venue.builder()
+                        .name("테스트 공연장")
+                        .address("서울시 테스트구")
+                        .build()
+        );
+
+        Performance performance = performanceRepository.save(
+                Performance.builder()
+                        .name("테스트 공연")
+                        .startDate(LocalDate.now())
+                        .endDate(LocalDate.now().plusDays(1))
+                        .runtime("120분")
+                        .poster("test.jpg")
+                        .state(PerformanceState.SCHEDULED)
+                        .minAge("전체관람가")
+                        .casts("홍길동 외")
+                        .productionCompany("테스트컴퍼니")
+                        .type(PerformanceType.MUSICAL)
+                        .venue(venue)
+                        .build()
+        );
+
+        PerformanceSession session = performanceSessionRepository.save(
+                PerformanceSession.builder()
+                        .performance(performance)
+                        .performanceTime(LocalDateTime.now().plusDays(1))
+                        .build()
+        );
+
         Reservation reservation1 = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSessionId(1L)
+                .performanceSession(session)
                 .totalPrice(20000)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.RESERVED)
                 .build());
 
         Payment payment1 = paymentRepository.save(Payment.builder()
                 .reservation(reservation1)
-                .amount(20000L)
+                .amount(20000)
                 .status(PaymentStatus.PENDING)
                 .build());
 
         Reservation reservation2 = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSessionId(2L)
+                .performanceSession(session)
                 .totalPrice(30000)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.RESERVED)
                 .build());
 
         Payment payment2 = paymentRepository.save(Payment.builder()
                 .reservation(reservation2)
-                .amount(30000L)
+                .amount(30000)
                 .status(PaymentStatus.PENDING)
                 .build());
 
@@ -182,16 +260,45 @@ public class PaymentControllerTest {
         // Given: 예약 및 결제 저장
         Member member = memberRepository.findById(testMemberId).orElseThrow();
 
+        Venue venue = venueRepository.save(
+                Venue.builder()
+                        .name("테스트 공연장")
+                        .address("서울시 테스트구")
+                        .build()
+        );
+
+        Performance performance = performanceRepository.save(
+                Performance.builder()
+                        .name("테스트 공연")
+                        .startDate(LocalDate.now())
+                        .endDate(LocalDate.now().plusDays(1))
+                        .runtime("120분")
+                        .poster("test.jpg")
+                        .state(PerformanceState.SCHEDULED)
+                        .minAge("전체관람가")
+                        .casts("홍길동 외")
+                        .productionCompany("테스트컴퍼니")
+                        .type(PerformanceType.MUSICAL)
+                        .venue(venue)
+                        .build()
+        );
+
+        PerformanceSession session = performanceSessionRepository.save(
+                PerformanceSession.builder()
+                        .performance(performance)
+                        .performanceTime(LocalDateTime.now().plusDays(1))
+                        .build()
+        );
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSessionId(1L)
+                .performanceSession(session)
                 .totalPrice(15000)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.RESERVED)
                 .build());
 
         Payment payment = paymentRepository.save(Payment.builder()
                 .reservation(reservation)
-                .amount(15000L)
+                .amount(15000)
                 .status(PaymentStatus.PENDING)
                 .build());
 
@@ -208,16 +315,46 @@ public class PaymentControllerTest {
     void confirmPayment() throws Exception {
         Member member = memberRepository.findById(testMemberId).orElseThrow();
 
+        Venue venue = venueRepository.save(
+                Venue.builder()
+                        .name("테스트 공연장")
+                        .address("서울시 테스트구")
+                        .build()
+        );
+
+        Performance performance = performanceRepository.save(
+                Performance.builder()
+                        .name("테스트 공연")
+                        .startDate(LocalDate.now())
+                        .endDate(LocalDate.now().plusDays(1))
+                        .runtime("120분")
+                        .poster("test.jpg")
+                        .state(PerformanceState.SCHEDULED)
+                        .minAge("전체관람가")
+                        .casts("홍길동 외")
+                        .productionCompany("테스트컴퍼니")
+                        .type(PerformanceType.MUSICAL)
+                        .venue(venue)
+                        .build()
+        );
+
+        PerformanceSession session = performanceSessionRepository.save(
+                PerformanceSession.builder()
+                        .performance(performance)
+                        .performanceTime(LocalDateTime.now().plusDays(1))
+                        .build()
+        );
+
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSessionId(1L)
+                .performanceSession(session)
                 .totalPrice(20000)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.RESERVED)
                 .build());
 
         Payment payment = paymentRepository.save(Payment.builder()
                 .reservation(reservation)
-                .amount(20000L)
+                .amount(20000)
                 .status(PaymentStatus.PENDING)
                 .build());
 
@@ -240,16 +377,46 @@ public class PaymentControllerTest {
     void cancelPayment() throws Exception {
         Member member = memberRepository.findById(testMemberId).orElseThrow();
 
+        Venue venue = venueRepository.save(
+                Venue.builder()
+                        .name("테스트 공연장")
+                        .address("서울시 테스트구")
+                        .build()
+        );
+
+        Performance performance = performanceRepository.save(
+                Performance.builder()
+                        .name("테스트 공연")
+                        .startDate(LocalDate.now())
+                        .endDate(LocalDate.now().plusDays(1))
+                        .runtime("120분")
+                        .poster("test.jpg")
+                        .state(PerformanceState.SCHEDULED)
+                        .minAge("전체관람가")
+                        .casts("홍길동 외")
+                        .productionCompany("테스트컴퍼니")
+                        .type(PerformanceType.MUSICAL)
+                        .venue(venue)
+                        .build()
+        );
+
+        PerformanceSession session = performanceSessionRepository.save(
+                PerformanceSession.builder()
+                        .performance(performance)
+                        .performanceTime(LocalDateTime.now().plusDays(1))
+                        .build()
+        );
+
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSessionId(1L)
+                .performanceSession(session)
                 .totalPrice(13000)
-                .status(ReservationStatus.COMPLETED)
+                .status(ReservationStatus.RESERVED)
                 .build());
 
         Payment payment = paymentRepository.save(Payment.builder()
                 .reservation(reservation)
-                .amount(13000L)
+                .amount(13000)
                 .status(PaymentStatus.COMPLETED) // 테스트를 위해 승인 상태로 생성
                 .build());
 
