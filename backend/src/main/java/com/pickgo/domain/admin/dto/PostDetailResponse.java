@@ -21,7 +21,8 @@ public class PostDetailResponse {
     private Long views;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private String performanceName;
+    private PerformanceDetailResponse performance;
+
 
     public static PostDetailResponse from(Post post) {
         return PostDetailResponse.builder()
@@ -32,7 +33,7 @@ public class PostDetailResponse {
                 .views(post.getViews())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
-                .performanceName(post.getPerformance().getName())
+                .performance(PerformanceDetailResponse.from(post.getPerformance()))
                 .build();
     }
 }

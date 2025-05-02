@@ -14,6 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AdminPostService {
@@ -22,31 +26,58 @@ public class AdminPostService {
     private final PerformanceRepository performanceRepository;
 
     /*게시물 전체 목록 조회*/
+    @Transactional(readOnly = true)
     public Page<Post> getAllPosts(int page, int size, Boolean isPublished) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Post> posts;
 
         if (isPublished != null) {
-            return adminPostRepository.findAllWithPerformanceAndVenueByIsPublished(isPublished, pageable);
+            posts = adminPostRepository.findAllWithPerformanceAndVenueByIsPublished(isPublished, pageable);
+        } else {
+            posts = adminPostRepository.findAllWithPerformanceAndVenue(pageable);
         }
 
-        return adminPostRepository.findAllWithPerformanceAndVenue(pageable);
+        // Lazy 컬렉션 강제 초기화 (LazyInitializationException 방지)
+        posts.forEach(post -> {
+            Performance perf = post.getPerformance();
+            if (perf != null) {
+                perf.getPerformanceAreas().size();  // 강제 초기화
+                perf.getPerformanceIntros().size(); // 강제 초기화
+            }
+        });
+
+        return posts;
     }
 
 
-
     /*게시글 수정*/
-    @Transactional
-    public void updatePost(Long id, PostUpdateRequest request) {
-    Post post = adminPostRepository.findById(id)
-            .orElseThrow(RsCode.POST_NOT_FOUND::toException);
-
-    Performance performance = performanceRepository.findById(request.getPerformanceId())
-            .orElseThrow(RsCode.PERFORMANCE_NOT_FOUND::toException);
+    @Transactional(readOnly = true)
+    public Post updatePost(Long id, PostUpdateRequest request) {
+        Post post = adminPostRepository.findWithPerformance(id)
+                .orElseThrow(RsCode.POST_NOT_FOUND::toException);
 
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setIsPublished(request.getIsPublished());
-        post.setPerformance(performance);
+
+        List<PostUpdateRequest.PerformanceUpdateRequest.AreaPriceUpdateRequest> areaRequests =
+                request.getPerformance().getAreas();
+
+        if (areaRequests != null && !areaRequests.isEmpty()) {
+            Map<Long, Integer> priceMap = areaRequests.stream()
+                    .collect(Collectors.toMap(
+                            PostUpdateRequest.PerformanceUpdateRequest.AreaPriceUpdateRequest::getId,
+                            PostUpdateRequest.PerformanceUpdateRequest.AreaPriceUpdateRequest::getPrice
+                    ));
+
+            post.getPerformance().getPerformanceAreas().forEach(area -> {
+                if (priceMap.containsKey(area.getId())) {
+                    area.setPrice(priceMap.get(area.getId()));
+                }
+            });
+        }
+
+        return post;
     }
 
     /*게시글 삭제*/
