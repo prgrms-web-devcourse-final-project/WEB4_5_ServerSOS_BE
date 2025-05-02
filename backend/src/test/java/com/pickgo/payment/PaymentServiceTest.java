@@ -10,9 +10,17 @@ import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.payment.service.PaymentService;
+import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.performance.entity.PerformanceState;
+import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.performance.repository.PerformanceRepository;
+import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
-import com.pickgo.domain.reservation.entity.ReservationStatus;
+import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.domain.venue.entity.Venue;
+import com.pickgo.domain.venue.repository.VenueRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
@@ -26,6 +34,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +51,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
 
+    private final String email = "test@example.com";
+    private final String password = "test_password";
+    private final String nickname = "test_user";
+
+    private final UUID memberId = UUID.randomUUID();
+    private final Long reservationId = 1L;
+    private final Long paymentId = 10L;
+
     @InjectMocks
     private PaymentService paymentService;
 
@@ -54,14 +71,16 @@ class PaymentServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
-    private final String email = "test@example.com";
-    private final String password = "test_password";
-    private final String nickname = "test_user";
+    @Mock
+    private VenueRepository venueRepository;
 
-    private final UUID memberId = UUID.randomUUID();
+    @Mock
+    private PerformanceRepository performanceRepository;
 
-    private final Long reservationId = 1L;
-    private final Long paymentId = 10L;
+    @Mock
+    private PerformanceSessionRepository performanceSessionRepository;
+
+    private PerformanceSession performanceSession;
 
     private Member getMockMember() {
         Member member = Member.builder()
@@ -80,13 +99,39 @@ class PaymentServiceTest {
         return member;
     }
 
+    private void setupPerformanceSession() {
+        Venue venue = Venue.builder()
+                .name("테스트 공연장")
+                .address("서울시 테스트구")
+                .build();
+
+        Performance performance = Performance.builder()
+                .name("테스트 공연")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(1))
+                .runtime("120분")
+                .poster("test.jpg")
+                .state(PerformanceState.SCHEDULED)
+                .minAge("전체관람가")
+                .casts("홍길동 외")
+                .productionCompany("테스트컴퍼니")
+                .type(PerformanceType.MUSICAL)
+                .venue(venue)
+                .build();
+
+        performanceSession = PerformanceSession.builder()
+                .performance(performance)
+                .performanceTime(LocalDateTime.now().plusDays(1))
+                .build();
+    }
+
     private Reservation getMockReservation(Member member) {
         return Reservation.builder()
                 .id(reservationId)
                 .member(member)
-                .performanceSessionId(1L)
-                .totalPrice(20000L)
-                .status(ReservationStatus.COMPLETED)
+                .performanceSession(performanceSession)
+                .totalPrice(20000)
+                .status(ReservationStatus.RESERVED)
                 .build();
     }
 
@@ -94,7 +139,7 @@ class PaymentServiceTest {
         return Payment.builder()
                 .id(paymentId)
                 .reservation(reservation)
-                .amount(20000L)
+                .amount(reservation.getTotalPrice())
                 .status(status)
                 .build();
     }
@@ -103,9 +148,9 @@ class PaymentServiceTest {
         return Reservation.builder()
                 .id(2L)
                 .member(member)
-                .performanceSessionId(1L)
-                .totalPrice(30000L)
-                .status(ReservationStatus.COMPLETED)
+                .performanceSession(performanceSession)
+                .totalPrice(30000)
+                .status(ReservationStatus.RESERVED)
                 .build();
     }
 
@@ -113,7 +158,7 @@ class PaymentServiceTest {
         return Payment.builder()
                 .id(101L)
                 .reservation(reservation)
-                .amount(30000L)
+                .amount(reservation.getTotalPrice())
                 .status(status)
                 .build();
     }
@@ -125,14 +170,14 @@ class PaymentServiceTest {
         Reservation reservation = getMockReservation(member);
         Payment payment = getMockPayment(reservation, PaymentStatus.PENDING);
 
-        PaymentCreateRequest request = new PaymentCreateRequest(20000L, reservationId);
+        PaymentCreateRequest request = new PaymentCreateRequest(20000, reservationId);
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
         when(paymentRepository.save(any())).thenReturn(payment);
 
         PaymentDetailResponse result = paymentService.createPayment(request);
 
-        assertThat(result.amount()).isEqualTo(20000L);
+        assertThat(result.amount()).isEqualTo(20000);
         assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.PENDING);
     }
 
@@ -156,7 +201,7 @@ class PaymentServiceTest {
         PageResponse<PaymentSimpleResponse> result = paymentService.getMyPayments(memberId, pageable);
 
         assertThat(result.items()).hasSize(2);
-        assertThat(result.items().getFirst().amount()).isEqualTo(20000L);
+        assertThat(result.items().getFirst().amount()).isEqualTo(20000);
     }
 
     @Test
@@ -170,7 +215,7 @@ class PaymentServiceTest {
 
         PaymentDetailResponse result = paymentService.getPaymentDetail(paymentId);
 
-        assertThat(result.amount()).isEqualTo(20000L);
+        assertThat(result.amount()).isEqualTo(20000);
         assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.COMPLETED);
     }
 
@@ -183,7 +228,7 @@ class PaymentServiceTest {
 
         when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
 
-        PaymentConfirmRequest request = new PaymentConfirmRequest("key", "order", 20000L);
+        PaymentConfirmRequest request = new PaymentConfirmRequest("key", "order", 20000);
 
         PaymentDetailResponse result = paymentService.confirmPayment(paymentId, request);
 
