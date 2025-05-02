@@ -37,6 +37,7 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Authority authority;
 
+	@Setter
 	private String profile;
 
     @Setter

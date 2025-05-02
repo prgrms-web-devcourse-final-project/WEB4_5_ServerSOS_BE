@@ -22,12 +22,18 @@ public enum RsCode {
 	MEMBER_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 유저입니다."),
 	MEMBER_ALREADY_EXISTS(RsConstant.BAD_REQUEST, "이미 존재하는 유저입니다."),
 
+
 	// Performance
 	PERFORMANCE_SESSION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 공연 회차입니다."),
 
 	// RESERVATION
 	RESERVATION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 예약 내역입니다."),
-	RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다.");
+	RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다."),
+
+	// S3
+	FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+	FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다.");
+
 
 	private final Integer code;
 	private final String message;
