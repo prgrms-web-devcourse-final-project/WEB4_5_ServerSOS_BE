@@ -5,7 +5,6 @@ import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -61,18 +60,15 @@ public class Performance extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
-    @BatchSize(size = 10)
     private List<PerformanceIntro> performanceIntros = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
-    @BatchSize(size = 10)
     private List<PerformanceArea> performanceAreas = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
-    @BatchSize(size = 10)
     private List<PerformanceSession> performanceSessions = new ArrayList<>();
 }

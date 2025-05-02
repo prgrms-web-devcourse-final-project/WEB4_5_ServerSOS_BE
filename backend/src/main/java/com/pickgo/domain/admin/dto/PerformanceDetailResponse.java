@@ -42,33 +42,25 @@ public class PerformanceDetailResponse {
                 p.getId(),
                 p.getName(),
                 p.getPoster(),
-                p.getState() != null ? p.getState().name() : "UNKNOWN",  // null 체크
-                p.getType() != null ? p.getType().name() : "UNKNOWN",    // null 체크
+                p.getState().name(),
+                p.getType().name(),
                 p.getCasts(),
-                safeParseInt(p.getRuntime(), 0),
-                safeParseInt(p.getMinAge(), 0),
+                Integer.parseInt(p.getRuntime()),
+                Integer.parseInt(p.getMinAge()),
                 p.getStartDate().atStartOfDay(),
                 p.getEndDate().atStartOfDay(),
                 p.getCreatedAt(),
                 p.getModifiedAt(),
-                p.getVenue() != null
-                        ? new VenueResponse(p.getVenue().getName(), p.getVenue().getAddress())
-                        : new VenueResponse("UNKNOWN", "UNKNOWN"),       // venue null 방어
-                p.getPerformanceIntros() != null
-                        ? p.getPerformanceIntros().stream()
+                new VenueResponse(p.getVenue().getName(), p.getVenue().getAddress()),
+                p.getPerformanceIntros().stream()
                         .map(PerformanceIntro::getIntro_image)
-                        .collect(Collectors.toList())
-                        : List.of(),
-                p.getPerformanceAreas() != null
-                        ? p.getPerformanceAreas().stream()
+                        .collect(Collectors.toList()),
+                p.getPerformanceAreas().stream()
                         .map(PerformanceAreaResponse::from)
-                        .collect(Collectors.toList())
-                        : List.of(),
-                p.getPerformanceSessions() != null
-                        ? p.getPerformanceSessions().stream()
+                        .collect(Collectors.toList()),
+                p.getPerformanceSessions().stream()
                         .map(PerformanceSessionResponse::from)
                         .collect(Collectors.toList())
-                        : List.of()
         );
     }
 

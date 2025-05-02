@@ -95,8 +95,8 @@ class AdminPostControllerTest {
 
 
     @Test
-    @DisplayName("PostDetailResponse 응답 변환 성공")
-    void toResponse() {
+    @DisplayName("PostDetailResponse 응답 변환 성공 - 모든 필드 정상값")
+    void toResponseWithoutNulls() {
         // given
         Venue venue = Venue.builder()
                 .name("서울 공연장")
@@ -104,13 +104,13 @@ class AdminPostControllerTest {
                 .build();
 
         PerformanceIntro intro1 = PerformanceIntro.builder()
-                .intro_image("소개 이미지 url")
+                .intro_image("소개 이미지 1")
                 .build();
 
         PerformanceArea area = PerformanceArea.builder()
                 .id(1L)
                 .name("VIP")
-                .grade(null)  // null 값 테스트
+                .grade("P")
                 .price(100000)
                 .build();
 
@@ -121,27 +121,27 @@ class AdminPostControllerTest {
 
         Performance performance = Performance.builder()
                 .id(1L)
-                .name("공연 이름")
+                .name("뮤지컬 헤드윅")
                 .poster("https://example.com/poster.jpg")
                 .state(PerformanceState.SCHEDULED)
                 .type(PerformanceType.MUSICAL)
-                .casts("유재석, 강호동, 신동엽")
-                .runtime("120")
-                .minAge("10")
+                .casts("조승우, 홍광호")
+                .runtime("150")
+                .minAge("12")
                 .startDate(LocalDate.of(2025, 4, 29))
                 .endDate(LocalDate.of(2025, 4, 30))
                 .venue(venue)
-                .performanceIntros(List.of(intro1, intro1, intro1))
+                .performanceIntros(List.of(intro1, intro1))
                 .performanceAreas(List.of(area))
                 .performanceSessions(List.of(session))
                 .build();
 
         Post post = Post.builder()
-                .id(2L)
-                .title("수정된 게시글 제목")
-                .content("수정된 게시글 내용")
+                .id(10L)
+                .title("예매 안내")
+                .content("공연 예매 방법 안내드립니다.")
                 .isPublished(true)
-                .views(1000L)
+                .views(555L)
                 .performance(performance)
                 .build();
 
@@ -149,11 +149,16 @@ class AdminPostControllerTest {
         PostDetailResponse response = PostDetailResponse.from(post);
 
         // then
-        assertThat(response.getId()).isEqualTo(2L);
-        assertThat(response.getTitle()).isEqualTo("수정된 게시글 제목");
-        assertThat(response.getPerformance().getName()).isEqualTo("공연 이름");
+        assertThat(response.getId()).isEqualTo(10L);
+        assertThat(response.getTitle()).isEqualTo("예매 안내");
+        assertThat(response.getPerformance().getName()).isEqualTo("뮤지컬 헤드윅");
+        assertThat(response.getPerformance().getState()).isEqualTo("SCHEDULED");
+        assertThat(response.getPerformance().getType()).isEqualTo("MUSICAL");
+        assertThat(response.getPerformance().getRuntime()).isEqualTo(150);
+        assertThat(response.getPerformance().getMinAge()).isEqualTo(12);
         assertThat(response.getPerformance().getVenue().name()).isEqualTo("서울 공연장");
-        assertThat(response.getPerformance().getIntroImages()).hasSize(3);
+        assertThat(response.getPerformance().getIntroImages()).hasSize(2);
+        assertThat(response.getPerformance().getAreas()).hasSize(1);
         assertThat(response.getPerformance().getSessions()).hasSize(1);
     }
 
