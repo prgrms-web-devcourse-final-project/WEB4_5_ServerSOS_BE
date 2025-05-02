@@ -48,6 +48,7 @@ public class Member extends BaseEntity {
     @Setter
     private String profile;
 
+    @Setter
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SocialProvider socialProvider;
