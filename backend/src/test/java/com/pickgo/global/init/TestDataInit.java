@@ -16,6 +16,7 @@ import com.pickgo.domain.performance.repository.VenueRepository;
 import com.pickgo.global.jwt.JwtProvider;
 import com.pickgo.token.TestToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@Profile("test")
 public class TestDataInit {
 
     private final MemberRepository memberRepository;

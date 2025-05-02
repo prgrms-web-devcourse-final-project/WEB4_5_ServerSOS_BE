@@ -38,4 +38,6 @@ public class RsConstant {
 	 * 서버가 내부 에러 시 사용합니다.
 	 */
 	public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
+
+	public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }

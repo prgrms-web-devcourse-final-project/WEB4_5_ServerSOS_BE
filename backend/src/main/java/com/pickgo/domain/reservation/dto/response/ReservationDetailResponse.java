@@ -1,9 +1,11 @@
 package com.pickgo.domain.reservation.dto.response;
 
 import com.pickgo.domain.area.seat.dto.SeatSimpleResponse;
+import com.pickgo.domain.performance.dto.PerformanceInfo;
+import com.pickgo.domain.performance.dto.PerformanceSessionInfo;
+import com.pickgo.domain.performance.dto.VenueInfo;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceSession;
-import com.pickgo.domain.performance.entity.Venue;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import lombok.Builder;
@@ -21,7 +23,7 @@ public record ReservationDetailResponse(
         ReservationStatus status,
         LocalDateTime reservation_time,
         PerformanceInfo performance,
-        SessionInfo session,
+        PerformanceSessionInfo session,
         VenueInfo venue,
         List<SeatSimpleResponse> seats
 ) {
@@ -36,53 +38,11 @@ public record ReservationDetailResponse(
                 .total_price(reservation.getTotalPrice())
                 .reservation_time(reservation.getCreatedAt())
                 .performance(PerformanceInfo.from(performance))
-                .session(SessionInfo.from(session))
+                .session(PerformanceSessionInfo.from(session))
                 .venue(VenueInfo.from(performance.getVenue()))
                 .seats(reservation.getPendingSeats().stream()
                         .map(p -> SeatSimpleResponse.from(p.getSeat()))
                         .toList())
                 .build();
-    }
-
-    public record PerformanceInfo(
-            String name,
-            String poster,
-            String runtime,
-            String type,
-            String state
-    ) {
-        public static PerformanceInfo from(Performance p) {
-            return new PerformanceInfo(
-                    p.getName(),
-                    p.getPoster(),
-                    p.getRuntime(),
-                    p.getType().getValue(),
-                    p.getState().getValue()
-            );
-        }
-    }
-
-    public record SessionInfo(
-            Long id,
-            LocalDateTime performanceTime
-    ) {
-        public static SessionInfo from(PerformanceSession session) {
-            return new SessionInfo(
-                    session.getId(),
-                    session.getPerformanceTime()
-            );
-        }
-    }
-
-    public record VenueInfo(
-            String name,
-            String address
-    ) {
-        public static VenueInfo from(Venue venue) {
-            return new VenueInfo(
-                    venue.getName(),
-                    venue.getAddress()
-            );
-        }
     }
 }

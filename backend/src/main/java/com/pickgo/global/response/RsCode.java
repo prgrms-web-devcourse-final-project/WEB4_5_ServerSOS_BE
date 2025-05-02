@@ -17,6 +17,7 @@ public enum RsCode {
 	UNAUTHENTICATED(RsConstant.UNAUTHORIZED, "인증이 실패했습니다."),
 	UNAUTHORIZED(RsConstant.FORBIDDEN, "접근 권한이 없습니다."),
 
+
 	// Member
 	MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
 	MEMBER_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 유저입니다."),
@@ -27,7 +28,11 @@ public enum RsCode {
 
 	// RESERVATION
 	RESERVATION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 예약 내역입니다."),
-	RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다.");
+	RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다."),
+
+	// SEAT
+	SEAT_CONFLICT(RsConstant.CONFLICT,"동시 요청으로 인해 좌석 예약에 실패했습니다. 다시 시도해주세요.");
+
 
 	private final Integer code;
 	private final String message;
