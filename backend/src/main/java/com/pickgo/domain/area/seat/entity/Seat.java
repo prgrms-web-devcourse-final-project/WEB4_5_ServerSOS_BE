@@ -27,6 +27,9 @@ public class Seat extends BaseEntity {
     @Setter
     private SeatStatus status;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_session_id", nullable = false)
     @Setter
