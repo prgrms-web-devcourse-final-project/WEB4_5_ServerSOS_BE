@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.pickgo.global.s3.S3Uploader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,6 +36,7 @@ import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -50,6 +53,9 @@ class MemberServiceTest {
 	@Mock
 	private HttpServletResponse response;
 
+	@Mock
+	private S3Uploader s3Uploader;
+
 	@InjectMocks
 	private MemberService memberService;
 
@@ -57,6 +63,7 @@ class MemberServiceTest {
 	private final String password = "test_password";
 	private final String encodedPassword = "encoded_password";
 	private final String nickname = "test_user";
+	private final String profile = "https://url.kr/estdgi";
 	private final String accessToken = "access-token";
 
 	private final UUID userId = UUID.randomUUID();
@@ -67,6 +74,7 @@ class MemberServiceTest {
 			.email(email)
 			.password(encodedPassword)
 			.nickname(nickname)
+			.profile(profile)
 			.authority(USER)
 			.socialProvider(NONE)
 			.build();
@@ -181,5 +189,38 @@ class MemberServiceTest {
 
 		assertThat(response.items()).hasSize(1);
 		assertThat(response.items().getFirst().email()).isEqualTo(email);
+	}
+
+	@Test
+	@DisplayName("프로필 이미지 업데이트 성공")
+	void updateProfileImage_success() {
+		Member member = getMockMember();
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		when(s3Uploader.upload(mockFile, "profile")).thenReturn("https://mock-s3.com/profile/newProfile.jpg");
+		when(memberRepository.findById(userId)).thenReturn(Optional.of(member));
+
+		String updatedImageUrl = memberService.updateProfileImage(userId, mockFile);
+
+		verify(s3Uploader).upload(mockFile, "profile");
+		assertThat(updatedImageUrl).isEqualTo("https://mock-s3.com/profile/newProfile.jpg");
+		assertThat(member.getProfile()).isEqualTo("https://mock-s3.com/profile/newProfile.jpg");
+	}
+
+	@Test
+	@DisplayName("이미지 파일이 비어있을 경우 기본 이미지로 설정")
+	void updateProfileImage_defaultImage() {
+		ReflectionTestUtils.setField(memberService, "profile", "https://url.kr/estdgi");
+
+		Member member = getMockMember();
+		MultipartFile mockFile = new MockMultipartFile("image", "image.jpg", "image/jpeg", new byte[0]);
+
+		when(memberRepository.findById(userId)).thenReturn(Optional.of(member));
+
+		String updatedImageUrl = memberService.updateProfileImage(userId, mockFile);
+
+		verify(s3Uploader, never()).upload(any(), any());
+		assertThat(updatedImageUrl).isEqualTo(profile);
+		assertThat(member.getProfile()).isEqualTo(profile);
 	}
 }
