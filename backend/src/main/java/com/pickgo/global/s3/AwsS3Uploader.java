@@ -30,7 +30,7 @@ public class AwsS3Uploader implements S3Uploader {
     @Override
     public String upload(MultipartFile file, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-        System.out.println(fileName);
+
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
