@@ -21,7 +21,7 @@ public class Payment extends BaseEntity {
     private PaymentStatus status; // 결제 상태 (PENDING, COMPLETED, FAILED, CANCELLED)
 
     @Column(nullable = false)
-    private Long amount;
+    private Integer amount;
 
     @OneToOne
     @JoinColumn(name = "reservation_id", unique = true, nullable = false)
