@@ -78,6 +78,8 @@ public class PaymentControllerTest {
     @Autowired
     private PerformanceSessionRepository performanceSessionRepository;
 
+    private PerformanceSession performanceSession;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
     private UUID testMemberId;
@@ -115,6 +117,34 @@ public class PaymentControllerTest {
         String responseJson = result.getResponse().getContentAsString();
         JsonNode jsonNode = objectMapper.readTree(responseJson);
         userToken = jsonNode.get("data").get("accessToken").asText();
+
+        Venue venue = venueRepository.save(Venue.builder()
+                .name("테스트 공연장")
+                .address("서울시 테스트구")
+                .build()
+        );
+
+        Performance performance = performanceRepository.save(Performance.builder()
+                .name("테스트 공연")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(1))
+                .runtime("120분")
+                .poster("test.jpg")
+                .state(PerformanceState.SCHEDULED)
+                .minAge("전체관람가")
+                .casts("홍길동 외")
+                .productionCompany("테스트컴퍼니")
+                .type(PerformanceType.MUSICAL)
+                .venue(venue)
+                .build()
+        );
+
+        performanceSession = performanceSessionRepository.save(PerformanceSession.builder()
+                .performance(performance)
+                .performanceTime(LocalDateTime.now().plusDays(1))
+                .build()
+        );
+
     }
 
     @AfterEach
@@ -130,39 +160,9 @@ public class PaymentControllerTest {
         // Given: 예약이 먼저 필요함
         Member member = memberRepository.findByEmail(testEmail).orElseThrow();
 
-        Venue venue = venueRepository.save(
-                Venue.builder()
-                        .name("테스트 공연장")
-                        .address("서울시 테스트구")
-                        .build()
-        );
-
-        Performance performance = performanceRepository.save(
-                Performance.builder()
-                        .name("테스트 공연")
-                        .startDate(LocalDate.now())
-                        .endDate(LocalDate.now().plusDays(1))
-                        .runtime("120분")
-                        .poster("test.jpg")
-                        .state(PerformanceState.SCHEDULED)
-                        .minAge("전체관람가")
-                        .casts("홍길동 외")
-                        .productionCompany("테스트컴퍼니")
-                        .type(PerformanceType.MUSICAL)
-                        .venue(venue)
-                        .build()
-        );
-
-        PerformanceSession session = performanceSessionRepository.save(
-                PerformanceSession.builder()
-                        .performance(performance)
-                        .performanceTime(LocalDateTime.now().plusDays(1))
-                        .build()
-        );
-
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSession(session)
+                .performanceSession(performanceSession)
                 .totalPrice(10000)
                 .status(ReservationStatus.RESERVED)
                 .build()
@@ -189,39 +189,9 @@ public class PaymentControllerTest {
 
         Member member = memberRepository.findByEmail(testEmail).orElseThrow();
 
-        Venue venue = venueRepository.save(
-                Venue.builder()
-                        .name("테스트 공연장")
-                        .address("서울시 테스트구")
-                        .build()
-        );
-
-        Performance performance = performanceRepository.save(
-                Performance.builder()
-                        .name("테스트 공연")
-                        .startDate(LocalDate.now())
-                        .endDate(LocalDate.now().plusDays(1))
-                        .runtime("120분")
-                        .poster("test.jpg")
-                        .state(PerformanceState.SCHEDULED)
-                        .minAge("전체관람가")
-                        .casts("홍길동 외")
-                        .productionCompany("테스트컴퍼니")
-                        .type(PerformanceType.MUSICAL)
-                        .venue(venue)
-                        .build()
-        );
-
-        PerformanceSession session = performanceSessionRepository.save(
-                PerformanceSession.builder()
-                        .performance(performance)
-                        .performanceTime(LocalDateTime.now().plusDays(1))
-                        .build()
-        );
-
         Reservation reservation1 = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSession(session)
+                .performanceSession(performanceSession)
                 .totalPrice(20000)
                 .status(ReservationStatus.RESERVED)
                 .build());
@@ -234,7 +204,7 @@ public class PaymentControllerTest {
 
         Reservation reservation2 = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSession(session)
+                .performanceSession(performanceSession)
                 .totalPrice(30000)
                 .status(ReservationStatus.RESERVED)
                 .build());
@@ -260,38 +230,9 @@ public class PaymentControllerTest {
         // Given: 예약 및 결제 저장
         Member member = memberRepository.findById(testMemberId).orElseThrow();
 
-        Venue venue = venueRepository.save(
-                Venue.builder()
-                        .name("테스트 공연장")
-                        .address("서울시 테스트구")
-                        .build()
-        );
-
-        Performance performance = performanceRepository.save(
-                Performance.builder()
-                        .name("테스트 공연")
-                        .startDate(LocalDate.now())
-                        .endDate(LocalDate.now().plusDays(1))
-                        .runtime("120분")
-                        .poster("test.jpg")
-                        .state(PerformanceState.SCHEDULED)
-                        .minAge("전체관람가")
-                        .casts("홍길동 외")
-                        .productionCompany("테스트컴퍼니")
-                        .type(PerformanceType.MUSICAL)
-                        .venue(venue)
-                        .build()
-        );
-
-        PerformanceSession session = performanceSessionRepository.save(
-                PerformanceSession.builder()
-                        .performance(performance)
-                        .performanceTime(LocalDateTime.now().plusDays(1))
-                        .build()
-        );
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSession(session)
+                .performanceSession(performanceSession)
                 .totalPrice(15000)
                 .status(ReservationStatus.RESERVED)
                 .build());
@@ -315,39 +256,9 @@ public class PaymentControllerTest {
     void confirmPayment() throws Exception {
         Member member = memberRepository.findById(testMemberId).orElseThrow();
 
-        Venue venue = venueRepository.save(
-                Venue.builder()
-                        .name("테스트 공연장")
-                        .address("서울시 테스트구")
-                        .build()
-        );
-
-        Performance performance = performanceRepository.save(
-                Performance.builder()
-                        .name("테스트 공연")
-                        .startDate(LocalDate.now())
-                        .endDate(LocalDate.now().plusDays(1))
-                        .runtime("120분")
-                        .poster("test.jpg")
-                        .state(PerformanceState.SCHEDULED)
-                        .minAge("전체관람가")
-                        .casts("홍길동 외")
-                        .productionCompany("테스트컴퍼니")
-                        .type(PerformanceType.MUSICAL)
-                        .venue(venue)
-                        .build()
-        );
-
-        PerformanceSession session = performanceSessionRepository.save(
-                PerformanceSession.builder()
-                        .performance(performance)
-                        .performanceTime(LocalDateTime.now().plusDays(1))
-                        .build()
-        );
-
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSession(session)
+                .performanceSession(performanceSession)
                 .totalPrice(20000)
                 .status(ReservationStatus.RESERVED)
                 .build());
@@ -361,7 +272,7 @@ public class PaymentControllerTest {
         PaymentConfirmRequest request = new PaymentConfirmRequest(
                 "dummyPaymentKey",
                 "dummyOrderId",
-                20000L
+                20000
         );
 
         mockMvc.perform(post("/api/payments/" + payment.getId() + "/confirm")
@@ -377,39 +288,9 @@ public class PaymentControllerTest {
     void cancelPayment() throws Exception {
         Member member = memberRepository.findById(testMemberId).orElseThrow();
 
-        Venue venue = venueRepository.save(
-                Venue.builder()
-                        .name("테스트 공연장")
-                        .address("서울시 테스트구")
-                        .build()
-        );
-
-        Performance performance = performanceRepository.save(
-                Performance.builder()
-                        .name("테스트 공연")
-                        .startDate(LocalDate.now())
-                        .endDate(LocalDate.now().plusDays(1))
-                        .runtime("120분")
-                        .poster("test.jpg")
-                        .state(PerformanceState.SCHEDULED)
-                        .minAge("전체관람가")
-                        .casts("홍길동 외")
-                        .productionCompany("테스트컴퍼니")
-                        .type(PerformanceType.MUSICAL)
-                        .venue(venue)
-                        .build()
-        );
-
-        PerformanceSession session = performanceSessionRepository.save(
-                PerformanceSession.builder()
-                        .performance(performance)
-                        .performanceTime(LocalDateTime.now().plusDays(1))
-                        .build()
-        );
-
         Reservation reservation = reservationRepository.save(Reservation.builder()
                 .member(member)
-                .performanceSession(session)
+                .performanceSession(performanceSession)
                 .totalPrice(13000)
                 .status(ReservationStatus.RESERVED)
                 .build());
