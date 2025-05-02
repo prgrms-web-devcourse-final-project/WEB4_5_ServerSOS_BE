@@ -19,7 +19,11 @@ public enum RsCode {
 	// Member
 	MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
 	MEMBER_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 유저입니다."),
-	MEMBER_ALREADY_EXISTS(RsConstant.BAD_REQUEST, "이미 존재하는 유저입니다.");
+	MEMBER_ALREADY_EXISTS(RsConstant.BAD_REQUEST, "이미 존재하는 유저입니다."),
+
+	// S3
+	FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+	FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다.");
 
 	private final Integer code;
 	private final String message;

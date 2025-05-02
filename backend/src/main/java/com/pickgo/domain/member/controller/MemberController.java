@@ -3,13 +3,7 @@ package com.pickgo.domain.member.controller;
 import static com.pickgo.global.response.RsCode.*;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pickgo.domain.member.dto.LoginRequest;
 import com.pickgo.domain.member.dto.LoginResponse;
@@ -25,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/members")
@@ -89,5 +84,15 @@ public class MemberController {
 	) {
 		memberService.updatePassword(principal.id(), request);
 		return RsData.from(SUCCESS);
+	}
+
+	@Operation(summary = "프로필 이미지 수정")
+	@PutMapping("/me/profile")
+	public RsData<String> updateProfileImage(
+			@AuthenticationPrincipal MemberPrincipal principal,
+			@RequestParam MultipartFile image
+	) {
+		String imageUrl = memberService.updateProfileImage(principal.id(), image);
+		return RsData.from(SUCCESS, imageUrl);
 	}
 }
