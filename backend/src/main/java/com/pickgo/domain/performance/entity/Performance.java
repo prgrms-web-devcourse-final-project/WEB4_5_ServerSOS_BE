@@ -9,9 +9,7 @@ import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -64,7 +62,7 @@ public class Performance extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
-    private Set<PerformanceIntro> performanceIntros = new HashSet<>();
+    private List<PerformanceIntro> performanceIntros = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)

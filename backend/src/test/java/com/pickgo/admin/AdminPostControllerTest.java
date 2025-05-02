@@ -1,9 +1,10 @@
 package com.pickgo.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.admin.dto.PostUpdateRequest;
+import com.pickgo.domain.admin.dto.PostDetailResponse;
 import com.pickgo.domain.admin.service.AdminPostService;
-import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.area.area.entity.PerformanceArea;
+import com.pickgo.domain.performance.entity.*;
 import com.pickgo.domain.post.entity.Post;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.global.response.RsCode;
@@ -16,16 +17,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,24 +95,71 @@ class AdminPostControllerTest {
 
 
     @Test
-    @DisplayName("게시글 수정 성공")
-    void updatePost() throws Exception {
-        Long performanceId = 1L;
-        PostUpdateRequest request = new PostUpdateRequest();
-        request.setPerformanceId(performanceId);
-        request.setTitle("수정된 제목");
-        request.setContent("수정된 내용");
-        request.setIsPublished(true);
+    @DisplayName("PostDetailResponse 응답 변환 성공")
+    void toResponse() {
+        // given
+        Venue venue = Venue.builder()
+                .name("서울 공연장")
+                .address("서울시 강남구")
+                .build();
 
-        doNothing().when(adminPostService).updatePost(eq(1L), any(PostUpdateRequest.class));
+        PerformanceIntro intro1 = PerformanceIntro.builder()
+                .intro_image("소개 이미지 url")
+                .build();
 
-        mockMvc.perform(put("/api/admin/posts/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
-                .andDo(print());
+        PerformanceArea area = PerformanceArea.builder()
+                .id(1L)
+                .name("VIP")
+                .grade(null)  // null 값 테스트
+                .price(100000)
+                .build();
+
+        PerformanceSession session = PerformanceSession.builder()
+                .id(1L)
+                .performanceTime(LocalDateTime.of(2025, 4, 27, 19, 0))
+                .build();
+
+        Performance performance = Performance.builder()
+                .id(1L)
+                .name("공연 이름")
+                .poster("https://example.com/poster.jpg")
+                .state(PerformanceState.SCHEDULED)
+                .type(PerformanceType.MUSICAL)
+                .casts("유재석, 강호동, 신동엽")
+                .runtime("120")
+                .minAge("10")
+                .startDate(LocalDate.of(2025, 4, 29))
+                .endDate(LocalDate.of(2025, 4, 30))
+
+                .venue(venue)
+                .performanceIntros(List.of(intro1, intro1, intro1))
+                .performanceAreas(List.of(area))
+                .performanceSessions(List.of(session))
+                .build();
+
+        Post post = Post.builder()
+                .id(2L)
+                .title("수정된 게시글 제목")
+                .content("수정된 게시글 내용")
+                .isPublished(true)
+                .views(1000L)
+                .createdAt(LocalDateTime.of(2025, 4, 24, 14, 30, 45))
+                .modifiedAt(LocalDateTime.of(2025, 5, 2, 11, 55, 28))
+                .performance(performance)
+                .build();
+
+        // when
+        PostDetailResponse response = PostDetailResponse.from(post);
+
+        // then
+        assertThat(response.getId()).isEqualTo(2L);
+        assertThat(response.getTitle()).isEqualTo("수정된 게시글 제목");
+        assertThat(response.getPerformance().getName()).isEqualTo("공연 이름");
+        assertThat(response.getPerformance().getVenue().name()).isEqualTo("서울 공연장");
+        assertThat(response.getPerformance().getIntroImages()).hasSize(3);
+        assertThat(response.getPerformance().getSessions()).hasSize(1);
     }
+
 
     @Test
     @DisplayName("게시글 삭제 성공")
