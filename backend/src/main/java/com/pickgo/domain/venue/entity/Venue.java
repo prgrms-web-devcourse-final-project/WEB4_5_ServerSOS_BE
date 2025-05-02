@@ -12,6 +12,7 @@ import lombok.*;
 public class Venue extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "venue_id")
     private Long id;
 
     @Column(nullable = false)

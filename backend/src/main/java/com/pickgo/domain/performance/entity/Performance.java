@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 public class Performance extends BaseEntity {
     @Id
+    @Column(name = "performance_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
