@@ -1,5 +1,7 @@
 package com.pickgo.global.init;
 
+import com.pickgo.domain.area.area.entity.AreaGrade;
+import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.Seat;
@@ -113,7 +115,8 @@ public class TestDataInit {
         PerformanceArea area = areaRepository.save(
                 PerformanceArea.builder()
                         .performance(performance)
-                        .name("A구역")
+                        .name(AreaName.A)
+                        .grade(AreaGrade.ROYAL)
                         .price(10000)
                         .build()
         );
