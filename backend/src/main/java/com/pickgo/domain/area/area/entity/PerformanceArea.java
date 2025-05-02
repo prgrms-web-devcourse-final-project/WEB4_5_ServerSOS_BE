@@ -20,7 +20,12 @@ public class PerformanceArea extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private AreaName name;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AreaGrade grade;
 
     @Column(nullable = false)
     @Setter
