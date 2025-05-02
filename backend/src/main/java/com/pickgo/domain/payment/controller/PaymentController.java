@@ -1,6 +1,6 @@
 package com.pickgo.domain.payment.controller;
 
-import com.pickgo.domain.auth.dto.MemberPrincipal;
+import com.pickgo.domain.member.dto.MemberPrincipal;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
 import com.pickgo.domain.payment.dto.PaymentCreateRequest;
 import com.pickgo.domain.payment.dto.PaymentDetailResponse;
