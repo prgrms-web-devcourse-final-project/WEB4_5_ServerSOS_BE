@@ -128,7 +128,7 @@ public class ReservationService {
         );
 
         // 0. 스케쥴러가 이미 취소했으면 패스
-        if (reservation.getStatus() == ReservationStatus.CANCELED) {
+        if (reservation.getStatus()==ReservationStatus.CANCELED) {
             return;
         }
 
