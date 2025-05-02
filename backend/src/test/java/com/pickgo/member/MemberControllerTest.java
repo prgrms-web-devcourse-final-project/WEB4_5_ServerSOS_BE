@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -58,6 +59,7 @@ public class MemberControllerTest {
 			.email(testEmail)
 			.password(passwordEncoder.encode(testPassword))
 			.nickname(testNickname)
+			.profile("profile.jpg")
 			.authority(USER)
 			.socialProvider(NONE)
 			.build();
@@ -150,5 +152,27 @@ public class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()));
+	}
+
+	@Test
+	@DisplayName("프로필 이미지 수정 성공")
+	void updateProfileImage_성공() throws Exception {
+		MockMultipartFile profileImage = new MockMultipartFile(
+				"image",
+				"newProfile.jpg",
+				MediaType.IMAGE_JPEG_VALUE,
+				"fake-image-content".getBytes()
+		);
+
+		mockMvc.perform(multipart("/api/members/me/profile")
+						.file(profileImage)
+						.with(request -> {
+							request.setMethod("PUT");
+							return request;
+						})
+						.header("Authorization", "Bearer " + token.userToken))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
+				.andExpect(jsonPath("$.data").value("https://mock-s3.com/profile/newProfile.jpg"));
 	}
 }
