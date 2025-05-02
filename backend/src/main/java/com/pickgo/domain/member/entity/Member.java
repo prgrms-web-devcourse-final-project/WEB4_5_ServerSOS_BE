@@ -1,23 +1,15 @@
 package com.pickgo.domain.member.entity;
 
-import java.util.UUID;
-
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
+import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,9 +37,25 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Authority authority;
 
+	@Setter
 	private String profile;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private SocialProvider socialProvider;
+    @Setter
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SocialProvider socialProvider;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    List<Reservation> reservations = new ArrayList<>();
+
+    public void update(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void addReservation(Reservation reservation) {
+        this.reservations.add(reservation);
+        reservation.setMember(this);
+    }
+
 }

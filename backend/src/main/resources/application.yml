@@ -44,3 +44,15 @@ custom:
 
   member:
     profile: ${MEMBER_PROFILE:https://url.kr/estdgi}
+
+  oauth:
+    kakao:
+      api-key: ${KAKAO_API_KEY}
+      redirect-uri: ${KAKAO_LOGIN_REDIRECT_URI:http://localhost:8080/api/oauth/kakao/login/redirect}
+      authorize-uri: ${KAKAO_AUTHORIZE_URI:https://kauth.kakao.com/oauth/authorize}
+      token-uri: ${KAKAO_TOKEN_URI:https://kauth.kakao.com/oauth/token}
+      user-info-uri: ${KAKAO_USER_INFO_URI:https://kapi.kakao.com/v2/user/me}
+
+kopis:
+  apikey: ${KOPIS_APIKEY}
+

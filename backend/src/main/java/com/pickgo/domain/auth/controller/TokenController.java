@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pickgo.domain.auth.dto.CreateTokenResponse;
+import com.pickgo.domain.auth.dto.TokenDetailResponse;
 import com.pickgo.domain.auth.service.TokenService;
 import com.pickgo.global.response.RsData;
 
@@ -23,9 +23,9 @@ public class TokenController {
 
 	private final TokenService tokenService;
 
-	@Operation(summary = "액세스 토큰 발급")
+	@Operation(summary = "액세스 토큰 재발급")
 	@PostMapping
-	public RsData<CreateTokenResponse> createToken(@CookieValue(value = "refreshToken") String refreshToken) {
+	public RsData<TokenDetailResponse> renewToken(@CookieValue(value = "refreshToken") String refreshToken) {
 		return RsData.from(CREATED, tokenService.createAccessToken(refreshToken));
 	}
 }
