@@ -202,7 +202,6 @@ class MemberServiceTest {
         String updatedImageUrl = memberService.updateProfileImage(userId, mockFile);
 
         verify(s3Uploader).upload(mockFile, "profile");
-        verify(s3Uploader).delete(profile);
         assertThat(updatedImageUrl).isEqualTo("https://mock-s3.com/profile/newProfile.jpg");
         assertThat(member.getProfile()).isEqualTo("https://mock-s3.com/profile/newProfile.jpg");
     }

@@ -113,8 +113,8 @@ public class MemberService {
     public String updateProfileImage(UUID id, MultipartFile image) {
         Member member = getEntity(id);
 
-        // 기존 프로필이 기본 이미지가 아니면 s3에서 삭제
-        if (!member.getProfile().equals(profile)) {
+        // 기존 프로필이 s3에 등록된 이미지라면 s3에서 삭제
+        if (member.getProfile().contains("amazonaws")) {
             s3Uploader.delete(member.getProfile());
         }
 
