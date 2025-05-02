@@ -2,8 +2,6 @@ package com.pickgo.domain.admin.service;
 
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
 import com.pickgo.domain.admin.repository.AdminPostRepository;
-import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.post.entity.Post;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
@@ -23,43 +21,30 @@ import java.util.stream.Collectors;
 public class AdminPostService {
 
     private final AdminPostRepository adminPostRepository;
-    private final PerformanceRepository performanceRepository;
 
     /*게시물 전체 목록 조회*/
-    @Transactional(readOnly = true)
     public Page<Post> getAllPosts(int page, int size, Boolean isPublished) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Post> posts;
 
         if (isPublished != null) {
-            posts = adminPostRepository.findAllWithPerformanceAndVenueByIsPublished(isPublished, pageable);
-        } else {
-            posts = adminPostRepository.findAllWithPerformanceAndVenue(pageable);
+            return adminPostRepository.findAllWithPerformanceAndVenueByIsPublished(isPublished, pageable);
         }
 
-        // Lazy 컬렉션 강제 초기화 (LazyInitializationException 방지)
-        posts.forEach(post -> {
-            Performance perf = post.getPerformance();
-            if (perf != null) {
-                perf.getPerformanceAreas().size();  // 강제 초기화
-                perf.getPerformanceIntros().size(); // 강제 초기화
-            }
-        });
-
-        return posts;
+        return adminPostRepository.findAllWithPerformanceAndVenue(pageable);
     }
 
-
     /*게시글 수정*/
-    @Transactional(readOnly = true)
+    @Transactional
     public Post updatePost(Long id, PostUpdateRequest request) {
-        Post post = adminPostRepository.findWithPerformance(id)
+        Post post = adminPostRepository.findById(id)
                 .orElseThrow(RsCode.POST_NOT_FOUND::toException);
 
+        // 게시글 정보 수정 (제목, 내용, 게시 여부)
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setIsPublished(request.getIsPublished());
 
+        // 좌석 구역 가격 수정
         List<PostUpdateRequest.PerformanceUpdateRequest.AreaPriceUpdateRequest> areaRequests =
                 request.getPerformance().getAreas();
 
@@ -76,7 +61,6 @@ public class AdminPostService {
                 }
             });
         }
-
         return post;
     }
 

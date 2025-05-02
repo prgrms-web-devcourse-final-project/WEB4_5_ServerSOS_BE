@@ -31,7 +31,7 @@ public class PerformanceMapper {
                 .productionCompany(response.getProductionCompany())
                 .type(convertType(response.getType()))
                 .venue(venue)
-                .performanceIntros(toPerformanceIntros(response.getIntroImages()))
+                .performanceIntros(new HashSet<>(toPerformanceIntros(response.getIntroImages())))
                 .build();
 
         for (PerformanceIntro intro : performance.getPerformanceIntros()) {

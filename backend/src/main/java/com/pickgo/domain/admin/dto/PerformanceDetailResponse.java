@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -41,41 +42,43 @@ public class PerformanceDetailResponse {
                 p.getId(),
                 p.getName(),
                 p.getPoster(),
-                // 기본값 설정: state가 null이면 "공연예정"
-                p.getState() != null ? p.getState().name() : "공연예정",
-
-                // 기본값 설정: type이 null이면 "기타"
-                p.getType() != null ? p.getType().name() : "기타",
-
+                p.getState() != null ? p.getState().name() : "UNKNOWN",  // null 체크
+                p.getType() != null ? p.getType().name() : "UNKNOWN",    // null 체크
                 p.getCasts(),
-                p.getRuntime() != null ? Integer.parseInt(p.getRuntime()) : 0,
-                p.getMinAge() != null ? Integer.parseInt(p.getMinAge()) : 0,
-
-                p.getStartDate() != null ? p.getStartDate().atStartOfDay() : null,
-                p.getEndDate() != null ? p.getEndDate().atStartOfDay() : null,
-
+                safeParseInt(p.getRuntime(), 0),
+                safeParseInt(p.getMinAge(), 0),
+                p.getStartDate().atStartOfDay(),
+                p.getEndDate().atStartOfDay(),
                 p.getCreatedAt(),
                 p.getModifiedAt(),
-
-                new VenueResponse(p.getVenue().getName(), p.getVenue().getAddress()),
-
-                p.getPerformanceIntros() != null ?
-                        p.getPerformanceIntros().stream()
-                                .map(PerformanceIntro::getIntro_image)
-                                .toList() : List.of(),
-
-                p.getPerformanceAreas() != null ?
-                        p.getPerformanceAreas().stream()
-                                .map(PerformanceAreaResponse::from)
-                                .toList() : List.of(),
-
-                p.getPerformanceSessions() != null ?
-                        p.getPerformanceSessions().stream()
-                                .map(PerformanceSessionResponse::from)
-                                .toList() : List.of()
+                p.getVenue() != null
+                        ? new VenueResponse(p.getVenue().getName(), p.getVenue().getAddress())
+                        : new VenueResponse("UNKNOWN", "UNKNOWN"),       // venue null 방어
+                p.getPerformanceIntros() != null
+                        ? p.getPerformanceIntros().stream()
+                        .map(PerformanceIntro::getIntro_image)
+                        .collect(Collectors.toList())
+                        : List.of(),
+                p.getPerformanceAreas() != null
+                        ? p.getPerformanceAreas().stream()
+                        .map(PerformanceAreaResponse::from)
+                        .collect(Collectors.toList())
+                        : List.of(),
+                p.getPerformanceSessions() != null
+                        ? p.getPerformanceSessions().stream()
+                        .map(PerformanceSessionResponse::from)
+                        .collect(Collectors.toList())
+                        : List.of()
         );
     }
 
+    private static int safeParseInt(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException | NullPointerException e) {
+            return defaultValue;
+        }
+    }
     public record VenueResponse(String name, String address) {}
 
     public record PerformanceAreaResponse(Long id, String name, String grade, int price) {

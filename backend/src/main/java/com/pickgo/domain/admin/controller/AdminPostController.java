@@ -45,6 +45,7 @@ public class AdminPostController {
     ){
         Post updatedPost = adminPostService.updatePost(id, request);
         return RsData.from(RsCode.SUCCESS, new PostUpdateResponse(PostDetailResponse.from(updatedPost)));
+
     }
 
     @Operation(summary = "admin 게시글 삭제")
