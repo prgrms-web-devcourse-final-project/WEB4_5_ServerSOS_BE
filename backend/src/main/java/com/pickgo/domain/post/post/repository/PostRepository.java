@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("""
@@ -60,4 +61,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 LIMIT 5
             """)
     List<Post> findTopScheduledPosts();
+
+    @Query("""
+                SELECT DISTINCT p FROM Post p
+                JOIN FETCH p.performance perf
+                LEFT JOIN FETCH perf.venue v
+                LEFT JOIN FETCH perf.performanceSessions ps
+                WHERE p.id = :id
+            """)
+    Optional<Post> findByIdWithAll(Long id);
 }

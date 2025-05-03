@@ -1,6 +1,7 @@
 package com.pickgo.domain.post.post.controller;
 
 import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.service.PostService;
@@ -52,5 +53,11 @@ public class PostController {
     @GetMapping("/opening-soon")
     public RsData<List<PostSimpleResponse>> getPopularPosts() {
         return RsData.from(SUCCESS, postService.getOpeningSoonPosts());
+    }
+
+    @Operation(summary = "게시물 상세 조회")
+    @GetMapping("/{id}")
+    public RsData<PostDetailResponse> getPost(@PathVariable Long id) {
+        return RsData.from(SUCCESS, postService.getPost(id));
     }
 }

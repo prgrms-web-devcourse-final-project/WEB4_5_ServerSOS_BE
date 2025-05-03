@@ -2,11 +2,14 @@ package com.pickgo.domain.post.post.service;
 
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceType;
-import com.pickgo.domain.post.post.entity.PostSortType;
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.Post;
+import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.repository.PostRepository;
 import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,5 +63,13 @@ public class PostService {
         List<Post> posts = postRepository.findTopScheduledPosts();
 
         return posts.stream().map(PostSimpleResponse::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PostDetailResponse getPost(Long id) {
+        // performance, venue, performanceSession은 fetch join을 이용하고 performanceArea, performanceIntro는 batch를 이용한 lazy loading
+        Post post = postRepository.findByIdWithAll(id)
+                .orElseThrow(() -> new BusinessException(RsCode.POST_NOT_FOUND));
+        return PostDetailResponse.from(post);
     }
 }
