@@ -1,10 +1,10 @@
 package com.pickgo.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.post.dto.PostReviewCreateRequest;
-import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.post.service.PostReviewService;
+import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

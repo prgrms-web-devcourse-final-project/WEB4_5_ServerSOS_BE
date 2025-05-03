@@ -1,9 +1,9 @@
-package com.pickgo.domain.post.controller;
+package com.pickgo.domain.post.review.controller;
 
-import com.pickgo.domain.post.dto.PostReviewCreateRequest;
-import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.post.service.PostReviewService;
+import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,12 +1,11 @@
 package com.pickgo.domain.admin.dto;
 
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
@@ -19,7 +18,7 @@ public class PostSimpleResponse {
     private LocalDate endDate;
     private String poster;
 
-    public static PostSimpleResponse from(Post post){
+    public static PostSimpleResponse from(Post post) {
         return PostSimpleResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())

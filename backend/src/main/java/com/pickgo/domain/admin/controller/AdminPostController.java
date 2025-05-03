@@ -5,7 +5,7 @@ import com.pickgo.domain.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
 import com.pickgo.domain.admin.dto.PostUpdateResponse;
 import com.pickgo.domain.admin.service.AdminPostService;
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
@@ -42,7 +42,7 @@ public class AdminPostController {
     public RsData<PostUpdateResponse> updatePost(
             @PathVariable("id") Long id,
             @RequestBody PostUpdateRequest request
-    ){
+    ) {
         Post updatedPost = adminPostService.updatePost(id, request);
         return RsData.from(RsCode.SUCCESS, new PostUpdateResponse(PostDetailResponse.from(updatedPost)));
 
@@ -54,6 +54,6 @@ public class AdminPostController {
             @PathVariable("id") Long id
     ) {
         adminPostService.deletePost(id);
-        return RsData.from(RsCode.SUCCESS,id);
+        return RsData.from(RsCode.SUCCESS, id);
     }
 }

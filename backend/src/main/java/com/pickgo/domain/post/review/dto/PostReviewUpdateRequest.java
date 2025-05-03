@@ -1,4 +1,4 @@
-package com.pickgo.domain.post.dto;
+package com.pickgo.domain.post.review.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

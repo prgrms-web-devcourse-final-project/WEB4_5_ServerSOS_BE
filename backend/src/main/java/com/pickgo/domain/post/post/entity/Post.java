@@ -1,4 +1,4 @@
-package com.pickgo.domain.post.entity;
+package com.pickgo.domain.post.post.entity;
 
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.global.entity.BaseEntity;

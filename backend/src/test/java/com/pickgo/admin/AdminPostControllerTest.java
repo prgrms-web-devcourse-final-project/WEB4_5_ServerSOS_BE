@@ -7,7 +7,7 @@ import com.pickgo.domain.area.area.entity.AreaGrade;
 import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.performance.entity.*;
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
@@ -93,7 +93,6 @@ class AdminPostControllerTest {
                 .andExpect(jsonPath("$.data.items[1].id").value(2L))
                 .andDo(print());
     }
-
 
 
     @Test

@@ -1,14 +1,14 @@
-package com.pickgo.domain.post.service;
+package com.pickgo.domain.post.review.service;
 
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.post.dto.PostReviewCreateRequest;
-import com.pickgo.domain.post.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.post.entity.Post;
-import com.pickgo.domain.post.entity.Review;
-import com.pickgo.domain.post.repository.PostRepository;
-import com.pickgo.domain.post.repository.PostReviewRepository;
+import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.post.entity.Post;
+import com.pickgo.domain.post.review.entity.Review;
+import com.pickgo.domain.post.post.repository.PostRepository;
+import com.pickgo.domain.post.review.repository.PostReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class PostReviewService {
                 .content(request.getContent())
                 .build();
 
-       Review savedReview = postreviewRepository.save(review);
+        Review savedReview = postreviewRepository.save(review);
 
         // 4. 응답 반환
         return PostReviewSimpleResponse.fromEntity(savedReview);
