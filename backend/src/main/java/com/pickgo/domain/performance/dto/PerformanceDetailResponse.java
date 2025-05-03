@@ -36,7 +36,7 @@ public record PerformanceDetailResponse(
                 performance.getMinAge(),
                 performance.getStartDate(),
                 performance.getEndDate(),
-                new VenueResponse(performance.getVenue().getId(), performance.getVenue().getName(), performance.getVenue().getAddress()),
+                new VenueResponse(performance.getVenue().getName(), performance.getVenue().getAddress()),
                 performance.getPerformanceIntros().stream()
                         .map(PerformanceIntro::getIntroImage)
                         .toList(),
