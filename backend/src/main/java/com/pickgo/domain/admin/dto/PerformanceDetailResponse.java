@@ -55,7 +55,7 @@ public class PerformanceDetailResponse {
                 p.getModifiedAt(),
                 new VenueResponse(p.getVenue().getName(), p.getVenue().getAddress()),
                 p.getPerformanceIntros().stream()
-                        .map(PerformanceIntro::getIntro_image)
+                        .map(PerformanceIntro::getIntroImage)
                         .collect(Collectors.toList()),
                 p.getPerformanceAreas().stream()
                         .map(PerformanceAreaResponse::from)
@@ -73,7 +73,9 @@ public class PerformanceDetailResponse {
             return defaultValue;
         }
     }
-    public record VenueResponse(String name, String address) {}
+
+    public record VenueResponse(String name, String address) {
+    }
 
     public record PerformanceAreaResponse(Long id, AreaName name, AreaGrade grade, int price) {
         public static PerformanceAreaResponse from(PerformanceArea a) {

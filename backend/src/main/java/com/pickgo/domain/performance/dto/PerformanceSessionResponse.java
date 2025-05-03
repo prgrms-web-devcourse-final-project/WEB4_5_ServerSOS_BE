@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record PerformanceSessionResponse(
         Long id,
-        LocalDateTime performanceTime
+        LocalDateTime time
 ) {
     public static PerformanceSessionResponse from(PerformanceSession session) {
         return new PerformanceSessionResponse(session.getId(), session.getPerformanceTime());
