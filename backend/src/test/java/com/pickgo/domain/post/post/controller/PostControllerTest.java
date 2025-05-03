@@ -4,6 +4,7 @@ import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceState;
 import com.pickgo.domain.performance.entity.PerformanceType;
 import com.pickgo.domain.performance.repository.PerformanceRepository;
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.post.post.entity.PostSortType;
@@ -130,5 +131,23 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("테스트 게시글"));
     }
-    
+
+    @Test
+    @DisplayName("게시글 상세 조회 테스트")
+    void getPost() throws Exception {
+        Long id = 1L;
+
+        when(postService.getPost(id))
+                .thenReturn(PostDetailResponse.from(post));
+
+        mockMvc.perform(get("/api/posts/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title").value("테스트 게시글"))
+                .andExpect(jsonPath("$.data.views").value(100))
+                .andExpect(jsonPath("$.data.performance.name").value("공연명"))
+                .andExpect(jsonPath("$.data.performance.poster").value("poster.jpg"))
+                .andExpect(jsonPath("$.data.performance.type").value("뮤지컬"));
+    }
+
 }

@@ -1,7 +1,9 @@
 package com.pickgo.domain.post.post.service;
 
 import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.performance.entity.PerformanceState;
 import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.post.post.entity.PostSortType;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -39,8 +42,12 @@ public class PostServiceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(10))
                 .poster("poster.jpg")
+                .state(PerformanceState.SCHEDULED)
                 .type(PerformanceType.MUSICAL)
                 .venue(Venue.builder().build())
+                .performanceIntros(List.of())
+                .performanceAreas(List.of())
+                .performanceSessions(List.of())
                 .build();
 
         return Post.builder()
@@ -103,5 +110,25 @@ public class PostServiceTest {
         // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).title()).isEqualTo(scheduledPosts.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("게시글 상세 조회 테스트")
+    void getPost() {
+        // given
+        Long id = 1L;
+        Post post = createPost();
+        when(postRepository.findByIdWithAll(id)).thenReturn(Optional.of(post));
+
+        // when
+        PostDetailResponse result = postService.getPost(id);
+
+        // then
+        assertThat(result.id()).isEqualTo(post.getId());
+        assertThat(result.title()).isEqualTo(post.getTitle());
+        assertThat(result.views()).isEqualTo(post.getViews());
+        assertThat(result.performance().name()).isEqualTo(post.getPerformance().getName());
+        assertThat(result.performance().poster()).isEqualTo(post.getPerformance().getPoster());
+        assertThat(result.performance().type()).isEqualTo(post.getPerformance().getType().getValue());
     }
 }

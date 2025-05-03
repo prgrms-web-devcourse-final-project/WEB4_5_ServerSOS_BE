@@ -105,7 +105,7 @@ class AdminPostControllerTest {
                 .build();
 
         PerformanceIntro intro1 = PerformanceIntro.builder()
-                .intro_image("소개 이미지 1")
+                .introImage("소개 이미지 1")
                 .build();
 
         PerformanceArea area = PerformanceArea.builder()
