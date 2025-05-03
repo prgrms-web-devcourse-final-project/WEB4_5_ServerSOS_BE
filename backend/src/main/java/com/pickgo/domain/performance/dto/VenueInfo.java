@@ -1,6 +1,5 @@
 package com.pickgo.domain.performance.dto;
-
-import com.pickgo.domain.performance.entity.Venue;
+import com.pickgo.domain.venue.entity.Venue;
 
 public record VenueInfo(
         String name,
