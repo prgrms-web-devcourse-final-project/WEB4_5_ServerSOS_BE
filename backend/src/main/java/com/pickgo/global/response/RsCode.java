@@ -27,6 +27,7 @@ public enum RsCode {
 	REVIEW_CREATED(RsConstant.REVIEW_CREATED, "리뷰가 등록되었습니다."),
 	REVIEW_DELETED(RsConstant.REVIEW_DELETED, "리뷰가 삭제되었습니다."),
 	REVIEW_UPDATED(RsConstant.REVIEW_UPDATED, "리뷰가 수정되었습니다."),
+
 	// Member
 	MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
 	MEMBER_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 유저입니다."),
@@ -42,7 +43,10 @@ public enum RsCode {
 
 	// S3
 	FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
-	FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다.");
+	FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다."),
+	// SEAT
+	SEAT_CONFLICT(RsConstant.CONFLICT,"동시 요청으로 인해 좌석 예약에 실패했습니다. 다시 시도해주세요.");
+
 
 
 	private final Integer code;

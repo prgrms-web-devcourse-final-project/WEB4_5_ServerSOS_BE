@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,43 +63,48 @@ public class ReservationService {
             throw new BusinessException(NOT_FOUND);
         }
 
-        // 3. 좌석 상태 확인 후 상태 변경(예약이 가능하다는 것이므로 예약 절차 진행)
-        for (Seat seat : seats) {
-            if (seat.getStatus() != AVAILABLE) {
-                throw new BusinessException(BAD_REQUEST);
+        // 여기부터 예약 트랜지션이므로 하나로 묶어야함
+        try {
+            // 3. 좌석 상태 확인 후 상태 변경(예약이 가능하다는 것이므로 예약 절차 진행)
+            for (Seat seat : seats) {
+                if (seat.getStatus() != AVAILABLE) {
+                    throw new BusinessException(SEAT_CONFLICT);
+                }
+                seat.setStatus(PENDING);
             }
-            seat.setStatus(PENDING);
+
+            // 4. 예약 내역 생성
+            // 4-1. 총 가격을 알기위해서는 pendingSeat의 가격 정보를 가져와함 -> area별로 다른 가격 계산 필요
+            int totalPrice = seats.stream()
+                    .mapToInt(seat -> seat.getPerformanceArea().getPrice()).sum();
+
+            // 4-2. 예약 생성
+            Reservation reservation = Reservation.builder()
+                    .member(member)
+                    .performanceSession(performanceSession)
+                    .status(ReservationStatus.RESERVED)
+                    .totalPrice(totalPrice)
+                    .build();
+
+            // 5. 멤버 연관관계
+            member.addReservation(reservation);
+
+            // 6. PendingSeat 생성 및 연관관계
+            List<PendingSeat> pendingSeats = seats.stream()
+                    .map(seat -> PendingSeat.builder()
+                            .seat(seat)
+                            .reservation(reservation)
+                            .build()
+                    ).toList();
+            reservation.updatePendingSeats(pendingSeats);
+
+            // 7. 예약 저장
+            reservationRepository.save(reservation);
+
+            return ReservationSimpleResponse.from(reservation);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new BusinessException(SEAT_CONFLICT);
         }
-
-        // 4. 예약 내역 생성
-        // 4-1. 총 가격을 알기위해서는 pendingSeat의 가격 정보를 가져와함 -> area별로 다른 가격 계산 필요
-        int totalPrice = seats.stream()
-                .mapToInt(seat -> seat.getPerformanceArea().getPrice()).sum();
-
-        // 4-2. 예약 생성
-        Reservation reservation = Reservation.builder()
-                .member(member)
-                .performanceSession(performanceSession)
-                .status(ReservationStatus.RESERVED)
-                .totalPrice(totalPrice)
-                .build();
-
-        // 5. 멤버 연관관계
-        member.addReservation(reservation);
-
-        // 6. PendingSeat 생성 및 연관관계
-        List<PendingSeat> pendingSeats = seats.stream()
-                .map(seat -> PendingSeat.builder()
-                        .seat(seat)
-                        .reservation(reservation)
-                        .build()
-                ).toList();
-        reservation.updatePendingSeats(pendingSeats);
-
-        // 7. 예약 저장
-        reservationRepository.save(reservation);
-
-        return ReservationSimpleResponse.from(reservation);
     }
 
     @Transactional(readOnly = true)
@@ -127,18 +133,26 @@ public class ReservationService {
                 () -> new BusinessException(RESERVATION_NOT_FOUND)
         );
 
+        // 0. 스케쥴러가 이미 취소했으면 패스
+        if (reservation.getStatus() == ReservationStatus.CANCELED) {
+            return;
+        }
+
         // 1. 예약 상태 취소
         // TODO : 추후에 리펙토링 필요 -> 현재는 예약 도중 취소하면 db에 계속 쌓임
         reservation.cancel();
 
         // 2. Seat 상태 복구
         for (PendingSeat pendingSeat : reservation.getPendingSeats()) {
-            pendingSeat.getSeat().setStatus(SeatStatus.AVAILABLE);
+            Seat seat = pendingSeat.getSeat();
+            if (seat.getStatus() == PENDING) {
+                seat.setStatus(SeatStatus.AVAILABLE);
+            }
         }
 
         // 3. 대기 Seat 삭제
         reservation.clearPendingSeats();
 
-        // 실제 DB에서 삭제되지는 않음
+        // 실제 reservation은 DB에서 삭제되지는 않음
     }
 }
