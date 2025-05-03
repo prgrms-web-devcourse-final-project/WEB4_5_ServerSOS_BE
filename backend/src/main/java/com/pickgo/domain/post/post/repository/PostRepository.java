@@ -68,6 +68,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 LEFT JOIN FETCH perf.venue v
                 LEFT JOIN FETCH perf.performanceSessions ps
                 WHERE p.id = :id
+                AND p.isPublished = true
             """)
     Optional<Post> findByIdWithAll(Long id);
 }
