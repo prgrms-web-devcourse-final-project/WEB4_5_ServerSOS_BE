@@ -48,4 +48,6 @@ public class RsConstant {
 	public static final int REVIEW_CREATED = 4301;
 	public static final int REVIEW_DELETED = 4302;
 	public static final int REVIEW_UPDATED = 4303;
+
+	public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }
