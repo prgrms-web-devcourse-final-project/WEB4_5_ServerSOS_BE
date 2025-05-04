@@ -9,10 +9,11 @@ public record PaymentCreateRequest(
         @NotNull Integer amount,
         @NotNull Long reservationId
 ) {
-    public Payment toEntity(Reservation reservation) {
+    public Payment toEntity(Reservation reservation, String orderId) {
         return Payment.builder()
                 .amount(amount)
-                .status(PaymentStatus.PENDING) // 기본값으로 설정한다고 가정
+                .status(PaymentStatus.PENDING)
+                .orderId(orderId)
                 .reservation(reservation)
                 .build();
     }
