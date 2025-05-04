@@ -51,11 +51,11 @@ public class PaymentController {
         return RsData.from(RsCode.SUCCESS, response);
     }
 
-    @Operation(summary = "결제 취소")
+    @Operation(summary = "결제 삭제")
     @DeleteMapping("/{id}")
-    public RsData<PaymentDetailResponse> cancelPayment(@PathVariable Long id) {
-        PaymentDetailResponse response = paymentService.cancelPayment(id);
-        return RsData.from(RsCode.SUCCESS, response);
+    public RsData<?> deletePayment(@PathVariable Long id) {
+        paymentService.deletePayment(id);
+        return RsData.from(RsCode.SUCCESS);
     }
 
     @Operation(summary = "결제 승인")

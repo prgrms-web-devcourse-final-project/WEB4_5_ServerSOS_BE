@@ -10,6 +10,7 @@ import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
+import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
@@ -32,9 +33,11 @@ public class PaymentService {
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
+        // 1. 예약 가져옴
         Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
 
+        // 2. 결제 생성
         Payment payment = paymentRepository.save(request.toEntity(reservation));
         return PaymentDetailResponse.from(payment);
     }
@@ -54,24 +57,40 @@ public class PaymentService {
         return PaymentDetailResponse.from(payment);
     }
 
+    /***
+     * PG사 내부적으로 취소시 결제 삭제
+     * 예약 상태가 아직 RESERVED면 결제 다시 생성 가능
+     * 결제 취소 자체는 예약 취소 시에만 가능
+     */
     @Transactional
-    public PaymentDetailResponse cancelPayment(Long id) {
+    public void deletePayment(Long id) {
         Payment payment = getEntity(id);
-        if (payment.getStatus() != PaymentStatus.COMPLETED) {
-            throw new BusinessException(RsCode.BAD_REQUEST);
+
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            throw new BusinessException(RsCode.INVALID_PAYMENT_STATE);
         }
-//        paymentRepository.delete(payment);
-        payment.setStatus(PaymentStatus.CANCELLED);
-        return PaymentDetailResponse.from(payment);
+        paymentRepository.delete(payment);
     }
 
     @Transactional
     public PaymentDetailResponse confirmPayment(Long id, PaymentConfirmRequest req) {
         Payment payment = getEntity(id);
+
+        // 이미 만료된 결제는 거절 -> 10분이 지나서 결제 만료
+        if (payment.getStatus() == PaymentStatus.EXPIRED) {
+            throw new BusinessException(RsCode.PAYMENT_EXPIRED);
+        }
+
         if (payment.getStatus() != PaymentStatus.PENDING) {
             throw new BusinessException(RsCode.BAD_REQUEST);
         }
+
+        Reservation reservation = payment.getReservation();
+
+        // 결제 승인 시 결제 완료 처리 및 예약 PAID 처리
         payment.setStatus(PaymentStatus.COMPLETED);
+        reservation.setStatus(ReservationStatus.PAID);
+
         return PaymentDetailResponse.from(payment);
     }
 

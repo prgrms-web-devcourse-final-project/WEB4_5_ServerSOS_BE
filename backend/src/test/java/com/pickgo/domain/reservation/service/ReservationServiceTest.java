@@ -121,6 +121,7 @@ class ReservationServiceTest {
                 seats.stream().map(Seat::getId).toList()
         );
 
+
         ReservationSimpleResponse response = reservationService.createReservation(member.getId(), request);
         Long reservationId = response.id();
 
