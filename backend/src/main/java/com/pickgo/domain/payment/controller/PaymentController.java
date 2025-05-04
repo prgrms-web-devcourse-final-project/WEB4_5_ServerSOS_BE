@@ -29,7 +29,10 @@ public class PaymentController {
 
     @Operation(summary = "결제 생성")
     @PostMapping
-    public RsData<PaymentDetailResponse> createPayment(@RequestBody @Valid PaymentCreateRequest request) {
+    public RsData<PaymentDetailResponse> createPayment(
+            @RequestBody @Valid PaymentCreateRequest request,
+            @AuthenticationPrincipal MemberPrincipal principal
+    ) {
         PaymentDetailResponse response = paymentService.createPayment(request);
         return RsData.from(RsCode.CREATED, response);
     }
@@ -59,13 +62,11 @@ public class PaymentController {
     }
 
     @Operation(summary = "결제 승인")
-    @PostMapping("/{id}/confirm")
+    @PostMapping("/confirm")
     public RsData<PaymentDetailResponse> confirmPayment(
-            @PathVariable Long id,
             @RequestBody @Valid PaymentConfirmRequest request
     ) {
-        PaymentDetailResponse response = paymentService.confirmPayment(id, request);
+        PaymentDetailResponse response = paymentService.confirmPayment(request);
         return RsData.from(RsCode.SUCCESS, response);
     }
-
 }
