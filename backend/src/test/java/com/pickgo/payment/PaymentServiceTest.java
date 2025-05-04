@@ -230,7 +230,7 @@ class PaymentServiceTest {
 
         PaymentConfirmRequest request = new PaymentConfirmRequest("key", "order", 20000);
 
-        PaymentDetailResponse result = paymentService.confirmPayment(paymentId, request);
+        PaymentDetailResponse result = paymentService.confirmPayment(request);
 
         assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.COMPLETED);
     }
