@@ -22,6 +22,11 @@ public class Payment extends BaseEntity {
 
     @Column(nullable = false)
     private Integer amount;
+    
+    private String paymentKey; // 토츠페이먼츠에서 발급해주는 키, 결제 승인 시 저장
+
+    @Column(nullable = false, unique = true)
+    private String orderId; // 주문 ID (UUID로 생성)
 
     @OneToOne
     @JoinColumn(name = "reservation_id", unique = true, nullable = false)

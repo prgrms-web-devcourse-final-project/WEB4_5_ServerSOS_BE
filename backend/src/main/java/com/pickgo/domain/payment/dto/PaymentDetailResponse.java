@@ -7,14 +7,17 @@ public record PaymentDetailResponse(
         Long id,
         Integer amount,
         PaymentStatus paymentStatus,
-        Long reservationId
+        Long reservationId,
+        String orderId // Toss 위젯에 필요, 프론트에서 사용
 ) {
     public static PaymentDetailResponse from(Payment payment) {
         return new PaymentDetailResponse(
                 payment.getId(),
                 payment.getAmount(),
                 payment.getStatus(),
-                payment.getReservation().getId()
+                payment.getReservation().getId(),
+                payment.getOrderId()
         );
     }
 }
+
