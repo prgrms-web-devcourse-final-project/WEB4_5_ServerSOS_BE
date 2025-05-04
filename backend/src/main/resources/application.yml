@@ -53,6 +53,10 @@ custom:
       token-uri: ${KAKAO_TOKEN_URI:https://kauth.kakao.com/oauth/token}
       user-info-uri: ${KAKAO_USER_INFO_URI:https://kapi.kakao.com/v2/user/me}
 
+  toss:
+    client_key: ${TOSS_PAYMENT_CLIENT_KEY}
+    secret_key: ${TOSS_PAYMENT_SECRET_KEY}
+
 kopis:
   apikey: ${KOPIS_APIKEY}
 
