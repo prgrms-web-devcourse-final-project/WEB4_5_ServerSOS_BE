@@ -50,6 +50,7 @@ public enum RsCode {
     // Payment
     PAYMENT_INTEGRITY_ERROR(RsConstant.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     PAYMENT_TOSS_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 승인 실패"),
+    PAYMENT_TOSS_CANCEL_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 취소 실패"),
     ;
 
     private final Integer code;
