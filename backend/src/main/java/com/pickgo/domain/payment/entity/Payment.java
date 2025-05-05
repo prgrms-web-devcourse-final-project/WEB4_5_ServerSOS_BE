@@ -11,6 +11,9 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@Table(indexes = {
+        @Index(name = "idx_payment_order_id", columnList = "orderId")
+})
 public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +25,7 @@ public class Payment extends BaseEntity {
 
     @Column(nullable = false)
     private Integer amount;
-    
+
     private String paymentKey; // 토츠페이먼츠에서 발급해주는 키, 결제 승인 시 저장
 
     @Column(nullable = false, unique = true)
