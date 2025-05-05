@@ -72,12 +72,39 @@ public class PaymentService {
     @Transactional
     public PaymentDetailResponse cancelPayment(Long id) {
         Payment payment = getEntity(id);
+
         if (payment.getStatus() != PaymentStatus.COMPLETED) {
             throw new BusinessException(RsCode.BAD_REQUEST);
         }
-//        paymentRepository.delete(payment);
-        payment.setStatus(PaymentStatus.CANCELLED);
-        return PaymentDetailResponse.from(payment);
+
+        String paymentKey = payment.getPaymentKey();
+        if (paymentKey == null || paymentKey.isBlank()) {
+            throw new BusinessException(RsCode.BAD_REQUEST);
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", tossPaymentConfig.getAuthorizations());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("cancelReason", "결제취소"); // 프론트에서 취소 사유 작성해야하나 임시로 고정
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            restTemplate.postForEntity(
+                    TossPaymentConfig.apiUrl + "/" + paymentKey + "/cancel",
+                    entity,
+                    String.class
+            );
+
+            payment.setStatus(PaymentStatus.CANCELLED); // DB 상태 변경
+            return PaymentDetailResponse.from(payment);
+
+        } catch (HttpClientErrorException e) {
+            throw new BusinessException(RsCode.PAYMENT_TOSS_CANCEL_FAILED);
+        }
     }
 
     @Transactional
