@@ -55,7 +55,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "결제 취소")
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/cancel")
     public RsData<PaymentDetailResponse> cancelPayment(@PathVariable Long id) {
         PaymentDetailResponse response = paymentService.cancelPayment(id);
         return RsData.from(RsCode.SUCCESS, response);
