@@ -11,7 +11,7 @@ public record PaymentCreateRequest(
 ) {
     public Payment toEntity(Reservation reservation, String orderId) {
         return Payment.builder()
-                .amount(amount)
+                .amount(reservation.getTotalPrice())
                 .status(PaymentStatus.PENDING)
                 .orderId(orderId)
                 .reservation(reservation)
