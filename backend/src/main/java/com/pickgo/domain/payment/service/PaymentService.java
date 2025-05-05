@@ -107,7 +107,7 @@ public class PaymentService {
         }
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = BusinessException.class)
     public PaymentDetailResponse confirmPayment(PaymentConfirmRequest req) {
 //        Payment payment = getEntity(id);
         Payment payment = paymentRepository.findByOrderId(req.orderId())
@@ -120,6 +120,7 @@ public class PaymentService {
 
         if (!payment.getAmount().equals(req.amount()) || !payment.getOrderId().equals(req.orderId())) {
             payment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(payment);
             throw new BusinessException(RsCode.PAYMENT_INTEGRITY_ERROR);
         }
 
@@ -138,7 +139,7 @@ public class PaymentService {
             RestTemplate restTemplate = new RestTemplate();
 
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    "https://api.tosspayments.com/v1/payments/confirm",
+                    TossPaymentConfig.apiUrl + "/confirm",
                     entity,
                     String.class
             );
