@@ -106,7 +106,7 @@ public class PaymentService {
                     String.class
             );
 
-            payment.setStatus(PaymentStatus.CANCELLED); // DB 상태 변경
+            payment.setStatus(PaymentStatus.CANCELED); // DB 상태 변경
             return PaymentDetailResponse.from(payment);
 
         } catch (HttpClientErrorException e) {
