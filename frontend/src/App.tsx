@@ -4,7 +4,7 @@ import { Header } from "./layout/Header"
 import { Home } from "./pages/Home"
 import { Login } from "./pages/Login"
 import { My } from "./pages/My"
-import { PerformanceDetail } from "./pages/PerformanceDetail"
+import { ShowDetail } from "./pages/ShowDetail"
 import { PerformanceReservation } from "./pages/PerformanceReservation"
 import { Footer } from "./layout/Footer"
 import Category from "./pages/Category"
@@ -19,10 +19,10 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/my" element={<My />} />
-            <Route path="/performance/:id" element={<PerformanceDetail />} />
+            <Route path="/show/:id" element={<ShowDetail />} />
             <Route path="/category/:genre" element={<Category />} />
             <Route
-              path="/performance/:id/reservation"
+              path="/show/:id/reservation"
               element={<PerformanceReservation />}
             />
           </Routes>
