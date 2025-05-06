@@ -21,7 +21,8 @@
         "noArrayIndexKey": "off"
       },
       "complexity": {
-        "noBannedTypes": "off"
+        "noBannedTypes": "off",
+        "noForEach": "off"
       },
       "correctness": {
         "noEmptyPattern": "off"
