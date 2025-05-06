@@ -5,7 +5,7 @@ import { Home } from "./pages/Home"
 import { Login } from "./pages/Login"
 import { My } from "./pages/My"
 import { ShowDetail } from "./pages/ShowDetail"
-import { PerformanceReservation } from "./pages/PerformanceReservation"
+import { ShowReservation } from "./pages/ShowReservation"
 import { Footer } from "./layout/Footer"
 import Category from "./pages/Category"
 
@@ -21,10 +21,7 @@ function App() {
             <Route path="/my" element={<My />} />
             <Route path="/show/:id" element={<ShowDetail />} />
             <Route path="/category/:genre" element={<Category />} />
-            <Route
-              path="/show/:id/reservation"
-              element={<PerformanceReservation />}
-            />
+            <Route path="/show/:id/reservation" element={<ShowReservation />} />
           </Routes>
         </div>
         <Footer />

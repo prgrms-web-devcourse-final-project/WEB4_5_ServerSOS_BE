@@ -49,7 +49,6 @@ const getShowData = (id: string) => {
 export function ShowDetail() {
   const { id } = useParams()
 
-  console.log("###hi")
   if (!id) {
     return <div>ID가 없습니다.</div>
   }
