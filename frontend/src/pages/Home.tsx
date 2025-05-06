@@ -1,4 +1,4 @@
-import CategoryNavigation from "@/components/home/CategoryNavigation"
+import CategoryNavigation from "@/components/category/CategoryNavigation"
 import { PageLayout } from "../layout/PageLayout"
 import RankingBanner from "@/components/home/RankingBanner"
 import { Sections } from "@/components/home/Sections/Sections"

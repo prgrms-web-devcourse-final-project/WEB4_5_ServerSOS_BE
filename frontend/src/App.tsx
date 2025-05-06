@@ -7,6 +7,7 @@ import { My } from "./pages/My"
 import { PerformanceDetail } from "./pages/PerformanceDetail"
 import { PerformanceReservation } from "./pages/PerformanceReservation"
 import { Footer } from "./layout/Footer"
+import Category from "./pages/Category"
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/my" element={<My />} />
             <Route path="/performance/:id" element={<PerformanceDetail />} />
+            <Route path="/category/:genre" element={<Category />} />
             <Route
               path="/performance/:id/reservation"
               element={<PerformanceReservation />}
