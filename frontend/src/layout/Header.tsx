@@ -5,7 +5,8 @@ export const Header = () => {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold">
+        <Link to="/" className="text-xl font-bold flex items-center gap-2">
+          <img src="/logo_64.png" alt="logo" className="w-10 h-10" />
           티켓 예매 사이트
         </Link>
         <div className="flex gap-2">
