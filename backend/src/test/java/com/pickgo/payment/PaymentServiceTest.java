@@ -189,7 +189,7 @@ class PaymentServiceTest {
         Reservation reservation1 = getMockReservation(member);
         Reservation reservation2 = getMockReservation2(member);
 
-        Payment payment1 = getMockPayment(reservation1, PaymentStatus.CANCELLED);
+        Payment payment1 = getMockPayment(reservation1, PaymentStatus.CANCELED);
         Payment payment2 = getMockPayment2(reservation2, PaymentStatus.COMPLETED);
 
         PageRequest pageable = PageRequest.of(0, 10);
@@ -246,7 +246,7 @@ class PaymentServiceTest {
 
         PaymentDetailResponse result = paymentService.cancelPayment(paymentId);
 
-        assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.CANCELLED);
+        assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.CANCELED);
     }
 
     @Test
@@ -254,7 +254,7 @@ class PaymentServiceTest {
     void cancelPayment_fail_invalidStatus() {
         Member member = getMockMember();
         Reservation reservation = getMockReservation(member);
-        Payment payment = getMockPayment(reservation, PaymentStatus.CANCELLED);
+        Payment payment = getMockPayment(reservation, PaymentStatus.CANCELED);
 
         when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
 
