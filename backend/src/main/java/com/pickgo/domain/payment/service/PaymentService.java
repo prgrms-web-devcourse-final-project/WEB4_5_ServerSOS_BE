@@ -42,6 +42,7 @@ public class PaymentService {
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
+        // 예약 정보를 조회합니다. 만약 없다면 잘못된 결제 생성 이므로 예외를 발생시킵니다.
         Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
 
@@ -56,15 +57,18 @@ public class PaymentService {
 
     @Transactional(readOnly = true)
     public PageResponse<PaymentSimpleResponse> getMyPayments(UUID memberId, Pageable pageable) {
+        // 내 예약 정보 목록을 조회합니다. 클라이언트로 부터 받은 AuthenticationPrincipal 통해 멤버를 조회합니다
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
 
+        // 멤버 정보를 이용하여 결제 정보를 조회합니다. 페이징 처리를 위해 pageable 객체를 사용합니다.
         Page<Payment> payments = paymentRepository.findByReservationMember(member, pageable);
         return PageResponse.from(payments, PaymentSimpleResponse::from);
     }
 
     @Transactional(readOnly = true)
     public PaymentDetailResponse getPaymentDetail(Long id) {
+        // 결제 정보 단건을 조회합니다. 결제 ID를 통해 조회합니다.
         Payment payment = getEntity(id);
         return PaymentDetailResponse.from(payment);
     }
@@ -73,15 +77,18 @@ public class PaymentService {
     public PaymentDetailResponse cancelPayment(Long id) {
         Payment payment = getEntity(id);
 
+        // 결제 상태가 COMPLETED가 아니라면 결제가 된것이 아니라 취소 불가.
         if (payment.getStatus() != PaymentStatus.COMPLETED) {
             throw new BusinessException(RsCode.BAD_REQUEST);
         }
 
+        // paymentKey가 없다면 결제 취소 요청을 보낼 수 없음. 결제가 된것도 아님.
         String paymentKey = payment.getPaymentKey();
         if (paymentKey == null || paymentKey.isBlank()) {
             throw new BusinessException(RsCode.BAD_REQUEST);
         }
 
+        // TossPayments 결제 취소 요청
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", tossPaymentConfig.getAuthorizations());
@@ -107,17 +114,19 @@ public class PaymentService {
         }
     }
 
+    // BusinessException이 발생하면 트랜잭션이 롤백되므로 noRollbackFor 설정. FAILED 상태 저장용
     @Transactional(noRollbackFor = BusinessException.class)
     public PaymentDetailResponse confirmPayment(PaymentConfirmRequest req) {
-//        Payment payment = getEntity(id);
+        // 결제 과정에서 생성된 payment를 찾아야하므로 클라이언트에 있는 정보인 orderId로 조회
         Payment payment = paymentRepository.findByOrderId(req.orderId())
                 .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
 
-
+        // 결제 상태가 PENDING이 아니라면 결제가 된것이 아님. 결제 승인 불가.
         if (payment.getStatus() != PaymentStatus.PENDING) {
             throw new BusinessException(RsCode.BAD_REQUEST);
         }
 
+        // DB에 저장된 결제 금액 & 주문 ID가 클라이언트의 정보와 일치하지 않는다면 무결성 깨짐. 결제 승인 불가.
         if (!payment.getAmount().equals(req.amount()) || !payment.getOrderId().equals(req.orderId())) {
             payment.setStatus(PaymentStatus.FAILED);
             paymentRepository.save(payment);
@@ -158,6 +167,7 @@ public class PaymentService {
     }
 
     private Payment getEntity(Long id) {
+        // findById용 메서드
         return paymentRepository.findById(id).orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
     }
 }
