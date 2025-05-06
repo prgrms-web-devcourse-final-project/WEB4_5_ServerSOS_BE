@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SimpleCalendar from "@/components/ui/simple-calendar"
 import ShowInfo from "@/components/show/ShowInfo"
 import ReviewSection from "@/components/review/ReviewSection"
+import { PageLayout } from "@/layout/PageLayout"
 
 // 공연 데이터 목업
 const getShowData = (id: string) => {
@@ -71,7 +72,7 @@ export function ShowDetail() {
   }, [selectedDate])
 
   return (
-    <main className="min-h-screen bg-white">
+    <PageLayout>
       {/* 공연 상세 정보 */}
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">{showData.title}</h1>
@@ -177,6 +178,6 @@ export function ShowDetail() {
           </Tabs>
         </div>
       </div>
-    </main>
+    </PageLayout>
   )
 }

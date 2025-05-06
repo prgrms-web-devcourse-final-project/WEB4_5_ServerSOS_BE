@@ -8,6 +8,7 @@ import { ShowDetail } from "./pages/ShowDetail"
 import { ShowReservation } from "./pages/ShowReservation"
 import { Footer } from "./layout/Footer"
 import Category from "./pages/Category"
+import { Join } from "./pages/Join"
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/join" element={<Join />} />
             <Route path="/my" element={<My />} />
             <Route path="/show/:id" element={<ShowDetail />} />
             <Route path="/category/:genre" element={<Category />} />

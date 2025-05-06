@@ -10,9 +10,11 @@ export const Header = () => {
         </Link>
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
-            로그인
+            <Link to="/login">로그인</Link>
           </Button>
-          <Button size="sm">회원가입</Button>
+          <Button size="sm">
+            <Link to="/join">회원가입</Link>
+          </Button>
         </div>
       </div>
     </header>

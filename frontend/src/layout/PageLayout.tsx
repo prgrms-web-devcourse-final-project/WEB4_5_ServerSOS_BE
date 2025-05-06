@@ -3,5 +3,5 @@ interface PageLayoutProps {
 }
 
 export const PageLayout = ({ children }: PageLayoutProps) => {
-  return <div>{children}</div>
+  return <main className="h-full bg-white">{children}</main>
 }
