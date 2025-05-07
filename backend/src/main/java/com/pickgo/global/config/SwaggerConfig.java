@@ -15,7 +15,9 @@ public class SwaggerConfig {
 
 	@Bean
 	public OpenAPI openApi() {
-		Info info = new Info().title("PickGO API Document");
+		Info info = new Info()
+			.title("PickGO API Document")
+			.version("1.0.0");
 
 		String jwtSchemeName = "Authorization";
 

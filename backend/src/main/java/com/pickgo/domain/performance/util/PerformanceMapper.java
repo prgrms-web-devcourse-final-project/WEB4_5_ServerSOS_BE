@@ -1,10 +1,13 @@
 package com.pickgo.domain.performance.util;
 
+import com.pickgo.domain.area.area.entity.AreaGrade;
+import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.seat.entity.Seat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.kopis.dto.KopisPerformanceDetailResponse;
 import com.pickgo.domain.performance.entity.*;
+import com.pickgo.domain.venue.entity.Venue;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -73,7 +76,7 @@ public class PerformanceMapper {
     private static List<PerformanceIntro> toPerformanceIntros(List<String> introDtos) {
         return introDtos.stream()
                 .map(introDto -> PerformanceIntro.builder()
-                        .intro_image(introDto)
+                        .introImage(introDto)
                         .build())
                 .toList();
     }
@@ -184,34 +187,57 @@ public class PerformanceMapper {
         };
     }
 
+    private static class AreaConfig {
+        AreaName areaName;
+        AreaGrade areaGrade;
+        int rowCount;
+        int seatCountPerRow;
+
+        public AreaConfig(AreaName areaName, AreaGrade areaGrade, int rowCount, int seatCountPerRow) {
+            this.areaName = areaName;
+            this.areaGrade = areaGrade;
+            this.rowCount = rowCount;
+            this.seatCountPerRow = seatCountPerRow;
+        }
+    }
+
     // 구역 생성
     private static List<PerformanceArea> createPerformanceAreas(Performance performance) {
+        List<AreaConfig> areaConfigs = List.of(
+                new AreaConfig(AreaName.VIP, AreaGrade.PREMIUM, 5, 20),
+                new AreaConfig(AreaName.A, AreaGrade.SPECIAL, 15, 10),
+                new AreaConfig(AreaName.B, AreaGrade.ROYAL, 15, 10),
+                new AreaConfig(AreaName.C, AreaGrade.SPECIAL, 15, 10),
+                new AreaConfig(AreaName.D, AreaGrade.NORMAL, 15, 30)
+        );
+
         List<PerformanceArea> performanceAreas = new ArrayList<>();
 
-        for (int i = 1; i <= 5; i++) {
-            PerformanceArea performanceArea = PerformanceArea.builder()
-                    .name("구역 " + i)
-                    .price(100000)
+        for (AreaConfig config : areaConfigs) {
+            PerformanceArea area = PerformanceArea.builder()
+                    .name(config.areaName)
+                    .grade(config.areaGrade)
+                    .price(100000) // 필요 시 구역별로 다르게
                     .performance(performance)
                     .build();
 
-            List<Seat> seats = createSeats(performanceArea);
-            performanceArea.setSeats(seats);
-
-            performanceAreas.add(performanceArea);
+            List<Seat> seats = createSeats(area, config.rowCount, config.seatCountPerRow);
+            area.setSeats(seats);
+            performanceAreas.add(area);
         }
 
         return performanceAreas;
     }
 
     // 좌석 생성 및 구역과 연결
-    private static List<Seat> createSeats(PerformanceArea area) {
+    private static List<Seat> createSeats(PerformanceArea area, int numRows, int numCols) {
         List<Seat> seats = new ArrayList<>();
 
-        for (char row = 'A'; row <= 'Z'; row++) { // A ~ Z
-            for (int number = 1; number <= 20; number++) { // 1 ~ 20
+        for (int r = 0; r < numRows; r++) {
+            char rowChar = (char) ('A' + r);
+            for (int number = 1; number <= numCols; number++) {
                 seats.add(Seat.builder()
-                        .row(String.valueOf(row))
+                        .row(String.valueOf(rowChar))
                         .number(number)
                         .performanceArea(area)
                         .status(SeatStatus.AVAILABLE)

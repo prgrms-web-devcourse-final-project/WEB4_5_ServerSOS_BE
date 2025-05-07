@@ -253,7 +253,7 @@ resource "aws_instance" "ec2" {
   # 개수
   count = 1
   # 사용할 AMI ID
-  ami = data.aws_ami.latest_amazon_linux.id
+  ami = "ami-0eb302fcc77c2f8bd"
   # EC2 인스턴스 유형
   instance_type = "t3.micro"
   # 사용할 서브넷 ID
@@ -280,4 +280,43 @@ resource "aws_instance" "ec2" {
   user_data = <<-EOF
 ${local.ec2_user_data_base}
 EOF
+}
+
+# 개발용 버킷
+resource "aws_s3_bucket" "pickgo_dev_bucket" {
+  bucket        = "${var.prefix}-pickgo-dev-bucket"
+  force_destroy = true
+
+  tags = {
+    Name        = "${var.prefix}-pickgo-dev-bucket"
+    Environment = "dev"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "pickgo_dev_block" {
+  bucket = aws_s3_bucket.pickgo_dev_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# 운영용 버킷
+resource "aws_s3_bucket" "pickgo_prod_bucket" {
+  bucket        = "${var.prefix}-pickgo-prod-bucket"
+
+  tags = {
+    Name        = "${var.prefix}-pickgo-prod-bucket"
+    Environment = "prod"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "pickgo_prod_block" {
+  bucket = aws_s3_bucket.pickgo_prod_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }

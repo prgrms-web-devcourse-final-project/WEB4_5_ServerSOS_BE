@@ -1,11 +1,12 @@
 package com.pickgo.member;
 
-import static com.pickgo.domain.member.entity.enums.Authority.*;
-import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
-import static com.pickgo.global.response.RsCode.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.member.dto.MemberCreateRequest;
+import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,19 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.token.TestToken;
+import static com.pickgo.domain.member.entity.enums.Authority.USER;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
+import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class MemberControllerTest {
 
 	@Autowired
@@ -58,6 +62,7 @@ public class MemberControllerTest {
 			.email(testEmail)
 			.password(passwordEncoder.encode(testPassword))
 			.nickname(testNickname)
+			.profile("profile.jpg")
 			.authority(USER)
 			.socialProvider(NONE)
 			.build();
@@ -150,5 +155,27 @@ public class MemberControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()));
+	}
+
+	@Test
+	@DisplayName("프로필 이미지 수정 성공")
+	void updateProfileImage_성공() throws Exception {
+		MockMultipartFile profileImage = new MockMultipartFile(
+				"image",
+				"newProfile.jpg",
+				MediaType.IMAGE_JPEG_VALUE,
+				"fake-image-content".getBytes()
+		);
+
+		mockMvc.perform(multipart("/api/members/me/profile")
+						.file(profileImage)
+						.with(request -> {
+							request.setMethod("PUT");
+							return request;
+						})
+						.header("Authorization", "Bearer " + token.userToken))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
+				.andExpect(jsonPath("$.data").value("https://mock-s3.com/profile/newProfile.jpg"));
 	}
 }

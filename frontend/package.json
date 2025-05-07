@@ -1,0 +1,46 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "format": "yarn biome format --write",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.9",
+    "@radix-ui/react-dialog": "^1.1.11",
+    "@radix-ui/react-dropdown-menu": "^2.1.14",
+    "@radix-ui/react-select": "^2.2.4",
+    "@radix-ui/react-slider": "^1.3.2",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-tabs": "^1.1.9",
+    "@radix-ui/react-toast": "^1.2.11",
+    "@tailwindcss/vite": "^4.1.5",
+    "@tanstack/react-query": "^5.74.11",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.503.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.5.3",
+    "tailwind-merge": "^3.2.0",
+    "tailwindcss": "^4.1.5",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "globals": "^16.0.0",
+    "tw-animate-css": "^1.2.8",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1"
+  },
+  "packageManager": "yarn@4.9.1"
+}
