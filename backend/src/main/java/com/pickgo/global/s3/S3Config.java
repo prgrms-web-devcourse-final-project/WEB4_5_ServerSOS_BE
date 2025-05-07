@@ -15,10 +15,10 @@ import java.util.Optional;
 @Configuration
 @Profile("!test")
 public class S3Config {
-    @Value("${aws.credentials.access_key}")
+    @Value("${aws.credentials.access_key:}")
     private Optional<String> accessKey;
 
-    @Value("${aws.credentials.secret_key}")
+    @Value("${aws.credentials.secret_key:}")
     private Optional<String> secretKey;
 
     @Value("${aws.region}")
