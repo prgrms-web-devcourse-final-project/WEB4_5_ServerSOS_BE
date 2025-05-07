@@ -85,12 +85,13 @@ public class TestDataInit {
                 .build());
 
         // 2. 공연장
-        Venue venue = venueRepository.save(
-                Venue.builder()
-                        .name("테스트 공연장")
-                        .address("서울시 테스트구")
-                        .build()
-        );
+        Venue venue = venueRepository.findByNameAndAddress("테스트 공연장", "서울시 테스트구")
+                .orElseGet(() -> venueRepository.save(
+                        Venue.builder()
+                                .name("테스트 공연장")
+                                .address("서울시 테스트구")
+                                .build()
+                ));
 
         // 3. 공연
         Performance performance = performanceRepository.save(

@@ -217,35 +217,14 @@ public class PerformanceMapper {
             PerformanceArea area = PerformanceArea.builder()
                     .name(config.areaName)
                     .grade(config.areaGrade)
-                    .price(100000) // 필요 시 구역별로 다르게
+                    .price(100000)
                     .performance(performance)
                     .build();
 
-            List<Seat> seats = createSeats(area, config.rowCount, config.seatCountPerRow);
-            area.setSeats(seats);
             performanceAreas.add(area);
         }
 
         return performanceAreas;
-    }
-
-    // 좌석 생성 및 구역과 연결
-    private static List<Seat> createSeats(PerformanceArea area, int numRows, int numCols) {
-        List<Seat> seats = new ArrayList<>();
-
-        for (int r = 0; r < numRows; r++) {
-            char rowChar = (char) ('A' + r);
-            for (int number = 1; number <= numCols; number++) {
-                seats.add(Seat.builder()
-                        .row(String.valueOf(rowChar))
-                        .number(number)
-                        .performanceArea(area)
-                        .status(SeatStatus.AVAILABLE)
-                        .build());
-            }
-        }
-
-        return seats;
     }
 
     // 회차 별 좌석 생성 및 구역과 연결
@@ -253,18 +232,39 @@ public class PerformanceMapper {
         for (PerformanceSession session : sessions) {
             List<Seat> sessionSeats = new ArrayList<>();
             for (PerformanceArea area : areas) {
-                for (Seat seat : area.getSeats()) {
-                    sessionSeats.add(Seat.builder()
-                            .row(seat.getRow())
-                            .number(seat.getNumber())
-                            .performanceSession(session)
-                            .performanceArea(area)
-                            .status(SeatStatus.AVAILABLE)
-                            .build());
-                    seat.setPerformanceSession(session);
+                int numRows = getRowCountByAreaName(area.getName());
+                int numCols = getColCountByAreaName(area.getName());
+
+                for (int r = 0; r < numRows; r++) {
+                    char rowChar = (char) ('A' + r);
+                    for (int n = 1; n <= numCols; n++) {
+                        sessionSeats.add(Seat.builder()
+                                .row(String.valueOf(rowChar))
+                                .number(n)
+                                .performanceSession(session)
+                                .performanceArea(area)
+                                .status(SeatStatus.AVAILABLE)
+                                .build());
+                    }
                 }
             }
             session.setSeats(sessionSeats);
         }
+    }
+
+    private static int getRowCountByAreaName(AreaName name) {
+        return switch (name) {
+            case VIP -> 5;
+            case A, B, C -> 15;
+            case D -> 15;
+        };
+    }
+
+    private static int getColCountByAreaName(AreaName name) {
+        return switch (name) {
+            case VIP -> 20;
+            case A, B, C -> 10;
+            case D -> 30;
+        };
     }
 }
