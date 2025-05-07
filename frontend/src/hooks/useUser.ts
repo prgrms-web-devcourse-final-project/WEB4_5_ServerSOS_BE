@@ -1,30 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { getLoginInfo } from "../lib/storage/loginStorage"
+import {
+  getLoginInfo,
+  setLoginInfo,
+  removeLoginInfo,
+} from "../lib/storage/loginStorage"
+import { apiClient } from "@/api/apiClient"
+import type { LoginRequest } from "@/api/__generated__"
 
-interface User {
-  id: string
-  email: string
-  nickname: string
-  authority: "USER" | "ADMIN" // 권한 타입을 리터럴 타입으로 정의
-  profile: string
-  socialProvider: "NONE" | "GOOGLE" | "KAKAO" // 소셜 로그인 제공자 타입
-  createdAt: string
-  modifiedAt: string
-}
+async function login(loginRequest: LoginRequest) {
+  const response = await apiClient.member.login({ loginRequest })
 
-// API 호출 함수
-async function fetchUserInfo(token: string): Promise<User> {
-  const response = await fetch("/api/member", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch user info")
+  if (response.code !== 200 || !response.data?.accessToken) {
+    throw new Error("Failed to login")
   }
 
-  return response.json()
+  setLoginInfo({
+    token: response.data.accessToken,
+  })
 }
 
 export function useUser() {
@@ -41,8 +33,24 @@ export function useUser() {
         throw new Error("No auth token")
       }
 
-      return fetchUserInfo(loginInfo.token)
+      const response = await apiClient.member.myInfo({
+        headers: {
+          Authorization: `Bearer ${loginInfo.token}`,
+        },
+      })
+
+      if (response.code !== 200) {
+        throw new Error("Failed to fetch user info")
+      }
+
+      return response.data
     },
+    throwOnError(error, query) {
+      removeLoginInfo()
+
+      return false
+    },
+
     // 로그인 정보가 없을 때는 쿼리를 실행하지 않음
     enabled: !!getLoginInfo()?.token,
   })
@@ -54,6 +62,7 @@ export function useUser() {
     isLogin,
     user,
     checkLogin,
+    login,
     isLoading,
   }
 }
