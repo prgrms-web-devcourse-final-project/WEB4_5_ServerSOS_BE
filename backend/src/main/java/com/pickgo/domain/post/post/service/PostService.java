@@ -37,6 +37,19 @@ public class PostService {
         postRepository.save(post);
     }
 
+    @Transactional
+    public void createPostPublished(Performance performance) {
+        Post post = Post.builder()
+                .title("게시글: " + performance.getName())
+                .content("임시 게시글 본문")
+                .isPublished(true)
+                .views(0L)
+                .performance(performance)
+                .build();
+
+        postRepository.save(post);
+    }
+
     @Transactional(readOnly = true)
     public PageResponse<PostSimpleResponse> getPosts(int page, int size, String keyword, PerformanceType type, PostSortType sort) {
         Pageable pageable = PageRequest.of(page - 1, size, sort.getSort());

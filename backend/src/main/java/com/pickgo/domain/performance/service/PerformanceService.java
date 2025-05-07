@@ -89,6 +89,6 @@ public class PerformanceService {
         Performance saved = performanceRepository.save(performance);
 
         // 임시 게시글 생성
-        postService.createPost(saved);
+        postService.createPostPublished(saved);
     }
 }
