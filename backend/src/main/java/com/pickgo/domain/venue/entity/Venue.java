@@ -9,6 +9,12 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
+@Table(
+        name = "venue",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"name", "address"})
+        }
+)
 public class Venue extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
