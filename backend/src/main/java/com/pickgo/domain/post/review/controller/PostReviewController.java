@@ -64,4 +64,26 @@ public class PostReviewController {
         postReviewService.deleteReview(id, reviewId);
         return RsData.from(RsCode.REVIEW_DELETED, null);
     }
+
+    @Operation(summary = "리뷰 좋아요")
+    @PostMapping("/{reviewId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<String> likeReview(
+            @PathVariable("id") Long id,
+            @PathVariable("reviewId") Long reviewId
+    ) {
+        postReviewService.likeReview(id, reviewId);
+        return RsData.from(RsCode.SUCCESS, "리뷰에 좋아요를 추가했습니다.");
+    }
+
+    @Operation(summary = "리뷰 좋아요 취소")
+    @DeleteMapping("/{reviewId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<String> unlikeReview(
+            @PathVariable("id") Long id,
+            @PathVariable("reviewId") Long reviewId
+    ) {
+        postReviewService.cancelLikeReview(id, reviewId);
+        return RsData.from(RsCode.SUCCESS, "리뷰 좋아요를 취소했습니다.");
+    }
 }

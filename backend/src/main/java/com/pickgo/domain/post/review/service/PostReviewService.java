@@ -2,13 +2,15 @@ package com.pickgo.domain.post.review.service;
 
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.post.post.entity.Post;
+import com.pickgo.domain.post.post.repository.PostRepository;
 import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.post.review.entity.Review;
-import com.pickgo.domain.post.post.repository.PostRepository;
 import com.pickgo.domain.post.review.repository.PostReviewRepository;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,10 +63,7 @@ public class PostReviewService {
         Review review = postreviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
-        if (!review.getPost().getId().equals(postId)) {
-            throw new IllegalArgumentException("리뷰가 해당 게시글에 속해있지 않습니다.");
-        }
-
+        isEqualId(review, postId);
         review.setContent(request.getContent());
 
         return PostReviewSimpleResponse.fromEntity(review);
@@ -75,10 +74,32 @@ public class PostReviewService {
         Review review = postreviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
-        if (!review.getPost().getId().equals(postId)) {
-            throw new IllegalArgumentException("리뷰가 해당 게시글에 속하지 않습니다.");
-        }
-
+        isEqualId(review, postId); // 리뷰가 해당 게시글에 속해있는지 확인
         postreviewRepository.delete(review);
     }
+
+    @Transactional
+    public void likeReview(Long postId, Long reviewId) {
+        Review review = postreviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
+
+        isEqualId(review, postId);
+        review.incrementLikeCount();
+    }
+
+    @Transactional
+    public void cancelLikeReview(Long postId, Long reviewId) {
+        Review review = postreviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
+
+        isEqualId(review, postId);
+        review.decrementLikeCount();
+    }
+
+    public void isEqualId(Review review, Long postId) {
+        if (!review.getPost().getId().equals(postId)) {
+            throw new BusinessException(RsCode.REVIEW_NOT_BELONG_TO_POST);
+        }
+    }
+
 }
