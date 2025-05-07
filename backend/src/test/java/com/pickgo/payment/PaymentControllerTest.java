@@ -157,6 +157,7 @@ public class PaymentControllerTest {
         paymentRepository.deleteAll();
         reservationRepository.deleteAll();
         memberRepository.deleteAll();
+        venueRepository.deleteAll();
     }
 
     @Test
