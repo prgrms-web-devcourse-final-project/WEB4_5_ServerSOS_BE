@@ -151,4 +151,36 @@ class PostReviewControllerTest {
                 .andExpect(jsonPath("$.code").value(RsCode.REVIEW_DELETED.getCode()))
                 .andExpect(jsonPath("$.message").value("리뷰가 삭제되었습니다."));
     }
+
+    @Test
+    @DisplayName("리뷰 좋아요")
+    void likeReview() throws Exception {
+        // given
+        Long postId = 1L;
+        Long reviewId = 1L;
+
+        Mockito.doNothing().when(postReviewService).likeReview(postId, reviewId);
+
+        // when & then
+        mockMvc.perform(post("/api/posts/{id}/reviews/{reviewId}/like", postId, reviewId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data").value("리뷰에 좋아요를 추가했습니다."));
+    }
+
+    @Test
+    @DisplayName("리뷰 좋아요 취소")
+    void unlikeReview() throws Exception {
+        // given
+        Long postId = 1L;
+        Long reviewId = 1L;
+
+        Mockito.doNothing().when(postReviewService).cancelLikeReview(postId, reviewId);
+
+        // when & then
+        mockMvc.perform(delete("/api/posts/{id}/reviews/{reviewId}/like", postId, reviewId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data").value("리뷰 좋아요를 취소했습니다."));
+    }
 }
