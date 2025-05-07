@@ -76,7 +76,7 @@ public class PerformanceMapper {
     private static List<PerformanceIntro> toPerformanceIntros(List<String> introDtos) {
         return introDtos.stream()
                 .map(introDto -> PerformanceIntro.builder()
-                        .intro_image(introDto)
+                        .introImage(introDto)
                         .build())
                 .toList();
     }

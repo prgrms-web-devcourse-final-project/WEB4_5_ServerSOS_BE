@@ -1,6 +1,6 @@
-package com.pickgo.domain.post.dto;
+package com.pickgo.domain.post.review.dto;
 
-import com.pickgo.domain.post.entity.Review;
+import com.pickgo.domain.post.review.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

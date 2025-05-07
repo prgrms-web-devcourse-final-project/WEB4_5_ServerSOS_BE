@@ -1,6 +1,6 @@
 package com.pickgo.domain.admin.repository;
 
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

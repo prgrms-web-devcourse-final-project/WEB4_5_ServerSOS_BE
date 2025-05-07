@@ -7,7 +7,7 @@ import com.pickgo.domain.area.area.entity.AreaGrade;
 import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.performance.entity.*;
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
@@ -95,7 +95,6 @@ class AdminPostControllerTest {
     }
 
 
-
     @Test
     @DisplayName("PostDetailResponse 응답 변환 성공 - 모든 필드 정상값")
     void toResponseWithoutNulls() {
@@ -106,7 +105,7 @@ class AdminPostControllerTest {
                 .build();
 
         PerformanceIntro intro1 = PerformanceIntro.builder()
-                .intro_image("소개 이미지 1")
+                .introImage("소개 이미지 1")
                 .build();
 
         PerformanceArea area = PerformanceArea.builder()

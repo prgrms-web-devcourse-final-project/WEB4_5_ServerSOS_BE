@@ -6,7 +6,7 @@ import com.pickgo.domain.kopis.service.KopisService;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.repository.PerformanceRepository;
 import com.pickgo.domain.performance.util.PerformanceMapper;
-import com.pickgo.domain.post.service.PostService;
+import com.pickgo.domain.post.post.service.PostService;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.pickgo.domain.admin.dto;
 
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

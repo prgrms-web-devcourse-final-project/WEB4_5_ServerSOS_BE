@@ -2,7 +2,7 @@ package com.pickgo.domain.admin.service;
 
 import com.pickgo.domain.admin.dto.PostUpdateRequest;
 import com.pickgo.domain.admin.repository.AdminPostRepository;
-import com.pickgo.domain.post.entity.Post;
+import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -67,10 +67,10 @@ public class AdminPostService {
     /*게시글 삭제*/
     @Transactional
     public void deletePost(Long id) {
-    Post post = adminPostRepository.findById(id)
-            .orElseThrow(RsCode.POST_NOT_FOUND::toException);
+        Post post = adminPostRepository.findById(id)
+                .orElseThrow(RsCode.POST_NOT_FOUND::toException);
 
-    adminPostRepository.delete(post);
+        adminPostRepository.delete(post);
     }
 
 
