@@ -233,14 +233,12 @@ class ReservationControllerTest {
                 .andExpect(status().isOk());
 
         // when & then: 예약 목록 조회
+        // 현재 예약 완료된 것이 없어서 목록에 조회안됨 -> 0개
         mvc.perform(get("/api/reservations/me")
                         .header("Authorization", "Bearer " + token.userToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
-                .andExpect(jsonPath("$.data.items.length()").value(1)) // 예약 2건
-                .andExpect(jsonPath("$.data.page").value(1))
-                .andExpect(jsonPath("$.data.size").value(10))
-                .andExpect(jsonPath("$.data.totalElements").value(1));
+                .andExpect(jsonPath("$.data.items.length()").value(0));
     }
 
 //    @Test

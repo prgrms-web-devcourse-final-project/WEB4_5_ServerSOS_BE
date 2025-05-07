@@ -54,7 +54,7 @@ public class ReservationController {
     @GetMapping("/me")
     @Operation(
             summary = "내 예약 목록 조회",
-            description = "로그인한 사용자의 예약 목록을 페이지 단위로 조회합니다."
+            description = "로그인한 사용자의 예약 목록을 페이지 단위로 조회합니다.(PAID,CANCELED 상태만 보여준다)"
     )
     public RsData<PageResponse<ReservationSimpleResponse>> getMyReservationList(
             @Parameter(hidden = true) @AuthenticationPrincipal MemberPrincipal principal,

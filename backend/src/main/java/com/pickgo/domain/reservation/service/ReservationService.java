@@ -128,7 +128,10 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public PageResponse<ReservationSimpleResponse> getMyReservationList(UUID memberId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        Page<Reservation> reservations = reservationRepository.findByMemberId(memberId, pageable);
+
+        // 오직 PAID 또는 CANCELED 상태만 조회
+        Page<Reservation> reservations = reservationRepository
+                .findByMemberIdAndStatusIn(memberId, List.of(ReservationStatus.PAID, ReservationStatus.CANCELED), pageable);
 
         return PageResponse.from(reservations, ReservationSimpleResponse::from);
     }
