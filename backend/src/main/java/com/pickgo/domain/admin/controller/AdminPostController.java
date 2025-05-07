@@ -47,10 +47,6 @@ public class AdminPostController {
     @PutMapping("/{id}")
     public RsData<PostUpdateResponse> updatePost(
             @PathVariable("id") Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "수정할 게시글 정보",
-                    required = true
-            )
             @RequestBody PostUpdateRequest request
     ) {
         Post updatedPost = adminPostService.updatePost(id, request);
