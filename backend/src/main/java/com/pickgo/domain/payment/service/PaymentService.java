@@ -73,8 +73,11 @@ public class PaymentService {
         return PaymentDetailResponse.from(payment);
     }
 
+    /***
+     * 내부적으로 예약 취소에서 사용
+     */
     @Transactional
-    public PaymentDetailResponse cancelPayment(Long id) {
+    public void cancelPayment(Long id) {
         Payment payment = getEntity(id);
 
         // 결제 상태가 COMPLETED가 아니라면 결제가 된것이 아니라 취소 불가.
@@ -107,7 +110,6 @@ public class PaymentService {
             );
 
             payment.cancel();
-            return PaymentDetailResponse.from(payment);
 
         } catch (HttpClientErrorException e) {
             throw new BusinessException(RsCode.PAYMENT_TOSS_CANCEL_FAILED);
@@ -120,6 +122,11 @@ public class PaymentService {
         // 결제 과정에서 생성된 payment를 찾아야하므로 클라이언트에 있는 정보인 orderId로 조회
         Payment payment = paymentRepository.findByOrderId(req.orderId())
                 .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
+
+        // 결제가 만료되었다면 결제 만료 예외
+        if (payment.getStatus() == PaymentStatus.EXPIRED) {
+            throw new BusinessException(RsCode.PAYMENT_EXPIRED);
+        }
 
         // 결제 상태가 PENDING이 아니라면 결제가 된것이 아님. 결제 승인 불가.
         if (payment.getStatus() != PaymentStatus.PENDING) {
