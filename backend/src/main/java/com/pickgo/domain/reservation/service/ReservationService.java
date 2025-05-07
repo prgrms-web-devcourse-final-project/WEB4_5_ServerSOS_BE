@@ -1,10 +1,13 @@
 package com.pickgo.domain.reservation.service;
 
 import com.pickgo.domain.area.seat.entity.Seat;
-import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.repository.SeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.payment.entity.Payment;
+import com.pickgo.domain.payment.entity.PaymentStatus;
+import com.pickgo.domain.payment.repository.PaymentRepository;
+import com.pickgo.domain.payment.service.PaymentService;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
@@ -41,6 +44,8 @@ public class ReservationService {
     private final PerformanceSessionRepository sessionRepository;
     private final SeatRepository seatRepository;
     private final MemberRepository memberRepository;
+    private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
 
     public ReservationSimpleResponse createReservation(
             UUID memberId,
@@ -128,30 +133,50 @@ public class ReservationService {
         return PageResponse.from(reservations, ReservationSimpleResponse::from);
     }
 
+    /***
+     * 예약 삭제는 예약하기(예약 생성) 후 뒤로가기 할 때 발생한다.
+     * 뒤로가기는 의미 없는 예약 생성이기때문에 삭제가 필요
+     */
+    public void deleteReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
+
+        // 1. 상태 체크 (RESERVED 상태인 자리만 취소가능)
+        if (reservation.getStatus() != ReservationStatus.RESERVED) {
+            throw new BusinessException(RsCode.INVALID_RESERVATION_STATE);
+        }
+
+        // 2. 자리를 다시 원복
+        for (PendingSeat pendingSeat : reservation.getPendingSeats()) {
+            pendingSeat.getSeat().setStatus(AVAILABLE);
+        }
+
+        // 3. 예약 삭제
+        reservationRepository.delete(reservation);
+    }
+
+    /***
+     * 예약 내역 조회 후, 예약을 취소할때 사용된다
+     * 내부적으로 결제 취소도 동반한다.
+     */
     public void cancelReservation(Long id) {
+        // 1. 예약과 결제를 조회
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new BusinessException(RESERVATION_NOT_FOUND)
         );
+        Payment payment = paymentRepository.findByReservation(reservation).orElseThrow(
+                () -> new BusinessException(NOT_FOUND)
+        );
 
-        // 0. 스케쥴러가 이미 취소했으면 패스
-        if (reservation.getStatus() == ReservationStatus.CANCELED) {
-            return;
+        // 2. TOSS 결제 취소 + 상태 변경
+        if (payment.getStatus() == PaymentStatus.COMPLETED) {
+            paymentService.cancelPayment(payment.getId());
         }
 
-        // 1. 예약 상태 취소
+        // 3. 예약 상태 변경
         reservation.cancel();
 
-        // 2. Seat 상태 복구
-        for (PendingSeat pendingSeat : reservation.getPendingSeats()) {
-            Seat seat = pendingSeat.getSeat();
-            if (seat.getStatus() == PENDING) {
-                seat.setStatus(SeatStatus.AVAILABLE);
-            }
-        }
-
-        // 3. 대기 Seat 삭제
+        // 4. 예약된 좌석 복구
         reservation.releaseSeats();
-
-        // 실제 reservation은 DB에서 삭제되지는 않음
     }
 }

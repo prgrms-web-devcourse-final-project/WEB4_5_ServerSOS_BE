@@ -65,10 +65,22 @@ public class ReservationController {
         return RsData.from(SUCCESS, response);
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "예약 삭제",
+            description = "예약 ID를 기반으로 예약을 삭제합니다. - 예약 생성 후 뒤로가기 시 발생"
+    )
+    public RsData<?> deleteReservation(
+            @Parameter(description = "예약 ID", example = "1") @PathVariable Long id
+    ) {
+        reservationService.deleteReservation(id);
+        return RsData.from(SUCCESS);
+    }
+
     @PostMapping("/{id}/cancel")
     @Operation(
             summary = "예약 취소",
-            description = "예약 ID를 기반으로 예약을 취소합니다."
+            description = "예약 ID를 기반으로 예약을 취소합니다. - 예약 완료 후 예약 내역에서 취소"
     )
     public RsData<?> cancelReservation(
             @Parameter(description = "예약 ID", example = "1") @PathVariable Long id

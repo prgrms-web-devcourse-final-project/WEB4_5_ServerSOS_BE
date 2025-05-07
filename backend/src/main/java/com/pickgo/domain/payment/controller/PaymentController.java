@@ -63,15 +63,15 @@ public class PaymentController {
         return RsData.from(RsCode.SUCCESS, response);
     }
 
-    @Operation(
-            summary = "결제 취소",
-            description = "결제를 취소합니다. 결제 ID를 통해 paymentKey를 조회 후 토스페이먼츠 API에 결제를 취소 요청을 보냅니다."
-    )
-    @PostMapping("/{id}/cancel")
-    public RsData<PaymentDetailResponse> cancelPayment(@PathVariable Long id) {
-        PaymentDetailResponse response = paymentService.cancelPayment(id);
-        return RsData.from(RsCode.SUCCESS, response);
-    }
+//    @Operation(
+//            summary = "결제 취소",
+//            description = "결제를 취소합니다. 결제 ID를 통해 paymentKey를 조회 후 토스페이먼츠 API에 결제를 취소 요청을 보냅니다."
+//    )
+//    @PostMapping("/{id}/cancel")
+//    public RsData<PaymentDetailResponse> cancelPayment(@PathVariable Long id) {
+//        PaymentDetailResponse response = paymentService.cancelPayment(id);
+//        return RsData.from(RsCode.SUCCESS, response);
+//    }
 
     @Operation(
             summary = "결제 승인",

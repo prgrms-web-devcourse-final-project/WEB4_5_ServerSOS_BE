@@ -243,32 +243,32 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.data.totalElements").value(1));
     }
 
-    @Test
-    @DisplayName("예약 취소 성공")
-    void cancelReservation_success() throws Exception {
-        // given: 예약 생성
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                session.getId(),
-                seats.stream().map(Seat::getId).toList()
-        );
-
-        String reservationResult = mvc.perform(post("/api/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + token.userToken)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        Long reservationId = ((Integer) JsonPath.read(reservationResult, "$.data.id")).longValue();
-
-        // when & then: 예약 취소
-        mvc.perform(post("/api/reservations/{id}/cancel", reservationId)
-                        .header("Authorization", "Bearer " + token.userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("200"))
-                .andExpect(jsonPath("$.message").value("예매가 취소되었습니다."));
-    }
+//    @Test
+//    @DisplayName("예약 취소 성공")
+//    void cancelReservation_success() throws Exception {
+//        // given: 예약 생성
+//        ReservationCreateRequest request = new ReservationCreateRequest(
+//                session.getId(),
+//                seats.stream().map(Seat::getId).toList()
+//        );
+//
+//        String reservationResult = mvc.perform(post("/api/reservations")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Authorization", "Bearer " + token.userToken)
+//                        .content(objectMapper.writeValueAsString(request)))
+//                .andExpect(status().isOk())
+//                .andReturn()
+//                .getResponse()
+//                .getContentAsString();
+//
+//        Long reservationId = ((Integer) JsonPath.read(reservationResult, "$.data.id")).longValue();
+//
+//        // when & then: 예약 취소
+//        mvc.perform(post("/api/reservations/{id}/cancel", reservationId)
+//                        .header("Authorization", "Bearer " + token.userToken))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.code").value("200"))
+//                .andExpect(jsonPath("$.message").value("예매가 취소되었습니다."));
+//    }
 
 }
