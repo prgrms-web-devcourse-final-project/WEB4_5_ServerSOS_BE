@@ -17,12 +17,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/{id}/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Admin API", description = "리뷰 관련 API 엔드포인트")
+@Tag(name = "Review API", description = "게시글 리뷰 관련 API")
 public class PostReviewController {
 
     private final PostReviewService postReviewService;
 
-    @Operation(summary = "게시글 리뷰 목록 조회")
+    @Operation(
+            summary = "게시글 리뷰 목록 조회",
+            description = "특정 게시글 ID에 해당하는 리뷰 목록을 조회합니다."
+    )
     @GetMapping
     public RsData<List<PostReviewSimpleResponse>> getReviews(
             @PathVariable("id") Long id
@@ -31,30 +34,47 @@ public class PostReviewController {
         return RsData.from(RsCode.SUCCESS, reviews);
     }
 
-    @Operation(summary = "게시글 리뷰 작성")
+    @Operation(
+            summary = "게시글 리뷰 작성",
+            description = "게시글에 새로운 리뷰를 작성합니다."
+    )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RsData<PostReviewSimpleResponse> createReview(
             @PathVariable("id") Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "작성할 리뷰 정보",
+                    required = true
+            )
             @RequestBody PostReviewCreateRequest request
     ) {
         PostReviewSimpleResponse response = postReviewService.createReview(id, request);
         return RsData.from(RsCode.REVIEW_CREATED, response);
     }
 
-    @Operation(summary = "게시글 리뷰 수정")
+    @Operation(
+            summary = "게시글 리뷰 수정",
+            description = "특정 게시글의 특정 리뷰를 수정합니다."
+    )
     @PutMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     public RsData<PostReviewSimpleResponse> updateReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "수정할 리뷰 정보",
+                    required = true
+            )
             @RequestBody PostReviewUpdateRequest request
     ) {
         PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request);
         return RsData.from(RsCode.REVIEW_UPDATED, response);
     }
 
-    @Operation(summary = "게시글 리뷰 삭제")
+    @Operation(
+            summary = "게시글 리뷰 삭제",
+            description = "특정 게시글의 특정 리뷰를 삭제합니다."
+    )
     @DeleteMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     public RsData<String> deleteReview(
