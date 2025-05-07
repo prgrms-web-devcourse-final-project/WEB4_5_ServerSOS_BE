@@ -59,4 +59,8 @@ public class Reservation extends BaseEntity {
         }
         this.pendingSeats.clear();
     }
+
+    public void completeSeats() {
+        this.pendingSeats.forEach(ps -> ps.getSeat().setStatus(SeatStatus.RESERVED));
+    }
 }

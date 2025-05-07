@@ -2,7 +2,6 @@ package com.pickgo.domain.payment.service;
 
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.payment.config.TossPaymentConfig;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
 import com.pickgo.domain.payment.dto.PaymentCreateRequest;
 import com.pickgo.domain.payment.dto.PaymentDetailResponse;
@@ -11,6 +10,7 @@ import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
+import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
@@ -18,17 +18,10 @@ import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -38,13 +31,17 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
-    private final TossPaymentConfig tossPaymentConfig;
+    private final TossService tossService;
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
         // 예약 정보를 조회합니다. 만약 없다면 잘못된 결제 생성 이므로 예외를 발생시킵니다.
         Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(() -> new BusinessException(RsCode.NOT_FOUND));
+
+        if (reservation.getStatus() != ReservationStatus.RESERVED) {
+            throw new BusinessException(RsCode.INVALID_RESERVATION_STATE);
+        }
 
         String orderId = UUID.randomUUID().toString(); // 서버에서 UUID 생성
 
@@ -92,28 +89,10 @@ public class PaymentService {
         }
 
         // TossPayments 결제 취소 요청
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", tossPaymentConfig.getAuthorizations());
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        tossService.cancelPayment(paymentKey);
 
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("cancelReason", "결제취소"); // 프론트에서 취소 사유 작성해야하나 임시로 고정
-
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
-            RestTemplate restTemplate = new RestTemplate();
-
-            restTemplate.postForEntity(
-                    TossPaymentConfig.apiUrl + "/" + paymentKey + "/cancel",
-                    entity,
-                    String.class
-            );
-
-            payment.cancel();
-
-        } catch (HttpClientErrorException e) {
-            throw new BusinessException(RsCode.PAYMENT_TOSS_CANCEL_FAILED);
-        }
+        // 상태 변경
+        payment.cancel();
     }
 
     // BusinessException이 발생하면 트랜잭션이 롤백되므로 noRollbackFor 설정. FAILED 상태 저장용
@@ -140,35 +119,27 @@ public class PaymentService {
             throw new BusinessException(RsCode.PAYMENT_INTEGRITY_ERROR);
         }
 
-        // TossPayments 결제 승인 요청
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", tossPaymentConfig.getAuthorizations());
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("paymentKey", req.paymentKey());
-            payload.put("orderId", req.orderId());
-            payload.put("amount", req.amount());
-
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
-            RestTemplate restTemplate = new RestTemplate();
-
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    TossPaymentConfig.apiUrl + "/confirm",
-                    entity,
-                    String.class
-            );
-
-            // 성공 시 상태 변경
-            payment.setStatus(PaymentStatus.COMPLETED);
-            payment.setPaymentKey(req.paymentKey());
-
-        } catch (HttpClientErrorException e) {
+            tossService.confirmPayment(req.paymentKey(), req.orderId(), req.amount());
+        }
+        catch (HttpClientErrorException e) {
             payment.setStatus(PaymentStatus.FAILED);
             paymentRepository.save(payment);
             throw new BusinessException(RsCode.PAYMENT_TOSS_FAILED);
         }
+
+        // confirm 성공 시,
+
+        // 1. 결제 상태 변경
+        payment.setStatus(PaymentStatus.COMPLETED);
+        payment.setPaymentKey(req.paymentKey());
+
+        // 2. 예약 상태 변경
+        Reservation reservation = payment.getReservation();
+        reservation.setStatus(ReservationStatus.PAID);
+
+        // 3. 좌석 상태 변경
+        reservation.completeSeats();
 
         return PaymentDetailResponse.from(payment);
     }
