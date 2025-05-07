@@ -40,6 +40,8 @@ public enum RsCode {
     // RESERVATION
     RESERVATION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 예약 내역입니다."),
     RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다."),
+    RESERVATION_EXPIRED(RsConstant.BAD_REQUEST, "예매 가능 시간이 초과되었습니다. 다시 예약해주세요"),
+    INVALID_RESERVATION_STATE(RsConstant.BAD_REQUEST, "예약 상태가 부적합 합니다."),
 
     // S3
     FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
@@ -51,6 +53,8 @@ public enum RsCode {
     PAYMENT_INTEGRITY_ERROR(RsConstant.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     PAYMENT_TOSS_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 승인 실패"),
     PAYMENT_TOSS_CANCEL_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 취소 실패"),
+    INVALID_PAYMENT_STATE(RsConstant.BAD_REQUEST,"결제 상태가 부적합 합니다."),
+    PAYMENT_EXPIRED(RsConstant.BAD_REQUEST,"결제 가능 시간이 초과되었습니다."),
     ;
 
     private final Integer code;

@@ -139,7 +139,6 @@ public class ReservationService {
         }
 
         // 1. 예약 상태 취소
-        // TODO : 추후에 리펙토링 필요 -> 현재는 예약 도중 취소하면 db에 계속 쌓임
         reservation.cancel();
 
         // 2. Seat 상태 복구
@@ -151,7 +150,7 @@ public class ReservationService {
         }
 
         // 3. 대기 Seat 삭제
-        reservation.clearPendingSeats();
+        reservation.releaseSeats();
 
         // 실제 reservation은 DB에서 삭제되지는 않음
     }
