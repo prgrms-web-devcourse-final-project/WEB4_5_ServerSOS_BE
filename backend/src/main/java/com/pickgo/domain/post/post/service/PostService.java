@@ -14,15 +14,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public void createPost(Performance performance) {
@@ -71,5 +74,21 @@ public class PostService {
         Post post = postRepository.findByIdWithAll(id)
                 .orElseThrow(() -> new BusinessException(RsCode.POST_NOT_FOUND));
         return PostDetailResponse.from(post);
+    }
+
+    public void increaseViewCount(String identifier, Long id) {
+        String viewedKey = "viewed:" + id + ":" + identifier;
+        String viewCountKey = "view_count:" + id;
+
+        // 조회 이력이 있다면 무시
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(viewedKey))) {
+            return;
+        }
+
+        // 조회 기록 저장 (24시간 TTL)
+        redisTemplate.opsForValue().set(viewedKey, "1", Duration.ofHours(24));
+
+        // 조회수 증가
+        redisTemplate.opsForValue().increment(viewCountKey);
     }
 }
