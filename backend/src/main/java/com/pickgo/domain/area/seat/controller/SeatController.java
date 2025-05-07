@@ -21,7 +21,7 @@ public class SeatController {
 
     /**
      * 공연 세션에 해당하는 좌석 상태를 실시간으로 구독
-     * 클라이언트에서 EventSource("/api/seats/subscribe?sessionId=1") 식으로 요청
+     * 클라이언트에서 EventSource("/api/areas/subscribe?sessionId=1") 식으로 요청
      */
 
     @Operation(summary = "좌석 상태 실시간 구독")
