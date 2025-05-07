@@ -61,10 +61,6 @@ public class PostReviewController {
     public RsData<PostReviewSimpleResponse> updateReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "수정할 리뷰 정보",
-                    required = true
-            )
             @RequestBody PostReviewUpdateRequest request
     ) {
         PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request);
