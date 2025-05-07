@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ public class ReservationTimeoutScheduler {
     private final PaymentRepository paymentRepository;
 
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
+    @Transactional
     public void cancelExpiredReservations() {
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
 

@@ -3,6 +3,8 @@ package com.pickgo.domain.payment.scheduler;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
+import com.pickgo.domain.reservation.entity.Reservation;
+import com.pickgo.domain.reservation.enums.ReservationStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +21,7 @@ public class PaymentTimeoutScheduler {
 
     private final PaymentRepository paymentRepository;
 
+
     @Scheduled(fixedRate = 60_000)
     @Transactional
     public void deleteStalePayments() {
@@ -30,6 +33,10 @@ public class PaymentTimeoutScheduler {
 
         for (Payment payment : stalePayments) {
             payment.setStatus(PaymentStatus.EXPIRED);
+
+            Reservation reservation = payment.getReservation();
+            reservation.setStatus(ReservationStatus.EXPIRED);
+            reservation.releaseSeats();
         }
     }
 }
