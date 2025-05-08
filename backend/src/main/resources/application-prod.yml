@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create # 현재 DB가 중요하지 않으므로 나중에 update, validate 처리로 바꾸기
     properties:
       hibernate:
         format_sql: false
