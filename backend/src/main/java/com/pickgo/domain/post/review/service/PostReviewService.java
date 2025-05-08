@@ -13,11 +13,11 @@ import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +28,17 @@ public class PostReviewService {
     private final MemberRepository memberRepository;
 
     // 게시글에 달린 리뷰 목록 조회
-    public List<PostReviewSimpleResponse> getReviewsByPostId(Long postId) {
-        List<Review> reviews = postReviewRepository.findAllByPostId(postId);
+    public List<PostReviewSimpleResponse> getReviewsByPostId(Long postId, Long cursorId, int size) {
+//        List<Review> reviews = postReviewRepository.findAllByPostId(postId);
+//        return reviews.stream()
+//                .map(PostReviewSimpleResponse::fromEntity)
+//                .collect(Collectors.toList());
+        PageRequest pageable = PageRequest.of(0, size);
+        List<Review> reviews = postReviewRepository.findByPostIdAndCursorIdOrderByLikeCount(postId, cursorId, pageable);
+
         return reviews.stream()
                 .map(PostReviewSimpleResponse::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public PostReviewSimpleResponse createReview(Long id, PostReviewCreateRequest request) {

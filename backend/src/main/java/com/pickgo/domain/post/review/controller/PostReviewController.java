@@ -25,9 +25,11 @@ public class PostReviewController {
     @Operation(summary = "게시글 리뷰 목록 조회")
     @GetMapping
     public RsData<List<PostReviewSimpleResponse>> getReviews(
-            @PathVariable("id") Long id
+            @PathVariable Long id,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(id);
+        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(id, cursorId == null ? Long.MAX_VALUE : cursorId, size);
         return RsData.from(RsCode.SUCCESS, reviews);
     }
 
