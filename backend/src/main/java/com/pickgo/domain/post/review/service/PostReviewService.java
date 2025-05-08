@@ -27,13 +27,16 @@ public class PostReviewService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    // 리뷰 작성(생성)
+    /*
+     리뷰 작성(생성)
+    request 리뷰 생성 요청 DTO
+     */
     public PostReviewSimpleResponse createReview(Long postId, PostReviewCreateRequest request) {
-       //Post 조회
+       //게시글 존재 여부 확인
         Post post = getPostById(postId);
-        //Member  조회
+        //회원 존재 여부 확인
         Member member = getMemberById(request.getMemberId());
-        //리뷰 생성
+        //리뷰 엔티티 생성 및 저장
         Review review = Review.builder()
                 .post(post)
                 .member(member)
@@ -41,26 +44,37 @@ public class PostReviewService {
                 .build();
 
         Review savedReview = postReviewRepository.save(review);
-        //응답 반환
+        //응답 DTO로 반환
         return PostReviewSimpleResponse.fromEntity(savedReview);
     }
 
-    // 리뷰 조회
+    /*
+     리뷰 조회
+     리뷰 응답 리스트
+     */
     public List<PostReviewSimpleResponse> getReviewsByPostId(Long postId) {
         return postReviewRepository.findAllByPostId(postId).stream()
                 .map(PostReviewSimpleResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    // 리뷰 수정
+    /*
+     리뷰 수정
+     request 리뷰 수정 요청 DTO
+     수정된 리뷰 응답 DTO 반환
+     */
     @Transactional
     public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, PostReviewUpdateRequest request) {
+        //리뷰 조회 및 게시글 ID 일치 여부 검증
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
+       // 내용 수정
         review.setContent(request.getContent());
         return PostReviewSimpleResponse.fromEntity(review);
     }
 
-    // 리뷰 삭제
+    /*
+     리뷰 삭제
+     */
     @Transactional
     public void deleteReview(Long postId, Long reviewId) {
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
@@ -68,17 +82,24 @@ public class PostReviewService {
     }
 
 
-    // 예외처리 메서드
+    /*
+     예외처리 메서드
+     게시글 ID로 조회 ,예외처리
+     */
     private Post getPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(RsCode.POST_NOT_FOUND));
     }
-
+    /*
+    회원 ID로 조회 + 예외처리
+     */
     private Member getMemberById(UUID memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(RsCode.MEMBER_NOT_FOUND));
     }
-
+    /*
+    리뷰 ID로 조회하고 + 해당하는 리뷰가 해당 게시글에 속해 있는지 검증 및 예외처리
+     */
     private Review getReviewByIdAndValidatePost(Long reviewId, Long postId) {
         Review review = postReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BusinessException(RsCode.REVIEW_NOT_FOUND));
