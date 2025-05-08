@@ -10,7 +10,6 @@ import com.pickgo.domain.post.post.service.PostService;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,19 +68,20 @@ public class PerformanceService {
         }
 
         Venue venue = null;
-        KopisVenueDetailResponse venueDetail = null;
         try {
             // 공연 시설 상세 조회 및 저장
-            venueDetail = kopisService.fetchVenueDetail(performanceDetailResponse.getVenueId());
-            venue = venueRepository.save(
-                    Venue.builder()
-                            .name(venueDetail.name())
-                            .address(venueDetail.address())
-                            .build());
-        } catch (DataIntegrityViolationException e) {
-            venue = venueRepository.findByNameAndAddress(venueDetail.name(), venueDetail.address()).orElseThrow();
+            KopisVenueDetailResponse venueDetail = kopisService.fetchVenueDetail(performanceDetailResponse.getVenueId());
+
+            venue = venueRepository.findByNameAndAddress(venueDetail.name(), venueDetail.address())
+                    .orElseGet(() -> venueRepository.save(
+                            Venue.builder()
+                                    .name(venueDetail.name())
+                                    .address(venueDetail.address())
+                                    .build()
+                    ));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Venue 처리 실패: " + e.getMessage());
+            return;
         }
 
         // 공연 저장
@@ -89,6 +89,6 @@ public class PerformanceService {
         Performance saved = performanceRepository.save(performance);
 
         // 임시 게시글 생성
-        postService.createPost(saved);
+        postService.createPostPublished(saved);
     }
 }

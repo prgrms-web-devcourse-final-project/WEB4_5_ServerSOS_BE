@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/{id}/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Review API", description = "게시글 리뷰 관련 API")
+@Tag(name = "Admin Review API", description = "리뷰 관련 API 엔드포인트")
 public class PostReviewController {
 
     private final PostReviewService postReviewService;

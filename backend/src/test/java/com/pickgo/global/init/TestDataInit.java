@@ -115,6 +115,7 @@ public class TestDataInit {
                 PerformanceSession.builder()
                         .performance(performance)
                         .performanceTime(LocalDateTime.now().plusDays(1))
+                        .reserveOpenAt(LocalDateTime.now().minusDays(10))
                         .build()
         );
 

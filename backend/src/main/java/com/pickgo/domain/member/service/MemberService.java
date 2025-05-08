@@ -1,33 +1,25 @@
 package com.pickgo.domain.member.service;
 
-import static com.pickgo.global.response.RsCode.*;
-
-import java.util.UUID;
-
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.member.dto.*;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.s3.S3Uploader;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.member.dto.LoginRequest;
-import com.pickgo.domain.member.dto.LoginResponse;
-import com.pickgo.domain.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.dto.MemberDetailResponse;
-import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.domain.member.dto.MemberSimpleResponse;
-import com.pickgo.domain.member.dto.MemberUpdateRequest;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.dto.PageResponse;
-import com.pickgo.global.exception.BusinessException;
-
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
+
+import static com.pickgo.global.response.RsCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -142,5 +134,9 @@ public class MemberService {
 	public Member getEntity(String email) {
 		return memberRepository.findByEmail(email)
 			.orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
+	}
+
+	public boolean existsByEmail(String email) {
+		return memberRepository.existsByEmail(email);
 	}
 }
