@@ -30,12 +30,12 @@ public class PerformanceService {
     private final VenueRepository venueRepository;
 
     // 30개의 쓰레드 풀 생성
-    private final ExecutorService executorService = Executors.newFixedThreadPool(30);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
     // kopis api를 통해 받아온 공연 데이터를 저장
     public void fetchAndSavePerformances() {
         // 공연 id 리스트 조회
-        List<String> performanceIds = kopisService.fetchPerformanceIds(1, 30);
+        List<String> performanceIds = kopisService.fetchPerformanceIds(1, 100);
         List<Future<?>> futures = new ArrayList<>();
 
         for (String performanceId : performanceIds) {

@@ -1,8 +1,8 @@
 package com.pickgo.domain.area.area.entity;
 
+import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.global.entity.BaseEntity;
 import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.area.seat.entity.Seat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +31,11 @@ public class PerformanceArea extends BaseEntity {
     @Setter
     private Integer price;
 
+    @Column(nullable = false)
+    private Integer rowCount;
+
+    @Column(nullable = false)
+    private Integer colCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
@@ -39,5 +44,5 @@ public class PerformanceArea extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "performanceArea", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter
-    private List<Seat> seats = new ArrayList<>();
+    private List<ReservedSeat> seats = new ArrayList<>();
 }
