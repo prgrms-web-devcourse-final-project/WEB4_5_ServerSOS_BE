@@ -64,6 +64,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           KAKAO_API_KEY: ${{ secrets.KAKAO_API_KEY }}
+          TOSS_PAYMENT_CLIENT_KEY: ${{ secrets.TOSS_PAYMENT_CLIENT_KEY }}
+          TOSS_PAYMENT_SECRET_KEY: ${{ secrets.TOSS_PAYMENT_SECRET_KEY }}
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2

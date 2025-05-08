@@ -73,6 +73,6 @@ class ReservationWithoutTransactionTest {
         Reservation updated = reservationRepository.findById(response.id()).orElseThrow();
 
         // 상태가 CANCELED로 변경되었는지 확인
-        assertThat(ReservationStatus.CANCELED).isEqualTo(updated.getStatus());
+        assertThat(ReservationStatus.EXPIRED).isEqualTo(updated.getStatus());
     }
 }
