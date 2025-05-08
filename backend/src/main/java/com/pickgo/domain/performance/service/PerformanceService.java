@@ -10,6 +10,7 @@ import com.pickgo.domain.post.post.service.PostService;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,36 +60,42 @@ public class PerformanceService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void fetchAndSaveSinglePerformance(String performanceId) {
-        // 공연 상세 조회
+        // 1. 공연 상세 조회
         KopisPerformanceDetailResponse performanceDetailResponse = kopisService.fetchPerformanceDetail(performanceId);
 
-        // 공연 중복 체크
+        // 2. 공연 중복 체크
         if (performanceRepository.existsByNameAndPoster(performanceDetailResponse.getName(), performanceDetailResponse.getPoster())) {
             return;
         }
 
-        Venue venue = null;
+        Venue venue;
         try {
-            // 공연 시설 상세 조회 및 저장
+            // 3. 공연 시설 상세 조회
             KopisVenueDetailResponse venueDetail = kopisService.fetchVenueDetail(performanceDetailResponse.getVenueId());
 
-            venue = venueRepository.findByNameAndAddress(venueDetail.name(), venueDetail.address())
-                    .orElseGet(() -> venueRepository.save(
-                            Venue.builder()
-                                    .name(venueDetail.name())
-                                    .address(venueDetail.address())
-                                    .build()
-                    ));
+            // 4. save 시도 → 실패 시 다시 조회
+            try {
+                venue = venueRepository.save(
+                        Venue.builder()
+                                .name(venueDetail.name())
+                                .address(venueDetail.address())
+                                .build()
+                );
+            } catch (DataIntegrityViolationException e) {
+                venue = venueRepository.findByNameAndAddress(venueDetail.name(), venueDetail.address())
+                        .orElseThrow(() -> new IllegalStateException("중복 venue 저장 중 오류, 재조회 실패"));
+            }
+
         } catch (Exception e) {
             System.out.println("Venue 처리 실패: " + e.getMessage());
             return;
         }
 
-        // 공연 저장
+        // 5. 공연 저장
         Performance performance = PerformanceMapper.toPerformance(performanceDetailResponse, venue);
         Performance saved = performanceRepository.save(performance);
 
-        // 임시 게시글 생성
+        // 6. 임시 게시글 생성
         postService.createPostPublished(saved);
     }
 }
