@@ -39,8 +39,5 @@ public class RsConstant {
 	 */
 	public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
-	public static Integer PERFORMANCE_NOT_FOUND = HttpStatus.NOT_FOUND.value();
-
-
 	public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }

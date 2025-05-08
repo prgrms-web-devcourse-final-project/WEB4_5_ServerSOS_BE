@@ -155,8 +155,8 @@ class AdminPostControllerTest {
         assertThat(response.getPerformance().getName()).isEqualTo("뮤지컬 헤드윅");
         assertThat(response.getPerformance().getState()).isEqualTo("SCHEDULED");
         assertThat(response.getPerformance().getType()).isEqualTo("MUSICAL");
-        assertThat(response.getPerformance().getRuntime()).isEqualTo(150);
-        assertThat(response.getPerformance().getMinAge()).isEqualTo(12);
+        assertThat(response.getPerformance().getRuntime()).isEqualTo("150");
+        assertThat(response.getPerformance().getMinAge()).isEqualTo("12");
         assertThat(response.getPerformance().getVenue().name()).isEqualTo("서울 공연장");
         assertThat(response.getPerformance().getIntroImages()).hasSize(2);
         assertThat(response.getPerformance().getAreas()).hasSize(1);
