@@ -44,4 +44,8 @@ public class WaitingService {
 	public void clear() {
 		waitingRepository.clear();
 	}
+
+	public boolean isIn(UUID userId) {
+		return waitingRepository.isIn(userId);
+	}
 }

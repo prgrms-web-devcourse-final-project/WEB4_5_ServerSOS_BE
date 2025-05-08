@@ -68,4 +68,10 @@ public class RedisWaitingRepository implements WaitingRepository {
 	public void clear() {
 		redisTemplate.delete(WAITING_LINE_KEY);
 	}
+
+	@Override
+	public boolean isIn(UUID userId) {
+		Double score = redisTemplate.opsForZSet().score(WAITING_LINE_KEY, String.valueOf(userId));
+		return score != null;
+	}
 }

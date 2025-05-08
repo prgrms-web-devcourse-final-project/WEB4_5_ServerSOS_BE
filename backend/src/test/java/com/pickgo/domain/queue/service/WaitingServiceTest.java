@@ -84,5 +84,11 @@ class WaitingServiceTest {
 		waitingService.clear();
 		verify(waitingRepository).clear();
 	}
+
+	@Test
+	void isIn_success() {
+		when(waitingRepository.isIn(userId)).thenReturn(false);
+		assertThat(waitingService.isIn(userId)).isFalse();
+	}
 }
 
