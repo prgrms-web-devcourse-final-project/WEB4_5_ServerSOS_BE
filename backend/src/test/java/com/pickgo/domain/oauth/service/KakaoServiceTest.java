@@ -1,4 +1,4 @@
-package com.pickgo.oauth;
+package com.pickgo.domain.oauth.service;
 
 import com.pickgo.domain.auth.service.TokenService;
 import com.pickgo.domain.member.entity.Member;

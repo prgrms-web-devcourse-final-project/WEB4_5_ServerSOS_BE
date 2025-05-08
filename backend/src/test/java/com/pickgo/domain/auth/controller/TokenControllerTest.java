@@ -1,13 +1,9 @@
-package com.pickgo.token;
+package com.pickgo.domain.auth.controller;
 
-import com.pickgo.domain.log.repository.MemberHistoryRepository;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.entity.enums.Authority;
-import com.pickgo.domain.member.entity.enums.SocialProvider;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.global.logging.service.HistorySaveService;
-import jakarta.servlet.http.Cookie;
+import static com.pickgo.global.response.RsCode.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +15,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.pickgo.global.response.RsCode.CREATED;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.entity.enums.Authority;
+import com.pickgo.domain.member.entity.enums.SocialProvider;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.global.logging.service.HistorySaveService;
+import com.pickgo.global.token.TestToken;
+
+import jakarta.servlet.http.Cookie;
 
 
 @SpringBootTest

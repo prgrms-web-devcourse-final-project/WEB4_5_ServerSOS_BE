@@ -1,15 +1,15 @@
-package com.pickgo.member;
+package com.pickgo.domain.member.service;
 
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.member.dto.*;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.member.service.MemberService;
-import com.pickgo.global.dto.PageResponse;
-import com.pickgo.global.exception.BusinessException;
-import com.pickgo.global.logging.util.LogWriter;
-import com.pickgo.global.s3.S3Uploader;
-import jakarta.servlet.http.HttpServletResponse;
+import static com.pickgo.domain.member.entity.enums.Authority.*;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
+import static com.pickgo.global.response.RsCode.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,17 +23,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.member.dto.LoginRequest;
+import com.pickgo.domain.member.dto.LoginResponse;
+import com.pickgo.domain.member.dto.MemberDetailResponse;
+import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.dto.MemberSimpleResponse;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
+import com.pickgo.global.s3.S3Uploader;
 
-import static com.pickgo.domain.member.entity.enums.Authority.USER;
-import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
-import static com.pickgo.global.response.RsCode.MEMBER_LOGIN_FAILED;
-import static com.pickgo.global.response.RsCode.MEMBER_NOT_FOUND;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import jakarta.servlet.http.HttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {

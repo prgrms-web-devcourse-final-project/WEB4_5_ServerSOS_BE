@@ -1,11 +1,14 @@
-package com.pickgo.admin;
+package com.pickgo.domain.admin.controller;
 
-import com.pickgo.domain.log.repository.MemberHistoryRepository;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.global.logging.service.HistorySaveService;
-import com.pickgo.global.response.RsCode;
-import com.pickgo.token.TestToken;
+import static com.pickgo.domain.member.entity.enums.Authority.*;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,15 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import static com.pickgo.domain.member.entity.enums.Authority.USER;
-import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.logging.service.HistorySaveService;
+import com.pickgo.global.response.RsCode;
+import com.pickgo.global.token.TestToken;
 
 @SpringBootTest
 @AutoConfigureMockMvc
