@@ -28,6 +28,7 @@ public class PostReviewService {
     private final MemberRepository memberRepository;
 
     // 게시글에 달린 리뷰 목록 조회
+    @Transactional(readOnly = true)
     public List<PostReviewSimpleResponse> getReviewsByPostId(
             Long postId,
             Long cursorId,
