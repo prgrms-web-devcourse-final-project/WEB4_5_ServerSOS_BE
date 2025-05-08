@@ -27,9 +27,17 @@ public class PostReviewController {
     public RsData<List<PostReviewSimpleResponse>> getReviews(
             @PathVariable Long id,
             @RequestParam(required = false) Long cursorId,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false) Integer cursorLikeCount,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "latest") String sort
     ) {
-        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(id, cursorId == null ? Long.MAX_VALUE : cursorId, size);
+        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(
+                id,
+                cursorId == null ? Long.MAX_VALUE : cursorId,
+                cursorLikeCount == null ? Integer.MAX_VALUE : cursorLikeCount,
+                size,
+                sort
+        );
         return RsData.from(RsCode.SUCCESS, reviews);
     }
 

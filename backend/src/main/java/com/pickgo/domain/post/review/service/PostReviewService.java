@@ -28,13 +28,21 @@ public class PostReviewService {
     private final MemberRepository memberRepository;
 
     // 게시글에 달린 리뷰 목록 조회
-    public List<PostReviewSimpleResponse> getReviewsByPostId(Long postId, Long cursorId, int size) {
-//        List<Review> reviews = postReviewRepository.findAllByPostId(postId);
-//        return reviews.stream()
-//                .map(PostReviewSimpleResponse::fromEntity)
-//                .collect(Collectors.toList());
+    public List<PostReviewSimpleResponse> getReviewsByPostId(
+            Long postId,
+            Long cursorId,
+            int cursorLikeCount,
+            int size,
+            String sort
+    ) {
         PageRequest pageable = PageRequest.of(0, size);
-        List<Review> reviews = postReviewRepository.findByPostIdAndCursorIdOrderByLikeCount(postId, cursorId, pageable);
+        List<Review> reviews;
+
+        if ("like".equalsIgnoreCase(sort)) {
+            reviews = postReviewRepository.findByPostIdAndCursorLike(postId, cursorLikeCount, cursorId, pageable);
+        } else {
+            reviews = postReviewRepository.findByPostIdAndCursorId(postId, cursorId, pageable);
+        }
 
         return reviews.stream()
                 .map(PostReviewSimpleResponse::fromEntity)
