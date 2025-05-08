@@ -98,8 +98,9 @@ class WaitingControllerTest {
 	@Test
 	@DisplayName("SSE 구독 성공")
 	void subscribeWaitingStatus_success() throws Exception {
+		waitingService.enterWaitingLine(userIds.getFirst());
 		mockMvc.perform(get("/api/queue/stream")
-				.header("Authorization", "Bearer " + token.userToken))
+				.header("Authorization", "Bearer " + accessTokens.getFirst()))
 			.andExpect(status().isOk());
 	}
 
