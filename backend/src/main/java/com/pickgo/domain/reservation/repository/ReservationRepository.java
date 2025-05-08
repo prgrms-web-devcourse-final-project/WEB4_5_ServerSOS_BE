@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Page<Reservation> findByMemberId(UUID memberId, Pageable pageable);
 
     List<Reservation> findByStatusAndCreatedAtBefore(ReservationStatus status, LocalDateTime createdAtBefore);
+
+    Page<Reservation> findByMemberIdAndStatusIn(UUID memberId, Collection<ReservationStatus> statuses,Pageable pageable);
 }
