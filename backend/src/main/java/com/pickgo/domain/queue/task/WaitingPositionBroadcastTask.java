@@ -40,7 +40,7 @@ public class WaitingPositionBroadcastTask {
 		if (emitter != null) {
 			emitter.send(
 				SseEmitter.event()
-					.name("position")
+					.name("wait")
 					.data(WaitingPosition.of(i + 1))
 			);
 		}
