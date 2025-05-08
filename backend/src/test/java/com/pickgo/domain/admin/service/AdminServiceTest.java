@@ -1,4 +1,4 @@
-package com.pickgo.admin;
+package com.pickgo.domain.admin.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
-import com.pickgo.domain.admin.service.AdminService;
 import com.pickgo.domain.member.dto.MemberSimpleResponse;
 import com.pickgo.domain.member.service.MemberService;
 import com.pickgo.global.dto.PageResponse;

@@ -1,4 +1,4 @@
-package com.pickgo.queue.controller;
+package com.pickgo.domain.queue.controller;
 
 import static com.pickgo.domain.member.entity.enums.Authority.*;
 import static com.pickgo.global.response.RsCode.*;
@@ -32,7 +32,7 @@ import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.queue.service.WaitingService;
 import com.pickgo.domain.queue.sse.SseEmitterHandler;
 import com.pickgo.domain.queue.task.EntryPermissionTask;
-import com.pickgo.token.TestToken;
+import com.pickgo.global.token.TestToken;
 
 @SpringBootTest
 @AutoConfigureMockMvc

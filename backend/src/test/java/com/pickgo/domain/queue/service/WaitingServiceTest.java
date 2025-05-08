@@ -1,4 +1,4 @@
-package com.pickgo.queue.service;
+package com.pickgo.domain.queue.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.pickgo.domain.queue.dto.WaitingPosition;
 import com.pickgo.domain.queue.repository.WaitingRepository;
-import com.pickgo.domain.queue.service.WaitingService;
 
 @ExtendWith(MockitoExtension.class)
 class WaitingServiceTest {

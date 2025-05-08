@@ -1,4 +1,4 @@
-package com.pickgo.member;
+package com.pickgo.domain.member.service;
 
 import static com.pickgo.domain.member.entity.enums.Authority.*;
 import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.pickgo.global.s3.S3Uploader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pickgo.domain.auth.service.TokenService;
 import com.pickgo.domain.member.dto.LoginRequest;
@@ -31,12 +31,11 @@ import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.dto.MemberSimpleResponse;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.member.service.MemberService;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.s3.S3Uploader;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {

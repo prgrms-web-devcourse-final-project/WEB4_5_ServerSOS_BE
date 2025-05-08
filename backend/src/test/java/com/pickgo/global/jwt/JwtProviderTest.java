@@ -1,4 +1,4 @@
-package com.pickgo.jwt;
+package com.pickgo.global.jwt;
 
 import static com.pickgo.global.response.RsCode.*;
 import static org.assertj.core.api.Assertions.*;
@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 
-import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.token.TestToken;
+import com.pickgo.global.token.TestToken;
 
 @SpringBootTest
 class JwtProviderTest {

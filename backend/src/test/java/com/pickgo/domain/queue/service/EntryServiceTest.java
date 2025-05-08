@@ -1,4 +1,4 @@
-package com.pickgo.queue.service;
+package com.pickgo.domain.queue.service;
 
 import static com.pickgo.domain.queue.enums.EntryState.*;
 import static org.assertj.core.api.Assertions.*;
@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.pickgo.domain.queue.repository.EntryRepository;
-import com.pickgo.domain.queue.service.EntryService;
 
 @ExtendWith(MockitoExtension.class)
 class EntryServiceTest {
