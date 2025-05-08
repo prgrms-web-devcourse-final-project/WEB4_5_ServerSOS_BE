@@ -27,8 +27,8 @@ public class PerformanceDetailResponse {
     private String state;
     private String type;
     private String casts;
-    private int runtime;
-    private int minAge;
+    private String runtime;
+    private String minAge;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime createdAt;
@@ -47,8 +47,8 @@ public class PerformanceDetailResponse {
                 p.getState().name(),
                 p.getType().name(),
                 p.getCasts(),
-                Integer.parseInt(p.getRuntime()),
-                Integer.parseInt(p.getMinAge()),
+                p.getRuntime(),
+                p.getMinAge(),
                 p.getStartDate().atStartOfDay(),
                 p.getEndDate().atStartOfDay(),
                 p.getCreatedAt(),
@@ -64,14 +64,6 @@ public class PerformanceDetailResponse {
                         .map(PerformanceSessionResponse::from)
                         .collect(Collectors.toList())
         );
-    }
-
-    private static int safeParseInt(String value, int defaultValue) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException | NullPointerException e) {
-            return defaultValue;
-        }
     }
 
     public record VenueResponse(String name, String address) {

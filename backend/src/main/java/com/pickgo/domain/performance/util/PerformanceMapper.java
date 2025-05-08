@@ -94,9 +94,13 @@ public class PerformanceMapper {
             List<LocalTime> times = scheduleMap.get(dayOfWeek);
             if (times != null) {
                 for (LocalTime time : times) {
+                    LocalDateTime performanceTime = LocalDateTime.of(date, time);
+                    LocalDateTime reserveOpenAt = performanceTime.minusDays(30);
+
                     sessions.add(PerformanceSession.builder()
                             .performance(performance)
-                            .performanceTime(LocalDateTime.of(date, time))
+                            .performanceTime(performanceTime)
+                            .reserveOpenAt(reserveOpenAt)
                             .build());
                 }
             }

@@ -15,11 +15,17 @@ import java.util.Optional;
 public interface AdminPostRepository extends JpaRepository<Post, Long> {
 
 
-    @Query("SELECT p FROM Post p JOIN FETCH p.performance perf JOIN FETCH perf.venue")
-    Page<Post> findAllWithPerformanceAndVenue(Pageable pageable);
+    @EntityGraph(attributePaths = {
+            "performance",
+            "performance.venue"
+    })
+    Page<Post> findAllBy(Pageable pageable);
 
-    @Query("SELECT p FROM Post p JOIN FETCH p.performance perf JOIN FETCH perf.venue WHERE p.isPublished = :isPublished")
-    Page<Post> findAllWithPerformanceAndVenueByIsPublished(@Param("isPublished") Boolean isPublished, Pageable pageable);
+    @EntityGraph(attributePaths = {
+            "performance",
+            "performance.venue"
+    })
+    Page<Post> findAllByIsPublished(Boolean isPublished, Pageable pageable);
 
     @EntityGraph(attributePaths = {
             "performance",
@@ -28,5 +34,7 @@ public interface AdminPostRepository extends JpaRepository<Post, Long> {
             "performance.performanceIntros",
             "performance.venue"
     })
-    Optional<Post> findById(Long id);
+    @Query("SELECT p FROM Post p WHERE p.id = :id")
+    Optional<Post> findById(@Param("id") Long id);
+
 }
