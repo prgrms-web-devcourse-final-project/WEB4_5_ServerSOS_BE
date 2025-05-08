@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/posts")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Admin API", description = "Admin API 엔드포인트")
+@Tag(name = "Admin Post API", description = "Admin API 엔드포인트")
 public class AdminPostController {
 
     private final AdminPostService adminPostService;

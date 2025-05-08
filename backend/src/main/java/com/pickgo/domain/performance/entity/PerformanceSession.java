@@ -22,6 +22,9 @@ public class PerformanceSession extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime performanceTime;
 
+    @Column(nullable = false)
+    private LocalDateTime reserveOpenAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
     private Performance performance;
