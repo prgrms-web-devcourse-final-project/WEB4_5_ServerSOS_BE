@@ -27,6 +27,7 @@ public enum RsCode {
 	REVIEW_CREATED(RsConstant.REVIEW_CREATED, "리뷰가 등록되었습니다."),
 	REVIEW_DELETED(RsConstant.REVIEW_DELETED, "리뷰가 삭제되었습니다."),
 	REVIEW_UPDATED(RsConstant.REVIEW_UPDATED, "리뷰가 수정되었습니다."),
+	REVIEW_NOT_FOUND(RsConstant.REVIEW_NOT_FOUND, "리뷰를 찾을수 없습니다."),
 
 	// Member
 	MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
