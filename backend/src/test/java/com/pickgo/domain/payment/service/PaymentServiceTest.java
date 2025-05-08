@@ -1,4 +1,27 @@
-package com.pickgo.payment;
+package com.pickgo.domain.payment.service;
+
+import static com.pickgo.domain.member.entity.enums.Authority.*;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -8,7 +31,6 @@ import com.pickgo.domain.payment.dto.PaymentSimpleResponse;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
-import com.pickgo.domain.payment.service.PaymentService;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.performance.entity.PerformanceState;
@@ -23,30 +45,6 @@ import com.pickgo.domain.venue.repository.VenueRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.pickgo.domain.member.entity.enums.Authority.USER;
-import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {

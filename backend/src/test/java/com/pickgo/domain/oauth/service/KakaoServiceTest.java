@@ -1,4 +1,4 @@
-package com.pickgo.oauth;
+package com.pickgo.domain.oauth.service;
 
 import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
 import static com.pickgo.global.response.RsCode.*;

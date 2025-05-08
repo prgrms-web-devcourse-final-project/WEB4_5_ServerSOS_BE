@@ -1,11 +1,12 @@
-package com.pickgo.post;
+package com.pickgo.domain.post.review.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
-import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
-import com.pickgo.domain.post.review.service.PostReviewService;
-import com.pickgo.global.response.RsCode;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,14 +17,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
+import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.review.service.PostReviewService;
+import com.pickgo.global.response.RsCode;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)

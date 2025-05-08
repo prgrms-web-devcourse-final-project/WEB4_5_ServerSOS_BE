@@ -1,4 +1,4 @@
-package com.pickgo.token;
+package com.pickgo.domain.auth.service;
 
 import static com.pickgo.global.response.RsCode.*;
 import static org.assertj.core.api.Assertions.*;
@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.pickgo.domain.auth.dto.TokenDetailResponse;
-import com.pickgo.domain.auth.service.TokenService;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
