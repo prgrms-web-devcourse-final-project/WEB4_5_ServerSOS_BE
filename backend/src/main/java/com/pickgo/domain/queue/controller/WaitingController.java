@@ -48,7 +48,7 @@ public class WaitingController {
 		return sseEmitterHandler.subscribe(principal.id());
 	}
 
-	@Operation(summary = "리소스 접근(추후 예약 컨트롤러 메서드로 대체)")
+	@Operation(summary = "리소스 접근(추후 좌석 조회 API로 대체)")
 	@PostMapping("/access")
 	public RsData<?> access(
 		@AuthenticationPrincipal MemberPrincipal principal,
