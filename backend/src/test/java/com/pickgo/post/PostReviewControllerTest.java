@@ -39,20 +39,23 @@ class PostReviewControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("게시글 리뷰 목록 조회")
-    void getReviews() throws Exception {
+    @DisplayName("커서 기반 페이징으로 리뷰 목록 조회")
+    void getReviewsWithCursor() throws Exception {
         // given
         Long postId = 1L;
+        Long cursorId = 100L;
+        int size = 10;
+
         List<PostReviewSimpleResponse> mockReviews = List.of(
                 PostReviewSimpleResponse.builder()
-                        .reviewId(1L)
+                        .reviewId(99L)
                         .userId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
                         .profile("profile1.jpg")
                         .nickname("작성자1")
                         .content("좋아요")
                         .build(),
                 PostReviewSimpleResponse.builder()
-                        .reviewId(2L)
+                        .reviewId(98L)
                         .userId(UUID.fromString("22222222-2222-2222-2222-222222222222"))
                         .profile("profile2.jpg")
                         .nickname("작성자2")
@@ -60,14 +63,18 @@ class PostReviewControllerTest {
                         .build()
         );
 
-        Mockito.when(postReviewService.getReviewsByPostId(postId))
+        Mockito.when(postReviewService.getReviewsByPostId(eq(postId), eq(cursorId), eq(size)))
                 .thenReturn(mockReviews);
 
         // when & then
-        mockMvc.perform(get("/api/posts/{id}/reviews", postId))
+        mockMvc.perform(get("/api/posts/{id}/reviews", postId)
+                        .param("cursorId", cursorId.toString())
+                        .param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data[0].reviewId").value(99))
                 .andExpect(jsonPath("$.data[0].content").value("좋아요"))
+                .andExpect(jsonPath("$.data[1].reviewId").value(98))
                 .andExpect(jsonPath("$.data[1].content").value("별로에요"));
     }
 
