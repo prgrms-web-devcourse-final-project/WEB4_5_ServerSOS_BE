@@ -3,6 +3,7 @@ package com.pickgo.domain.reservation.service;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.pickgo.domain.area.seat.entity.SeatStatus.PENDING;
 import static com.pickgo.global.response.RsCode.*;
 
 @Service
@@ -71,11 +71,20 @@ public class ReservationService {
             PerformanceArea area = areaRepository.findById(dto.areaId())
                     .orElseThrow(() -> new BusinessException(NOT_FOUND));
 
+            // 입력값 검증
+            if (dto.row() < 1 || dto.row() > area.getRowCount()) {
+                throw new BusinessException(INVALID_SEAT_POSITION);
+            }
+
+            if (dto.column() < 1 || dto.column() > area.getColCount()) {
+                throw new BusinessException(INVALID_SEAT_POSITION);
+            }
+
             ReservedSeat reservedSeat = ReservedSeat.builder()
                     .performanceArea(area)
                     .row(String.valueOf('A' + dto.row() - 1))
                     .number(dto.column())
-                    .status(PENDING)
+                    .status(SeatStatus.PENDING)
                     .build();
 
             reservedSeats.add(reservedSeat);
