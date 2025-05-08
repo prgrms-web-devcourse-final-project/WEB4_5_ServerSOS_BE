@@ -5,10 +5,10 @@ public enum EntryState {
 
 	public static EntryState from(String value) {
 		for (EntryState state : values()) {
-			if (state.name().equalsIgnoreCase(value)) {
+			if (state.name().equals(value)) {
 				return state;
 			}
 		}
-		throw new IllegalArgumentException("EntryState 파싱 오류: " + value);
+		return null;
 	}
 }
