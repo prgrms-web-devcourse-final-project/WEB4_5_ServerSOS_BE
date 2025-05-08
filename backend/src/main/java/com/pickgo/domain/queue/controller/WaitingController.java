@@ -18,6 +18,7 @@ import com.pickgo.domain.queue.dto.WaitingPosition;
 import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.queue.service.WaitingService;
 import com.pickgo.domain.queue.sse.SseEmitterHandler;
+import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.jwt.JwtProvider;
 import com.pickgo.global.response.RsData;
 
@@ -45,6 +46,9 @@ public class WaitingController {
 	@Operation(summary = "대기열 상태 구독")
 	@GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribeWaitingStatus(@AuthenticationPrincipal MemberPrincipal principal) {
+		if (!waitingService.isIn(principal.id())) {
+			throw new BusinessException(BAD_REQUEST);
+		}
 		return sseEmitterHandler.subscribe(principal.id());
 	}
 

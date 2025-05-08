@@ -22,4 +22,6 @@ public interface WaitingRepository {
 	List<UUID> getLine();
 
 	void clear();
+
+	boolean isIn(UUID userId);
 }
