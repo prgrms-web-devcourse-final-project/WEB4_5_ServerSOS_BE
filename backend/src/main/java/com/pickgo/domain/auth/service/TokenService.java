@@ -30,6 +30,9 @@ public class TokenService {
 	@Value("${custom.jwt.refresh_token.expiration_minutes}")
 	private long refreshTokenExpirationMinutes;
 
+	@Value("${custom.jwt.entry_token.expiration_minutes}")
+	private long entryTokenExpirationMinutes;
+
 	@Value("${custom.http.secure}")
 	private boolean secure;
 
@@ -57,6 +60,10 @@ public class TokenService {
 
 	public String genRefreshToken(Member member) {
 		return jwtProvider.generateToken(member, Duration.ofMinutes(refreshTokenExpirationMinutes));
+	}
+
+	public String genEntryToken(Member member) {
+		return jwtProvider.generateToken(member, Duration.ofMinutes(entryTokenExpirationMinutes));
 	}
 
 	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
