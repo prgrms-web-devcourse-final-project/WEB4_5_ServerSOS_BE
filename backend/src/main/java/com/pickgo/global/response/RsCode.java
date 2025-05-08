@@ -18,7 +18,7 @@ public enum RsCode {
     UNAUTHENTICATED(RsConstant.UNAUTHORIZED, "인증이 실패했습니다."),
     UNAUTHORIZED(RsConstant.FORBIDDEN, "접근 권한이 없습니다."),
     //Performance
-    PERFORMANCE_NOT_FOUND(RsConstant.PERFORMANCE_NOT_FOUND, "공연 정보가 없습니다."),
+    PERFORMANCE_NOT_FOUND(RsConstant.NOT_FOUND, "공연 정보가 없습니다."),
 
     //Post
     POST_NOT_FOUND(RsConstant.NOT_FOUND, "게시글을 찾을 수 없습니다."),

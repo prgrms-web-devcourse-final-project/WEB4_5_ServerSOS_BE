@@ -38,17 +38,6 @@ public class RsConstant {
 	 * 서버가 내부 에러 시 사용합니다.
 	 */
 	public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
-	public static Integer PERFORMANCE_NOT_FOUND;
-
-	/*게시물 관련*/
-	public static  Integer POST_NOT_FOUND = HttpStatus.NOT_FOUND.value();
-
-	/*리뷰 관련*/
-	public static Integer REVIEW_CREATED = HttpStatus.CREATED.value();
-	public static Integer REVIEW_DELETED = HttpStatus.OK.value();
-	public static Integer REVIEW_UPDATED = HttpStatus.OK.value();
-	public static Integer PERFORMANCE_NOT_FOUND = HttpStatus.NOT_FOUND.value();
-
 
 	public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }
