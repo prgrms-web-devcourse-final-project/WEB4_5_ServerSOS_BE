@@ -7,6 +7,11 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_PORT}:3306"
     command: --general-log=1 --general-log-file=/etc/mysql/conf.d/general.log

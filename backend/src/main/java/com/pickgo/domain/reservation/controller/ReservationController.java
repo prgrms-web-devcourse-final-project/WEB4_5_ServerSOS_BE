@@ -54,7 +54,7 @@ public class ReservationController {
     @GetMapping("/me")
     @Operation(
             summary = "내 예약 목록 조회",
-            description = "로그인한 사용자의 예약 목록을 페이지 단위로 조회합니다."
+            description = "로그인한 사용자의 예약 목록을 페이지 단위로 조회합니다.(PAID,CANCELED 상태만 보여준다)"
     )
     public RsData<PageResponse<ReservationSimpleResponse>> getMyReservationList(
             @Parameter(hidden = true) @AuthenticationPrincipal MemberPrincipal principal,
@@ -65,10 +65,22 @@ public class ReservationController {
         return RsData.from(SUCCESS, response);
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "예약 삭제",
+            description = "예약 ID를 기반으로 예약을 삭제합니다. - 예약 생성 후 뒤로가기 시 발생"
+    )
+    public RsData<?> deleteReservation(
+            @Parameter(description = "예약 ID", example = "1") @PathVariable Long id
+    ) {
+        reservationService.deleteReservation(id);
+        return RsData.from(SUCCESS);
+    }
+
     @PostMapping("/{id}/cancel")
     @Operation(
             summary = "예약 취소",
-            description = "예약 ID를 기반으로 예약을 취소합니다."
+            description = "예약 ID를 기반으로 예약을 취소합니다. - 예약 완료 후 예약 내역에서 취소"
     )
     public RsData<?> cancelReservation(
             @Parameter(description = "예약 ID", example = "1") @PathVariable Long id
