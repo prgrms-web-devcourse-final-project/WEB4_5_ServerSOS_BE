@@ -41,14 +41,6 @@ public class RsConstant {
 
 	public static Integer PERFORMANCE_NOT_FOUND = HttpStatus.NOT_FOUND.value();
 
-	/*게시물 관련*/
-	public static Integer POST_NOT_FOUND = HttpStatus.NOT_FOUND.value();
-
-	/*리뷰 관련*/
-	public static Integer REVIEW_CREATED = HttpStatus.CREATED.value();
-	public static Integer REVIEW_DELETED = HttpStatus.OK.value() ;
-	public static Integer REVIEW_UPDATED = HttpStatus.OK.value();
-	public static Integer REVIEW_NOT_FOUND = HttpStatus.NOT_FOUND.value();
 
 	public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }
