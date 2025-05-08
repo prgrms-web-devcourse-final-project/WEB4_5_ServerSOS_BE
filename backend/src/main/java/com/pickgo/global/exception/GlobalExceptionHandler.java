@@ -1,15 +1,18 @@
 package com.pickgo.global.exception;
 
-import com.pickgo.global.response.RsData;
-import jakarta.persistence.OptimisticLockException;
-import lombok.extern.slf4j.Slf4j;
+import static com.pickgo.global.response.RsCode.*;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
-import static com.pickgo.global.response.RsCode.*;
+import com.pickgo.global.response.RsData;
+
+import jakarta.persistence.OptimisticLockException;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
@@ -24,6 +27,11 @@ public class GlobalExceptionHandler {
             final BusinessException exception
     ) {
         return RsData.from(exception.getRsCode());
+    }
+
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    public void handleAsyncTimeout(AsyncRequestTimeoutException exception) {
+        logWarn(exception);
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
