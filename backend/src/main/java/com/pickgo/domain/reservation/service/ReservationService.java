@@ -82,7 +82,7 @@ public class ReservationService {
 
             ReservedSeat reservedSeat = ReservedSeat.builder()
                     .performanceArea(area)
-                    .row(String.valueOf('A' + dto.row() - 1))
+                    .row(String.valueOf((char) ('A' + dto.row() - 1)))
                     .number(dto.column())
                     .status(SeatStatus.PENDING)
                     .build();
@@ -106,12 +106,13 @@ public class ReservationService {
                     .build();
 
             // 4. 연관관계 세팅
-            reservedSeats.forEach(seat -> seat.setReservation(reservation));
+            member.addReservation(reservation);
             reservation.updateReservedSeats(reservedSeats);
+            reservedSeats.forEach(seat -> seat.setReservation(reservation));
 
-            // 5. 예약 저장
-            seatRepository.saveAll(reservedSeats);
+            // 5. 좌석 및 예약 저장
             reservationRepository.save(reservation);
+            seatRepository.saveAll(reservedSeats);
 
             return ReservationSimpleResponse.from(reservation);
         } catch (DataIntegrityViolationException e) {
