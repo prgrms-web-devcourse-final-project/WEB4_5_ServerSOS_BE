@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostReviewService {
 
-    private final PostReviewRepository postreviewRepository;
+    private final PostReviewRepository postReviewRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
     // 게시글에 달린 리뷰 목록 조회
     public List<PostReviewSimpleResponse> getReviewsByPostId(Long postId) {
-        List<Review> reviews = postreviewRepository.findAllByPostId(postId);
+        List<Review> reviews = postReviewRepository.findAllByPostId(postId);
         return reviews.stream()
                 .map(PostReviewSimpleResponse::fromEntity)
                 .collect(Collectors.toList());
@@ -52,7 +52,7 @@ public class PostReviewService {
                 .content(request.getContent())
                 .build();
 
-        Review savedReview = postreviewRepository.save(review);
+        Review savedReview = postReviewRepository.save(review);
 
         // 4. 응답 반환
         return PostReviewSimpleResponse.fromEntity(savedReview);
@@ -60,7 +60,7 @@ public class PostReviewService {
 
     @Transactional
     public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, PostReviewUpdateRequest request) {
-        Review review = postreviewRepository.findById(reviewId)
+        Review review = postReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
         isEqualId(review, postId);
@@ -71,16 +71,16 @@ public class PostReviewService {
 
     @Transactional
     public void deleteReview(Long postId, Long reviewId) {
-        Review review = postreviewRepository.findById(reviewId)
+        Review review = postReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
         isEqualId(review, postId); // 리뷰가 해당 게시글에 속해있는지 확인
-        postreviewRepository.delete(review);
+        postReviewRepository.delete(review);
     }
 
     @Transactional
     public void likeReview(Long postId, Long reviewId) {
-        Review review = postreviewRepository.findById(reviewId)
+        Review review = postReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
         isEqualId(review, postId);
@@ -89,7 +89,7 @@ public class PostReviewService {
 
     @Transactional
     public void cancelLikeReview(Long postId, Long reviewId) {
-        Review review = postreviewRepository.findById(reviewId)
+        Review review = postReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
         isEqualId(review, postId);
