@@ -3,11 +3,16 @@ package com.pickgo.domain.log.entity;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.log.enums.HttpMethod;
-import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
-public class BusinessLog extends BaseEntity {
+@Getter
+@MappedSuperclass
+public abstract class BaseLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +47,9 @@ public class BusinessLog extends BaseEntity {
 
     @Column(length = 1000)
     private String description; // 설명
+
+    @CreatedDate
+    @Column(name = "created_at", columnDefinition = "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'")
+    private LocalDateTime createdAt;
+
 }
