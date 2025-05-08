@@ -61,7 +61,6 @@ public class KopisService {
 
     // 공연 시설 상세
     public KopisVenueDetailResponse fetchVenueDetail(String venueId) {
-        System.out.println(venueId);
         String xml = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/prfplc/" + venueId.trim())
