@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "format": "yarn biome format --write",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "codegen": "openapi-generator-cli generate -i src/api/oasDoc.json -g typescript-fetch -o src/api/__generated__"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.9",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@openapitools/openapi-generator-cli": "^2.20.0",
     "@types/node": "^22.15.3",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
