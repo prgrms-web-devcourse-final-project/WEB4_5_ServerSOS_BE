@@ -149,6 +149,7 @@ public class PaymentControllerTest {
         performanceSession = performanceSessionRepository.save(PerformanceSession.builder()
                 .performance(performance)
                 .performanceTime(LocalDateTime.now().plusDays(1))
+                .reserveOpenAt(LocalDateTime.now().minusDays(14))
                 .build()
         );
 
