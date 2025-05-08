@@ -39,43 +39,96 @@ class PostReviewControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("커서 기반 페이징으로 리뷰 목록 조회")
-    void getReviewsWithCursor() throws Exception {
+    @DisplayName("커서 기반 페이징으로 리뷰 목록 조회 - 최신순 정렬(id 내림차순)")
+    void getReviewsWithCursorSortedById() throws Exception {
         // given
         Long postId = 1L;
-        Long cursorId = 100L;
+        Long cursorId = 98L;
         int size = 10;
+        String sort = "latest";
 
         List<PostReviewSimpleResponse> mockReviews = List.of(
                 PostReviewSimpleResponse.builder()
-                        .reviewId(99L)
-                        .userId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                        .reviewId(97L)
+                        .userId(UUID.randomUUID())
                         .profile("profile1.jpg")
                         .nickname("작성자1")
                         .content("좋아요")
                         .build(),
                 PostReviewSimpleResponse.builder()
-                        .reviewId(98L)
-                        .userId(UUID.fromString("22222222-2222-2222-2222-222222222222"))
+                        .reviewId(96L)
+                        .userId(UUID.randomUUID())
                         .profile("profile2.jpg")
                         .nickname("작성자2")
                         .content("별로에요")
                         .build()
         );
 
-        Mockito.when(postReviewService.getReviewsByPostId(eq(postId), eq(cursorId), eq(size)))
+        Mockito.when(postReviewService.getReviewsByPostId(eq(postId), eq(cursorId), eq(Integer.MAX_VALUE), eq(size), eq(sort)))
                 .thenReturn(mockReviews);
 
         // when & then
         mockMvc.perform(get("/api/posts/{id}/reviews", postId)
                         .param("cursorId", cursorId.toString())
-                        .param("size", String.valueOf(size)))
+                        .param("size", String.valueOf(size))
+                        .param("sort", sort))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data[0].reviewId").value(99))
-                .andExpect(jsonPath("$.data[0].content").value("좋아요"))
-                .andExpect(jsonPath("$.data[1].reviewId").value(98))
-                .andExpect(jsonPath("$.data[1].content").value("별로에요"));
+                .andExpect(jsonPath("$.data[0].reviewId").value(97))
+                .andExpect(jsonPath("$.data[1].reviewId").value(96));
+    }
+
+    @Test
+    @DisplayName("커서 기반 페이징으로 리뷰 목록 조회 - 좋아요순 정렬(likeCount 내림차순 + id 내림차순)")
+    void getReviewsWithCursorSortedByLikeCountDesc() throws Exception {
+        // given
+        Long postId = 1L;
+        Long cursorId = 99L;
+        int cursorLikeCount = 15;
+        int size = 10;
+        String sort = "like";
+
+        List<PostReviewSimpleResponse> mockReviews = List.of(
+                PostReviewSimpleResponse.builder()
+                        .reviewId(96L)
+                        .userId(UUID.randomUUID())
+                        .profile("profile1.jpg")
+                        .nickname("작성자1")
+                        .content("좋아요")
+                        .likeCount(24)
+                        .build(),
+                PostReviewSimpleResponse.builder()
+                        .reviewId(98L)
+                        .userId(UUID.randomUUID())
+                        .profile("profile3.jpg")
+                        .nickname("작성자3")
+                        .content("별로에요22")
+                        .likeCount(13)
+                        .build(),
+                PostReviewSimpleResponse.builder()
+                        .reviewId(97L)
+                        .userId(UUID.randomUUID())
+                        .profile("profile2.jpg")
+                        .nickname("작성자2")
+                        .content("별로에요")
+                        .likeCount(13)
+                        .build()
+        );
+
+        Mockito.when(postReviewService.getReviewsByPostId(eq(postId), eq(cursorId), eq(cursorLikeCount), eq(size), eq(sort)))
+                .thenReturn(mockReviews);
+
+        // when & then
+        mockMvc.perform(get("/api/posts/{id}/reviews", postId)
+                        .param("cursorId", cursorId.toString())
+                        .param("cursorLikeCount", String.valueOf(cursorLikeCount))
+                        .param("size", String.valueOf(size))
+                        .param("sort", sort))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data[0].likeCount").value(24))
+                .andExpect(jsonPath("$.data[1].likeCount").value(13))
+                .andExpect(jsonPath("$.data[1].reviewId").value(98));
     }
 
     @Test
