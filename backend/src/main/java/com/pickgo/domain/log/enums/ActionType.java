@@ -10,6 +10,7 @@ public enum ActionType {
     MEMBER_LOGIN_KAKAO("카카오 로그인"),
     MEMBER_LOGOUT("회원 로그아웃"),
     MEMBER_SIGNUP("회원 가입"),
+    MEMBER_PROFILE("내 정보 조회"),
 
     // Reservation
     RESERVATION_CREATED("예약 생성"),

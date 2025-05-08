@@ -9,7 +9,6 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @MappedSuperclass
 public abstract class BaseLog {
