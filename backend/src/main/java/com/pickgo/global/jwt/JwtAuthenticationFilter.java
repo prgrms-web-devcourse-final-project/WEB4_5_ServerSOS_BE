@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || request.getRequestURI().startsWith("/api/oauth")
                 || request.getRequestURI().startsWith("/swagger-ui")
                 || request.getRequestURI().startsWith("/v3/api-docs")
-                || request.getRequestURI().startsWith("/api/posts")
+                || (request.getRequestURI().startsWith("/api/posts") && "GET".equals(request.getMethod()))
         ) {
             filterChain.doFilter(request, response);
             return;
