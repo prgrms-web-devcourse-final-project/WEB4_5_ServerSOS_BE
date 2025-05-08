@@ -18,15 +18,16 @@ public enum RsCode {
     UNAUTHENTICATED(RsConstant.UNAUTHORIZED, "인증이 실패했습니다."),
     UNAUTHORIZED(RsConstant.FORBIDDEN, "접근 권한이 없습니다."),
     //Performance
-    PERFORMANCE_NOT_FOUND(RsConstant.PERFORMANCE_NOT_FOUND, "공연 정보가 없습니다."),
+    PERFORMANCE_NOT_FOUND(RsConstant.NOT_FOUND, "공연 정보가 없습니다."),
 
     //Post
-    POST_NOT_FOUND(RsConstant.POST_NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    POST_NOT_FOUND(RsConstant.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 
-    //Review
-    REVIEW_CREATED(RsConstant.REVIEW_CREATED, "리뷰가 등록되었습니다."),
-    REVIEW_DELETED(RsConstant.REVIEW_DELETED, "리뷰가 삭제되었습니다."),
-    REVIEW_UPDATED(RsConstant.REVIEW_UPDATED, "리뷰가 수정되었습니다."),
+	//Review
+	REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
+	REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
+	REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
+	REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
 
     // Member
     MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),

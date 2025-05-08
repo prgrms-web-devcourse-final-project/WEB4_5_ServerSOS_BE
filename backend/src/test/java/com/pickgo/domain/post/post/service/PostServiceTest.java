@@ -20,19 +20,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PostServiceTest {
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Mock
+    private ValueOperations<String, String> valueOperations;
 
     @InjectMocks
     private PostService postService;
@@ -130,5 +138,52 @@ public class PostServiceTest {
         assertThat(result.performance().name()).isEqualTo(post.getPerformance().getName());
         assertThat(result.performance().poster()).isEqualTo(post.getPerformance().getPoster());
         assertThat(result.performance().type()).isEqualTo(post.getPerformance().getType().getValue());
+    }
+
+    @Test
+    @DisplayName("조회수 증가 테스트")
+    void increaseViewCount_onlyOncePerIdentifier() {
+        // given
+        Long postId = 1L;
+        String identifier = "MEMBER_1";
+
+        String viewedKey = "viewed:" + postId + ":" + identifier;
+        String viewCountKey = "view_count:" + postId;
+
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(redisTemplate.hasKey(viewedKey)).thenReturn(false); // 조회 이력이 없을 때
+        when(valueOperations.increment(viewCountKey)).thenReturn(1L);
+
+        // when
+        postService.increaseViewCount(identifier, postId);
+
+        // then
+        verify(redisTemplate).hasKey(viewedKey); // 조회 이력 확인
+        verify(valueOperations).set(viewedKey, "1", Duration.ofHours(24)); // 조회 기록 저장
+        verify(valueOperations).increment(viewCountKey); // 조회수 증가
+    }
+
+    @Test
+    @DisplayName("중복 조회는 조회수를 증가시키지 않는다")
+    void increaseViewCount_duplicateIgnored() {
+        // given
+        Long postId = 1L;
+        String identifier = "IP_127.0.0.1"; // 비회원 조회를 위한 IP 기반 식별자
+
+        String viewedKey = "viewed:" + postId + ":" + identifier;
+        String viewCountKey = "view_count:" + postId;
+
+        // 이미 조회 이력이 있다고 가정
+        when(redisTemplate.hasKey(viewedKey)).thenReturn(true); // 조회 이력 있음
+
+        // when
+        postService.increaseViewCount(identifier, postId);
+
+        // then
+        // 조회 이력이 있다는 조건이므로 조회수가 증가하지 않아야 한다
+        verify(redisTemplate).hasKey(viewedKey); // 조회 이력 확인
+        verify(redisTemplate, never()).opsForValue(); // opsForValue 호출되지 않음
+        verify(valueOperations, never()).set(viewedKey, "1", Duration.ofHours(24)); // 조회 기록 저장 안 됨
+        verify(valueOperations, never()).increment(viewCountKey); // 조회수 증가 안 됨
     }
 }

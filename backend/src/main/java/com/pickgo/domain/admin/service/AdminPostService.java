@@ -27,10 +27,10 @@ public class AdminPostService {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         if (isPublished != null) {
-            return adminPostRepository.findAllWithPerformanceAndVenueByIsPublished(isPublished, pageable);
+            return adminPostRepository.findAllByIsPublished(isPublished, pageable);
         }
 
-        return adminPostRepository.findAllWithPerformanceAndVenue(pageable);
+        return adminPostRepository.findAllBy(pageable);
     }
 
     /*게시글 수정*/

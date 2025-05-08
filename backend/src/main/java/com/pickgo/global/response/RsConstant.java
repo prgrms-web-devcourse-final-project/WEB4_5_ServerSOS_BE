@@ -39,15 +39,5 @@ public class RsConstant {
 	 */
 	public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
-	public static final int PERFORMANCE_NOT_FOUND = 4101;
-
-	/*게시물 관련*/
-	public static final int POST_NOT_FOUND = 4201;
-
-	/*리뷰 관련*/
-	public static final int REVIEW_CREATED = 4301;
-	public static final int REVIEW_DELETED = 4302;
-	public static final int REVIEW_UPDATED = 4303;
-
 	public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }
