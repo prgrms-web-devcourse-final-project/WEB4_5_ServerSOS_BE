@@ -5,9 +5,9 @@ import java.util.List;
 
 public record ReservationCreateRequest(
         Long performance_session_id,
-        List<SeatDto> seats
+        List<SeatRequest> seats
 ) {
-    public record SeatDto(
+    public record SeatRequest(
             long areaId,
             int row,
             int column
