@@ -2,6 +2,7 @@ package com.pickgo.domain.reservation.entity;
 
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
+
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
@@ -54,7 +55,4 @@ public class Reservation extends BaseEntity {
         this.status = ReservationStatus.CANCELED;
     }
 
-    public void completeSeats() {
-        this.reservedSeats.forEach(rs -> rs.setStatus(SeatStatus.RESERVED));
-    }
 }

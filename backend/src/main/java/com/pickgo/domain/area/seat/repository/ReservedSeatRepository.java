@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface ReservedSeatRepository extends JpaRepository<ReservedSeat, Long> {
     List<ReservedSeat> findByPerformanceAreaAndPerformanceSession(PerformanceArea area, PerformanceSession performanceSession);
+
 }

@@ -1,5 +1,8 @@
 package com.pickgo.domain.payment.service;
 
+import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
+import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
@@ -16,6 +19,7 @@ import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,8 @@ public class PaymentService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final TossService tossService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ReservedSeatRepository reservedSeatRepository;
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
@@ -139,7 +145,11 @@ public class PaymentService {
         reservation.setStatus(ReservationStatus.PAID);
 
         // 3. 좌석 상태 변경
-        reservation.completeSeats();
+        reservation.getReservedSeats().forEach(seat -> {
+            seat.setStatus(SeatStatus.RESERVED);        // 1. 좌석 상태 변경
+            reservedSeatRepository.save(seat);          // 2. 좌석 상태 DB 반영
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+        });
 
         return PaymentDetailResponse.from(payment);
     }

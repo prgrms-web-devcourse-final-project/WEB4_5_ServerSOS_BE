@@ -1,11 +1,16 @@
 package com.pickgo.domain.reservation.scheduler;
 
+import com.pickgo.domain.area.seat.entity.ReservedSeat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
+import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,8 @@ import java.util.List;
 public class ReservationTimeoutScheduler {
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ReservedSeatRepository reservedSeatRepository;
 
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
     @Transactional
@@ -36,7 +43,18 @@ public class ReservationTimeoutScheduler {
             if (!hasPayment) {
                 reservation.setStatus(ReservationStatus.EXPIRED);
                 reservation.getReservedSeats().clear();
+
+                for (ReservedSeat seat : reservation.getReservedSeats()) {
+                    seat.setStatus(SeatStatus.PENDING);
+                    reservedSeatRepository.save(seat);
+                    applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+                }
+
+
             }
+            // 이후 좌석 연결 제거
+            reservation.getReservedSeats().clear();
+
         }
     }
 }
