@@ -67,7 +67,7 @@ public class ReservationService {
         // 2. 좌석 생성
         List<ReservedSeat> reservedSeats = new ArrayList<>();
 
-        for (ReservationCreateRequest.SeatDto dto : request.seats()) {
+        for (ReservationCreateRequest.SeatRequest dto : request.seats()) {
             PerformanceArea area = areaRepository.findById(dto.areaId())
                     .orElseThrow(() -> new BusinessException(NOT_FOUND));
 
