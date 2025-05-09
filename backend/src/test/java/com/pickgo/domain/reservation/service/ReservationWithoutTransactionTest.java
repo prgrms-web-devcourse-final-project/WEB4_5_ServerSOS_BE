@@ -1,6 +1,6 @@
 package com.pickgo.domain.reservation.service;
 
-import com.pickgo.domain.area.seat.entity.Seat;
+import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +35,7 @@ class ReservationWithoutTransactionTest {
 
     private Member member;
     private PerformanceSession session;
-    private List<Seat> seats;
+    private PerformanceArea area;
 
 
     @BeforeEach
@@ -45,21 +44,19 @@ class ReservationWithoutTransactionTest {
         var data = testDataInit.create(); // 테스트 데이터를 세팅하고 DTO 또는 record 반환한다고 가정
         this.member = data.member();
         this.session = data.session();
-        this.seats = data.seats();
+        this.area = data.area();
     }
 
     @Test
     @DisplayName("스케쥴러를 통한 예약 취소")
     void timeoutScheduler() throws InterruptedException {
         // given
-        List<Long> seatIds = seats.stream()
-                .map(Seat::getId)
-                .collect(Collectors.toList());
-
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                session.getId(),
-                seatIds
+        var seatDtos = List.of(
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
+
+        ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
 
         ReservationSimpleResponse response = reservationService.createReservation(member.getId(), request);
 

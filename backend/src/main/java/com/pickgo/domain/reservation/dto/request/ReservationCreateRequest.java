@@ -5,6 +5,12 @@ import java.util.List;
 
 public record ReservationCreateRequest(
         Long performance_session_id,
-        List<Long> seatIds
+        List<SeatRequest> seats
 ) {
+    public record SeatRequest(
+            long areaId,
+            int row,
+            int column
+    ) {
+    }
 }

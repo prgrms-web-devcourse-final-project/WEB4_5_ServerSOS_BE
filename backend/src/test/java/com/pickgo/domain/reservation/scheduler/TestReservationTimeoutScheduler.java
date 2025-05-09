@@ -37,7 +37,7 @@ public class TestReservationTimeoutScheduler {
             boolean hasPayment = paymentRepository.existsByReservation(reservation);
             if (!hasPayment) {
                 reservation.setStatus(ReservationStatus.EXPIRED);
-                reservation.releaseSeats();
+                reservation.getReservedSeats().clear();
             }
         }
     }

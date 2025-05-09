@@ -36,7 +36,7 @@ public class PaymentTimeoutScheduler {
 
             Reservation reservation = payment.getReservation();
             reservation.setStatus(ReservationStatus.EXPIRED);
-            reservation.releaseSeats();
+            reservation.getReservedSeats().clear();
         }
     }
 }

@@ -27,11 +27,9 @@ public record ReservationSimpleResponse(
                 .total_price(reservation.getTotalPrice())
                 .status(reservation.getStatus())
                 .reservation_time(reservation.getCreatedAt())
-                .seats(
-                        reservation.getPendingSeats().stream()
-                                .map(pendingSeat -> SeatSimpleResponse.from(pendingSeat.getSeat()))
-                                .toList()
-                )
+                .seats(reservation.getReservedSeats().stream()
+                        .map(SeatSimpleResponse::from)
+                        .toList())
                 .build();
     }
 }
