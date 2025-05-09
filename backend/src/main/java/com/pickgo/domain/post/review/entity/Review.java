@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(indexes = @Index(name = "idx_like_count", columnList = "likeCount"))
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +39,7 @@ public class Review extends BaseEntity {
     public void setContent(String content) {
         this.content = content;
     }
-    
+
     public void incrementLikeCount() {
         this.likeCount++;
     }
