@@ -1,6 +1,6 @@
 package com.pickgo.domain.performance.dto;
 
-import com.pickgo.domain.area.area.dto.PerformanceAreaResponse;
+import com.pickgo.domain.area.area.dto.PerformanceAreaSimpleResponse;
 import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceIntro;
 import com.pickgo.domain.venue.dto.VenueResponse;
@@ -21,7 +21,7 @@ public record PerformanceDetailResponse(
         LocalDate endDate,
         VenueResponse venue,
         List<String> images,
-        List<PerformanceAreaResponse> areas,
+        List<PerformanceAreaSimpleResponse> areas,
         List<PerformanceSessionResponse> sessions
 ) {
     public static PerformanceDetailResponse from(Performance performance) {
@@ -41,7 +41,7 @@ public record PerformanceDetailResponse(
                         .map(PerformanceIntro::getIntroImage)
                         .toList(),
                 performance.getPerformanceAreas().stream()
-                        .map(PerformanceAreaResponse::from)
+                        .map(PerformanceAreaSimpleResponse::from)
                         .toList(),
                 performance.getPerformanceSessions().stream()
                         .map(PerformanceSessionResponse::from)

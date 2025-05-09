@@ -16,8 +16,8 @@ import lombok.*;
         name = "reserved_seat",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uq_reserved_seat_area_row_number",
-                        columnNames = {"performance_area_id", "seat_row", "number"}
+                        name = "uq_reserved_seat_session_area_row_number",
+                        columnNames = {"performance_session_id", "performance_area_id", "seat_row", "number"}
                 )
         }
 )
