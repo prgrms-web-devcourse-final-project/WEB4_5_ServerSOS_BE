@@ -11,6 +11,7 @@ import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class PerformanceAreaService {
     private final PerformanceAreaRepository performanceAreaRepository;
     private final ReservedSeatRepository reservedSeatRepository;
 
+    @Transactional(readOnly = true)
     public List<PerformanceAreaDetailResponse> getAreas(Long sessionId) {
         PerformanceSession performanceSession = performanceSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new BusinessException(PERFORMANCE_SESSION_NOT_FOUND));
