@@ -3,6 +3,7 @@ package com.pickgo.domain.area.area.controller;
 import com.pickgo.domain.area.area.dto.PerformanceAreaDetailResponse;
 import com.pickgo.domain.area.area.service.PerformanceAreaService;
 import com.pickgo.global.response.RsData;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class PerformanceAreaController {
     private final PerformanceAreaService performanceAreaService;
 
     @GetMapping
+    @Operation(summary = "구역 목록 조회", description = "구역의 예약중(완료) 좌석 목록을 제공합니다.")
     public RsData<List<PerformanceAreaDetailResponse>> getAreas(@RequestParam Long sessionId) {
         return RsData.from(SUCCESS, performanceAreaService.getAreas(sessionId));
     }
