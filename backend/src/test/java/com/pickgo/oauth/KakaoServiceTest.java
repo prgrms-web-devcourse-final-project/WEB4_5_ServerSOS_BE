@@ -1,12 +1,15 @@
 package com.pickgo.oauth;
 
-import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
-import static com.pickgo.global.response.RsCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.UUID;
-
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.service.MemberService;
+import com.pickgo.domain.oauth.kakao.dto.KakaoToken;
+import com.pickgo.domain.oauth.kakao.dto.KakaoUserInfo;
+import com.pickgo.domain.oauth.kakao.service.KakaoService;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,16 +22,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.service.MemberService;
-import com.pickgo.domain.oauth.kakao.dto.KakaoToken;
-import com.pickgo.domain.oauth.kakao.dto.KakaoUserInfo;
-import com.pickgo.domain.oauth.kakao.service.KakaoService;
-import com.pickgo.global.exception.BusinessException;
+import java.util.UUID;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.KAKAO;
+import static com.pickgo.global.response.RsCode.MEMBER_NOT_FOUND;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class KakaoServiceTest {
@@ -43,6 +42,8 @@ class KakaoServiceTest {
 	private HttpServletRequest request;
 	@Mock
 	private HttpServletResponse response;
+	@Mock
+	private LogWriter logWriter;
 
 	@InjectMocks
 	private KakaoService kakaoService;

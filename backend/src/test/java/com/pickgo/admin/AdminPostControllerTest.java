@@ -6,9 +6,11 @@ import com.pickgo.domain.admin.service.AdminPostService;
 import com.pickgo.domain.area.area.entity.AreaGrade;
 import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.performance.entity.*;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.venue.entity.Venue;
+import com.pickgo.global.logging.service.HistorySaveService;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,12 @@ class AdminPostControllerTest {
 
     @MockBean
     private org.springframework.data.jpa.mapping.JpaMetamodelMappingContext jpaMetamodelMappingContext;
+
+    @Autowired
+    private HistorySaveService historySaveService;
+
+    @Autowired
+    private MemberHistoryRepository memberHistoryRepository;
 
     @Autowired
     private ObjectMapper objectMapper;

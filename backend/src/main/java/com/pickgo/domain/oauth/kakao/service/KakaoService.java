@@ -1,10 +1,16 @@
 package com.pickgo.domain.oauth.kakao.service;
 
-import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
-import static com.pickgo.global.response.RsCode.*;
-
-import java.net.URI;
-
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.service.MemberService;
+import com.pickgo.domain.oauth.kakao.dto.KakaoToken;
+import com.pickgo.domain.oauth.kakao.dto.KakaoUserInfo;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,16 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.service.MemberService;
-import com.pickgo.domain.oauth.kakao.dto.KakaoToken;
-import com.pickgo.domain.oauth.kakao.dto.KakaoUserInfo;
-import com.pickgo.global.exception.BusinessException;
+import java.net.URI;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.KAKAO;
+import static com.pickgo.global.response.RsCode.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +54,7 @@ public class KakaoService {
 	private final RestTemplate restTemplate;
 	private final TokenService tokenService;
 	private final MemberService memberService;
+	private final LogWriter logWriter;
 
 	public RedirectView redirectToKakaoLogin() {
 		String kakaoAuthUrl = UriComponentsBuilder.fromUriString(authorizeUri)
@@ -78,6 +79,8 @@ public class KakaoService {
 		String homeUrl = UriComponentsBuilder.fromUriString(origin)
 			.build()
 			.toString();
+
+		logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN_KAKAO);
 
 		return new RedirectView(homeUrl);
 	}

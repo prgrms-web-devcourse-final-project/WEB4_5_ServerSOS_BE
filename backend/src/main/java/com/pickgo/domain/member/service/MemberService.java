@@ -1,17 +1,21 @@
 package com.pickgo.domain.member.service;
 
 import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.dto.*;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.s3.S3Uploader;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final TokenService tokenService;
 	private final S3Uploader s3Uploader;
+	private final LogWriter logWriter;
 
 	@Transactional
 	public MemberDetailResponse save(MemberCreateRequest request) {
@@ -42,6 +47,8 @@ public class MemberService {
 
 		Member member = request.toEntity(passwordEncoder, profile);
 		saveEntity(member);
+
+		logWriter.writeMemberLog(member, ActionType.MEMBER_SIGNUP);
 
 		return MemberDetailResponse.from(member);
 	}
@@ -62,11 +69,15 @@ public class MemberService {
 		tokenService.createRefreshToken(member, response);
 		String newAccessToken = tokenService.genAccessToken(member);
 
+		logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN);
+
 		return LoginResponse.of(newAccessToken);
 	}
 
 	public void logout(HttpServletResponse response) {
 		tokenService.removeRefreshTokenCookie(response);
+
+		logWriter.writeMemberLog(getCurrentMember(),ActionType.MEMBER_LOGOUT);
 	}
 
 	@Transactional
@@ -74,6 +85,8 @@ public class MemberService {
 		Member member = getEntity(id);
 		tokenService.removeRefreshTokenCookie(response);
 		memberRepository.delete(member);
+
+		logWriter.writeMemberLog(member,ActionType.MEMBER_DELETED);
 	}
 
 	@Transactional(readOnly = true)
@@ -134,6 +147,13 @@ public class MemberService {
 	public Member getEntity(String email) {
 		return memberRepository.findByEmail(email)
 			.orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
+	}
+
+	private Member getCurrentMember() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UUID memberId = UUID.fromString(auth.getName());
+		return memberRepository.findById(memberId)
+				.orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
 	}
 
 	public boolean existsByEmail(String email) {

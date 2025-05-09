@@ -5,6 +5,7 @@ import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
+import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.payment.entity.Payment;
@@ -21,6 +22,7 @@ import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -47,6 +49,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
+    private final LogWriter logWriter;
     private final PerformanceAreaRepository areaRepository;
 
     public ReservationSimpleResponse createReservation(
@@ -115,6 +118,8 @@ public class ReservationService {
             reservationRepository.save(reservation);
             seatRepository.saveAll(reservedSeats);
 
+            logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CREATED);
+
             return ReservationSimpleResponse.from(reservation);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(SEAT_CONFLICT);
@@ -122,8 +127,8 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public ReservationDetailResponse getReservation(Long id, UUID memberId) {
-        Reservation reservation = reservationRepository.findById(id)
+    public ReservationDetailResponse getReservation(Long reservationId, UUID memberId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(RESERVATION_NOT_FOUND));
 
         // 본인 예약인지 확인
@@ -158,17 +163,20 @@ public class ReservationService {
             throw new BusinessException(RsCode.INVALID_RESERVATION_STATE);
         }
 
-        // 3. 좌석 및 예약 삭제
+        // 3. 예약 삭제
         reservationRepository.delete(reservation);
+
+        // 4. 로깅
+        logWriter.writeReservationLog(reservation, ActionType.RESERVATION_DELETED);
     }
 
     /***
      * 예약 내역 조회 후, 예약을 취소할때 사용된다
      * 내부적으로 결제 취소도 동반한다.
      */
-    public void cancelReservation(Long id) {
+    public void cancelReservation(Long reservationId) {
         // 1. 예약과 결제를 조회
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new BusinessException(RESERVATION_NOT_FOUND)
         );
         Payment payment = paymentRepository.findByReservation(reservation).orElseThrow(
@@ -183,7 +191,10 @@ public class ReservationService {
         // 3. 예약 상태 변경
         reservation.cancel();
 
-        // 4. 좌석 삭제
+        // 4. 예약된 좌석 복구
         reservation.getReservedSeats().clear();
+
+        // 5. 로깅
+        logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CANCELED);
     }
 }

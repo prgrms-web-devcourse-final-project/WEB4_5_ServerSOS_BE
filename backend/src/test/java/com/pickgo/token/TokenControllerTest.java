@@ -1,10 +1,12 @@
 package com.pickgo.token;
 
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.global.logging.service.HistorySaveService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +38,12 @@ public class TokenControllerTest {
 
 	@Autowired
 	private JwtProvider jwtProvider;
+
+	@Autowired
+	private HistorySaveService historySaveService;
+
+	@Autowired
+	private MemberHistoryRepository memberHistoryRepository;
 
 	@Autowired
 	private TestToken token;

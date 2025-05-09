@@ -1,9 +1,13 @@
 package com.pickgo.domain.reservation.scheduler;
 
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +23,7 @@ import java.util.List;
 public class ReservationTimeoutScheduler {
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
+    private final LogWriter logWriter;
 
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
     @Transactional
@@ -36,7 +41,19 @@ public class ReservationTimeoutScheduler {
             if (!hasPayment) {
                 reservation.setStatus(ReservationStatus.EXPIRED);
                 reservation.getReservedSeats().clear();
+
+                // 3. 로그 저장
+                LogContext systemContext = new LogContext(
+                        "Scheduler",
+                        "SCHEDULED",
+                        "scheduler",
+                        ActorType.SYSTEM
+                );
+
+                logWriter.writeReservationLog(reservation, ActionType.RESERVATION_EXPIRED, systemContext);
             }
         }
+
+
     }
 }
