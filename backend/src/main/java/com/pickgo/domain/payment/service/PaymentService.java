@@ -1,5 +1,8 @@
 package com.pickgo.domain.payment.service;
 
+import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
+import com.pickgo.domain.area.seat.service.SeatPublisher;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
@@ -32,6 +35,8 @@ public class PaymentService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final TossService tossService;
+    private final SeatPublisher seatPublisher;
+    private final ReservedSeatRepository reservedSeatRepository;
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
@@ -139,7 +144,11 @@ public class PaymentService {
         reservation.setStatus(ReservationStatus.PAID);
 
         // 3. 좌석 상태 변경
-        reservation.completeSeats();
+        reservation.getReservedSeats().forEach(seat -> {
+            seat.setStatus(SeatStatus.RESERVED);        // 1. 좌석 상태 변경
+            reservedSeatRepository.save(seat);          // 2. 좌석 상태 DB 반영
+            seatPublisher.sendSeatStatusUpdate(seat);   // 3. SSE 실시간 알림 전송
+        });
 
         return PaymentDetailResponse.from(payment);
     }
