@@ -66,8 +66,8 @@ class ReservationControllerTest {
     @DisplayName("예약 성공 - 유저")
     void reserve_success() throws Exception {
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
@@ -102,8 +102,8 @@ class ReservationControllerTest {
     @DisplayName("예약 실패 - 존재하지 않는 공연 회차 ID")
     void reserve_fail_1() throws Exception {
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(99999L, seatDtos);
@@ -121,8 +121,8 @@ class ReservationControllerTest {
     @DisplayName("예약 실패 - 일부 좌석이 존재하지 않음")
     void reserve_fail_2() throws Exception {
         var invalidSeatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 100, 100),
-                new ReservationCreateRequest.SeatDto(area.getId(), 100, 200)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 100, 100),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 100, 200)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), invalidSeatDtos);
@@ -141,8 +141,8 @@ class ReservationControllerTest {
     void getReservation_success() throws Exception {
         // given: 예약 생성
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
@@ -189,8 +189,8 @@ class ReservationControllerTest {
     void getReservation_forbidden() throws Exception {
         // given: 예약 생성
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
@@ -219,8 +219,8 @@ class ReservationControllerTest {
     void getMyReservations_success() throws Exception {
         // given: 예약 1건 생성
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);

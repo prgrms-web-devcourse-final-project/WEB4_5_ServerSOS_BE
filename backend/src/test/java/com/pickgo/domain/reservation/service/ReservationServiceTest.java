@@ -64,8 +64,8 @@ class ReservationServiceTest {
     void createReserve() {
         // given
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
@@ -85,8 +85,8 @@ class ReservationServiceTest {
     void getReservation() {
         // given
         var seatDtos = List.of(
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatDto(area.getId(), 1, 2)
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
         );
 
         ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
