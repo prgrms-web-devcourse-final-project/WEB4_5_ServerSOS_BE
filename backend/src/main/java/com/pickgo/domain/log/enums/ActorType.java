@@ -7,7 +7,8 @@ import lombok.Getter;
 public enum ActorType {
     USER("유저"),
     ADMIN("관리자"),
-    GUEST("게스트");
+    GUEST("게스트"),
+    SYSTEM("시스템");
 
     private final String description;
 

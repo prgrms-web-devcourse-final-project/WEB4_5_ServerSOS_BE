@@ -2,15 +2,19 @@ package com.pickgo.domain.log.entity;
 
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
-import com.pickgo.domain.log.enums.HttpMethod;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseLog {
 
     @Id
@@ -40,9 +44,8 @@ public abstract class BaseLog {
     @Column(nullable = false)
     private String requestUri; // api
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private HttpMethod httpMethod; // POST, GET
+    private String httpMethod; // POST, GET
 
     @Column(length = 1000)
     private String description; // 설명
@@ -51,4 +54,16 @@ public abstract class BaseLog {
     @Column(name = "created_at", columnDefinition = "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'")
     private LocalDateTime createdAt;
 
+    public BaseLog(String actorId, ActorType actorType, ActionType action,
+                   String target, String targetName,
+                   String requestUri, String httpMethod, String description) {
+        this.actorId = actorId;
+        this.actorType = actorType;
+        this.action = action;
+        this.target = target;
+        this.targetName = targetName;
+        this.requestUri = requestUri;
+        this.httpMethod = httpMethod;
+        this.description = description;
+    }
 }

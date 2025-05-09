@@ -3,6 +3,8 @@ package com.pickgo.domain.reservation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
+import com.pickgo.domain.log.entity.ReservationHistory;
+import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.performance.entity.PerformanceSession;
@@ -24,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,6 +50,12 @@ class ReservationControllerTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private HistorySaveService historySaveService;
+
+    @Autowired
+    private ReservationHistoryRepository reservationHistoryRepository;
 
     private Member member;
     private PerformanceSession session;
@@ -96,6 +103,14 @@ class ReservationControllerTest {
 
         Reservation savedReservation = foundMember.getReservations().get(0);
         assertThat(savedReservation.getReservedSeats()).hasSize(seatDtos.size());
+
+        List<ReservationHistory> logs = reservationHistoryRepository.findAll();
+
+        assertThat(logs).hasSize(1); // 로그가 하나 저장되었는지
+        ReservationHistory log = logs.get(0);
+        assertThat(log.getReservationId()).isEqualTo(savedReservation.getId());
+        assertThat(log.getAction()).isEqualTo(ActionType.RESERVATION_CREATED);
+        assertThat(log.getActorId()).isEqualTo(member.getId().toString());
     }
 
     @Test
