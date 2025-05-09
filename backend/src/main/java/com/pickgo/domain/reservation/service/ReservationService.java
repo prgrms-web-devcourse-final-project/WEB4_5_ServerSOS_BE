@@ -22,6 +22,7 @@ import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -160,11 +161,6 @@ public class ReservationService {
         // 1. 상태 체크 (RESERVED 상태인 자리만 취소가능)
         if (reservation.getStatus() != ReservationStatus.RESERVED) {
             throw new BusinessException(RsCode.INVALID_RESERVATION_STATE);
-        }
-
-        // 2. 자리를 다시 원복
-        for (PendingSeat pendingSeat : reservation.getPendingSeats()) {
-            pendingSeat.getSeat().setStatus(AVAILABLE);
         }
 
         // 3. 예약 삭제

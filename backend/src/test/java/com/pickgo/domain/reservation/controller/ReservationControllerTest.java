@@ -5,12 +5,14 @@ import com.jayway.jsonpath.JsonPath;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.log.entity.ReservationHistory;
 import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.repository.ReservationHistoryRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.init.TestDataInit;
+import com.pickgo.global.logging.service.HistorySaveService;
 import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
