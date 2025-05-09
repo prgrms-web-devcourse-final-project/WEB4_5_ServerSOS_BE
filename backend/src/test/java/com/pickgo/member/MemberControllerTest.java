@@ -142,7 +142,7 @@ public class MemberControllerTest {
 			.andExpect(jsonPath("$.data.accessToken").exists());
 
 		MemberHistory history = memberHistoryRepository.findAll().get(0);
-		assertThat(history.getAction()).isEqualTo(ActionType.MEMBER_LOGIN);
+		assertThat(history.getAction()).isEqualTo(ActionType.MEMBER_SIGNUP);
 		assertThat(history.getActorType()).isEqualTo(ActorType.GUEST);
 	}
 
