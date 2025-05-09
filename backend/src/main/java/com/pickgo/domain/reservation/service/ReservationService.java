@@ -4,6 +4,7 @@ import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -23,6 +24,7 @@ import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +50,7 @@ public class ReservationService {
     private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
     private final PerformanceAreaRepository areaRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ReservationSimpleResponse createReservation(
             UUID memberId,
@@ -88,6 +91,8 @@ public class ReservationService {
                     .build();
 
             reservedSeats.add(reservedSeat);
+
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(reservedSeat));
         }
 
         // 여기부터 예약 트랜지션이므로 하나로 묶어야함
