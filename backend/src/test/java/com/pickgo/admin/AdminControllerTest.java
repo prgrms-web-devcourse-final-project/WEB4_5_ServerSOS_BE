@@ -94,4 +94,38 @@ class AdminControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @DisplayName("ADMIN - 회원 로그 조회 성공")
+    void getMemberLogs_성공() throws Exception {
+        mockMvc.perform(get("/api/admin/member-histories")
+                        .header("Authorization", "Bearer " + token.adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.items").isArray());
+    }
+
+
+    @Test
+    @DisplayName("ADMIN - 예약 로그 조회 성공")
+    void getReservationLogs_성공() throws Exception {
+        mockMvc.perform(get("/api/admin/reservation-histories")
+                        .header("Authorization", "Bearer " + token.adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.items").isArray());
+    }
+
+    @Test
+    @DisplayName("ADMIN - 결제 로그 조회 성공")
+    void getPaymentLogs_성공() throws Exception {
+        mockMvc.perform(get("/api/admin/payment-histories")
+                        .header("Authorization", "Bearer " + token.adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.items").isArray());
+    }
 }
