@@ -1,9 +1,11 @@
 package com.pickgo.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.member.dto.MemberPrincipal;
 import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
 import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
@@ -14,13 +16,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,15 +51,15 @@ class PostReviewControllerTest {
         int size = 10;
         String sort = "latest";
 
-        List<PostReviewSimpleResponse> mockReviews = List.of(
-                PostReviewSimpleResponse.builder()
+        List<PostReviewWithLikeResponse> mockReviews = List.of(
+                PostReviewWithLikeResponse.builder()
                         .reviewId(97L)
                         .userId(UUID.randomUUID())
                         .profile("profile1.jpg")
                         .nickname("작성자1")
                         .content("좋아요")
                         .build(),
-                PostReviewSimpleResponse.builder()
+                PostReviewWithLikeResponse.builder()
                         .reviewId(96L)
                         .userId(UUID.randomUUID())
                         .profile("profile2.jpg")
@@ -64,8 +68,14 @@ class PostReviewControllerTest {
                         .build()
         );
 
-        Mockito.when(postReviewService.getReviewsByPostId(eq(postId), eq(cursorId), eq(Integer.MAX_VALUE), eq(size), eq(sort)))
-                .thenReturn(mockReviews);
+        Mockito.when(postReviewService.getReviewsByPostId(
+                eq(postId),
+                eq(cursorId),
+                eq(Integer.MAX_VALUE),
+                eq(size),
+                eq(sort),
+                isNull()
+        )).thenReturn(mockReviews);
 
         // when & then
         mockMvc.perform(get("/api/posts/{id}/reviews", postId)
@@ -88,8 +98,8 @@ class PostReviewControllerTest {
         int size = 10;
         String sort = "like";
 
-        List<PostReviewSimpleResponse> mockReviews = List.of(
-                PostReviewSimpleResponse.builder()
+        List<PostReviewWithLikeResponse> mockReviews = List.of(
+                PostReviewWithLikeResponse.builder()
                         .reviewId(96L)
                         .userId(UUID.randomUUID())
                         .profile("profile1.jpg")
@@ -97,7 +107,7 @@ class PostReviewControllerTest {
                         .content("좋아요")
                         .likeCount(24)
                         .build(),
-                PostReviewSimpleResponse.builder()
+                PostReviewWithLikeResponse.builder()
                         .reviewId(98L)
                         .userId(UUID.randomUUID())
                         .profile("profile3.jpg")
@@ -105,7 +115,7 @@ class PostReviewControllerTest {
                         .content("별로에요22")
                         .likeCount(13)
                         .build(),
-                PostReviewSimpleResponse.builder()
+                PostReviewWithLikeResponse.builder()
                         .reviewId(97L)
                         .userId(UUID.randomUUID())
                         .profile("profile2.jpg")
@@ -115,8 +125,14 @@ class PostReviewControllerTest {
                         .build()
         );
 
-        Mockito.when(postReviewService.getReviewsByPostId(eq(postId), eq(cursorId), eq(cursorLikeCount), eq(size), eq(sort)))
-                .thenReturn(mockReviews);
+        Mockito.when(postReviewService.getReviewsByPostId(
+                eq(postId),
+                eq(cursorId),
+                eq(cursorLikeCount),
+                eq(size),
+                eq(sort),
+                isNull()
+        )).thenReturn(mockReviews);
 
         // when & then
         mockMvc.perform(get("/api/posts/{id}/reviews", postId)
@@ -218,8 +234,18 @@ class PostReviewControllerTest {
         // given
         Long postId = 1L;
         Long reviewId = 1L;
+        UUID memberId = UUID.randomUUID();
 
-        Mockito.doNothing().when(postReviewService).likeReview(postId, reviewId);
+        // 단순 record 기반 MemberPrincipal 생성
+        MemberPrincipal mockPrincipal = new MemberPrincipal(memberId);
+
+        // 인증 객체 생성
+        Authentication auth = new UsernamePasswordAuthenticationToken(mockPrincipal, null, List.of());
+
+        // SecurityContext에 인증 객체 설정
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        Mockito.doNothing().when(postReviewService).likeReview(postId, reviewId, memberId);
 
         // when & then
         mockMvc.perform(post("/api/posts/{id}/reviews/{reviewId}/like", postId, reviewId))
@@ -234,11 +260,21 @@ class PostReviewControllerTest {
         // given
         Long postId = 1L;
         Long reviewId = 1L;
+        UUID memberId = UUID.randomUUID();
 
-        Mockito.doNothing().when(postReviewService).cancelLikeReview(postId, reviewId);
+        // 단순 record 기반 MemberPrincipal 생성
+        MemberPrincipal mockPrincipal = new MemberPrincipal(memberId);
+
+        // 인증 객체 생성
+        Authentication auth = new UsernamePasswordAuthenticationToken(mockPrincipal, null, List.of());
+
+        // SecurityContext에 인증 객체 설정
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        Mockito.doNothing().when(postReviewService).cancelLikeReview(postId, reviewId, memberId);
 
         // when & then
-        mockMvc.perform(delete("/api/posts/{id}/reviews/{reviewId}/like", postId, reviewId))
+        mockMvc.perform(delete("/api/posts/{id}/reviews/{reviewId}/like", postId, reviewId, memberId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(RsCode.SUCCESS.getCode()))
                 .andExpect(jsonPath("$.data").value("리뷰 좋아요를 취소했습니다."));
