@@ -31,7 +31,10 @@ public enum ActionType {
     POST_CREATED("게시글 생성"),
     POST_UPDATED("게시글 수정"),
     POST_DELETED("게시글 삭제"),
-    POST_DETAIL_VIEW("게시글 상세 조회");
+    POST_DETAIL_VIEW("게시글 상세 조회"),
+
+    // Exception
+    EXCEPTION("예외 발생");
 
     private final String description;
 

@@ -1,10 +1,12 @@
 package com.pickgo.global.logging.service;
 
 
+import com.pickgo.domain.log.entity.ExceptionLog;
 import com.pickgo.domain.log.entity.MemberHistory;
 import com.pickgo.domain.log.entity.PaymentHistory;
 import com.pickgo.domain.log.entity.ReservationHistory;
 import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.repository.ExceptionLogRepository;
 import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.log.repository.PaymentHistoryRepository;
 import com.pickgo.domain.log.repository.ReservationHistoryRepository;
@@ -24,24 +26,24 @@ public class HistorySaveService {
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final MemberHistoryRepository memberHistoryRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
+    private final ExceptionLogRepository exceptionLogRepository;
 
     /***
      * 로깅에서 오류가 나도 메소드가 정상 작동할 수 있도록 별도 트랜잭션 생성
-     * 예약 로그 저장
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveReservationHistory(Reservation reservation, LogContext logContext, ActionType actionType) {
+    public void saveReservationHistory(Reservation reservation, LogContext ctx, ActionType actionType) {
         ReservationHistory history = new ReservationHistory(
                 reservation.getId(),
                 reservation.getStatus(),
                 reservation.getTotalPrice(),
                 reservation.getCreatedAt(),
                 reservation.getPerformanceSession().getId(),
-                logContext.actorId(),
-                logContext.actorType(),
+                ctx.actorId(),
+                ctx.actorType(),
                 actionType,
-                logContext.requestUri(),
-                logContext.httpMethod(),
+                ctx.requestUri(),
+                ctx.httpMethod(),
                 "예약 : " + actionType.getDescription()
         );
         reservationHistoryRepository.save(history);
@@ -81,5 +83,21 @@ public class HistorySaveService {
                 "결제 : " + action.getDescription()
         );
         paymentHistoryRepository.save(history);
+    }
+
+
+    @Transactional
+    public void saveExceptionLog(Exception e, LogContext ctx, ActionType actionType) {
+        ExceptionLog exceptionLog = new ExceptionLog(
+                e.getClass().getSimpleName(),
+                ctx.actorId(),
+                ctx.actorType(),
+                actionType,
+                ctx.requestUri(),
+                ctx.httpMethod(),
+                "예외 메시지 : " + e.getMessage()
+        );
+
+        exceptionLogRepository.save(exceptionLog);
     }
 }

@@ -25,7 +25,7 @@ public class LogWriter {
         }
     }
 
-    public void writeReservationLog(Reservation reservation, ActionType action,LogContext logContext) {
+    public void writeReservationLog(Reservation reservation, ActionType action, LogContext logContext) {
         try {
             historySaveService.saveReservationHistory(reservation, logContext, action);
         } catch (Exception e) {
@@ -65,5 +65,10 @@ public class LogWriter {
         } catch (Exception e) {
             System.out.println("결제 로그 저장 실패 : " + e.getMessage());
         }
+    }
+
+    public void writeExceptionLog(Exception e, ActionType action) {
+        LogContext logContext = logContextUtil.extract();
+        historySaveService.saveExceptionLog(e, logContext, action);
     }
 }
