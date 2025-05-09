@@ -1,8 +1,10 @@
 package com.pickgo.domain.post.review.controller;
 
+import com.pickgo.domain.member.dto.MemberPrincipal;
 import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
 import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,19 +27,21 @@ public class PostReviewController {
 
     @Operation(summary = "게시글 리뷰 목록 조회")
     @GetMapping
-    public RsData<List<PostReviewSimpleResponse>> getReviews(
+    public RsData<List<PostReviewWithLikeResponse>> getReviews(
             @PathVariable Long id,
             @RequestParam(required = false) Long cursorId,
             @RequestParam(required = false) Integer cursorLikeCount,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "latest") String sort
+            @RequestParam(defaultValue = "latest") String sort,
+            @RequestHeader(value = "Authorization", required = false) String authHeader
     ) {
-        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(
+        List<PostReviewWithLikeResponse> reviews = postReviewService.getReviewsByPostId(
                 id,
                 cursorId == null ? Long.MAX_VALUE : cursorId,
                 cursorLikeCount == null ? Integer.MAX_VALUE : cursorLikeCount,
                 size,
-                sort
+                sort,
+                authHeader
         );
         return RsData.from(RsCode.SUCCESS, reviews);
     }
@@ -80,9 +85,10 @@ public class PostReviewController {
     @ResponseStatus(HttpStatus.OK)
     public RsData<String> likeReview(
             @PathVariable("id") Long id,
-            @PathVariable("reviewId") Long reviewId
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        postReviewService.likeReview(id, reviewId);
+        postReviewService.likeReview(id, reviewId, principal.id());
         return RsData.from(RsCode.SUCCESS, "리뷰에 좋아요를 추가했습니다.");
     }
 
@@ -91,9 +97,10 @@ public class PostReviewController {
     @ResponseStatus(HttpStatus.OK)
     public RsData<String> unlikeReview(
             @PathVariable("id") Long id,
-            @PathVariable("reviewId") Long reviewId
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        postReviewService.cancelLikeReview(id, reviewId);
+        postReviewService.cancelLikeReview(id, reviewId, principal.id());
         return RsData.from(RsCode.SUCCESS, "리뷰 좋아요를 취소했습니다.");
     }
 }
