@@ -2,6 +2,9 @@ package com.pickgo.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.entity.PaymentHistory;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.log.repository.PaymentHistoryRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
@@ -45,6 +48,7 @@ import java.util.UUID;
 
 import static com.pickgo.global.response.RsCode.CREATED;
 import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -203,6 +207,10 @@ public class PaymentControllerTest {
                 .andExpect(jsonPath("$.data.paymentStatus").value(PaymentStatus.PENDING.toString()))
                 .andExpect(jsonPath("$.data.createdAt").value(Matchers.matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*")))
                 .andDo(print());
+
+        PaymentHistory history = paymentHistoryRepository.findAll().get(0);
+        assertThat(history.getAction()).isEqualTo(ActionType.PAYMENT_CREATED);
+        assertThat(history.getActorType()).isEqualTo(ActorType.USER);
     }
 
     @Test
