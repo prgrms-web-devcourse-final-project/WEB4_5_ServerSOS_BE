@@ -109,6 +109,7 @@ public class ReservationService {
             member.addReservation(reservation);
             reservation.updateReservedSeats(reservedSeats);
             reservedSeats.forEach(seat -> seat.setReservation(reservation));
+            reservedSeats.forEach(seat -> seat.setPerformanceSession(performanceSession));
 
             // 5. 좌석 및 예약 저장
             reservationRepository.save(reservation);
