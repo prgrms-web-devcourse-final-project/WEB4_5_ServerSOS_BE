@@ -69,6 +69,11 @@ class ReservationControllerTest {
         this.area = data.area();
     }
 
+    @BeforeEach
+    void clearLog() {
+        reservationHistoryRepository.deleteAll();
+    }
+
     @Test
     @DisplayName("예약 성공 - 유저")
     void reserve_success() throws Exception {

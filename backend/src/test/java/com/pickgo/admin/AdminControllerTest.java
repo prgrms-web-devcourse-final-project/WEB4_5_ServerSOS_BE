@@ -1,7 +1,9 @@
 package com.pickgo.admin;
 
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.global.logging.service.HistorySaveService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +40,12 @@ class AdminControllerTest {
 
     @Autowired
     private TestToken token;
+
+    @Autowired
+    private HistorySaveService historySaveService;
+
+    @Autowired
+    private MemberHistoryRepository memberHistoryRepository;
 
     @BeforeEach
     void setUp() {

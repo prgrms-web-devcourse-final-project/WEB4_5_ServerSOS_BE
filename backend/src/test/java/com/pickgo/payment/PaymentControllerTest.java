@@ -2,6 +2,7 @@ package com.pickgo.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.repository.PaymentHistoryRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
@@ -21,6 +22,7 @@ import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
+import com.pickgo.global.logging.service.HistorySaveService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,6 +86,12 @@ public class PaymentControllerTest {
     private PerformanceSessionRepository performanceSessionRepository;
 
     private PerformanceSession performanceSession;
+
+    @Autowired
+    private HistorySaveService historySaveService;
+
+    @Autowired
+    private PaymentHistoryRepository paymentHistoryRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

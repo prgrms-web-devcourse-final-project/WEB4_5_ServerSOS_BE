@@ -1,11 +1,13 @@
 package com.pickgo.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.global.logging.service.HistorySaveService;
 import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +52,12 @@ public class MemberControllerTest {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private HistorySaveService historySaveService;
+
+	@Autowired
+	private MemberHistoryRepository memberHistoryRepository;
 
 	// 회원가입된 기존 유저
 	private final String testEmail = "test@example.com";

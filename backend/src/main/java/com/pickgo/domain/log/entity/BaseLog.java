@@ -34,13 +34,6 @@ public abstract class BaseLog {
     @Column(nullable = false)
     private ActionType action;
 
-    // 누구에게
-    @Column
-    private String target;
-
-    @Column
-    private String targetName;
-
     @Column(nullable = false)
     private String requestUri; // api
 
@@ -55,13 +48,10 @@ public abstract class BaseLog {
     private LocalDateTime createdAt;
 
     public BaseLog(String actorId, ActorType actorType, ActionType action,
-                   String target, String targetName,
                    String requestUri, String httpMethod, String description) {
         this.actorId = actorId;
         this.actorType = actorType;
         this.action = action;
-        this.target = target;
-        this.targetName = targetName;
         this.requestUri = requestUri;
         this.httpMethod = httpMethod;
         this.description = description;

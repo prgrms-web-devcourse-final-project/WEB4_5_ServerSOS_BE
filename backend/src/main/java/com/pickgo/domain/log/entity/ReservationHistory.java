@@ -43,13 +43,11 @@ public class ReservationHistory extends BaseLog {
             String actorId,
             ActorType actorType,
             ActionType action,
-            String target,
-            String targetName,
             String requestUri,
             String httpMethod,
             String description
     ) {
-        super(actorId, actorType, action, target, targetName, requestUri, httpMethod, description);
+        super(actorId, actorType, action, requestUri, httpMethod, description);
         this.reservationId = reservationId;
         this.status = status;
         this.totalPrice = totalPrice;
