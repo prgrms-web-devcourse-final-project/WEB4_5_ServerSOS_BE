@@ -9,7 +9,7 @@ export const usePopularPost = ({ size, type }: GetPopularPostsRequest) => {
   })
 
   return {
-    data,
+    popularPosts: data?.data,
     isLoading,
     error,
   }

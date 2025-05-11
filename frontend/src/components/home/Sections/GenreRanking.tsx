@@ -19,9 +19,13 @@ export default function GenreRanking() {
   const [activeCategory, setActiveCategory] =
     useState<GetPopularPostsTypeEnum>("MUSICAL")
 
-  const { data: popularPosts } = usePopularPost({
+  const { popularPosts, isLoading } = usePopularPost({
     type: activeCategory,
   })
+
+  if (!isLoading && (!popularPosts || popularPosts?.length === 0)) {
+    return <div>장르 랭킹이 없습니다.</div>
+  }
 
   return (
     <div>
@@ -47,7 +51,7 @@ export default function GenreRanking() {
 
       {/* 랭킹 그리드 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-        {popularPosts?.data?.slice(0, 3).map((item) => (
+        {popularPosts?.slice(0, 3).map((item) => (
           <Link key={item.id} to={`/show/${item.id}`} className="group">
             <div className="bg-white rounded-lg overflow-hidden shadow-md transition-shadow hover:shadow-lg">
               <div className="relative h-80 overflow-hidden">

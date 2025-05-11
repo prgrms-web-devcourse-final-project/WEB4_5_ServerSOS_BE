@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 
-import { ChevronLeft, ChevronRight, Image } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { usePopularPost } from "@/hooks/usePopularPost"
@@ -9,12 +9,10 @@ import { getDurationStr } from "@/lib/date"
 export default function RankingBanner() {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const { data: popularPosts } = usePopularPost({})
+  const { popularPosts } = usePopularPost({})
 
   const [bannerData, ...smallPosters] =
-    popularPosts?.data && popularPosts.data.length > 0
-      ? popularPosts.data
-      : [null, null]
+    popularPosts && popularPosts.length > 0 ? popularPosts : [null, null]
 
   console.log("#popularPosts", popularPosts, bannerData, smallPosters)
 
@@ -32,10 +30,6 @@ export default function RankingBanner() {
     const interval = setInterval(nextSlide, 5000)
     return () => clearInterval(interval)
   }, [nextSlide])
-
-  if (!popularPosts?.data) {
-    return null
-  }
 
   return (
     <div className="relative">
@@ -57,7 +51,7 @@ export default function RankingBanner() {
               <p className="text-sm mb-6">
                 {getDurationStr(bannerData?.startDate, bannerData?.endDate)}
               </p>
-              <Link to="/reservation">
+              <Link to={`/show/${bannerData?.id}`}>
                 <Button size="lg">예매하기</Button>
               </Link>
             </div>
