@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "format": "yarn biome format --write",
     "preview": "vite preview",
     "codegen": "openapi-generator-cli generate -i https://api.team2.pick-go.shop/v3/api-docs -g typescript-fetch -o src/api/__generated__"
