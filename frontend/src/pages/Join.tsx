@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
 import { PageLayout } from "@/layout/PageLayout"
+import { apiClient } from "@/api/apiClient"
 
 export function Join() {
   const navigate = useNavigate()
@@ -75,26 +76,24 @@ export function Join() {
     setIsSubmitting(true)
 
     try {
-      // 실제 API 호출 부분 (예시)
-      // const response = await fetch('/api/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     username: formData.username,
-      //     password: formData.password,
-      //     nickname: formData.nickname,
-      //     email: formData.email
-      //   })
-      // });
-
-      // if (!response.ok) throw new Error('회원가입에 실패했습니다.');
-
       console.log("회원가입 데이터:", {
         username: formData.username,
         password: formData.password,
         nickname: formData.nickname,
         email: formData.email,
       })
+
+      const response = await apiClient.member.signup({
+        memberCreateRequest: {
+          email: formData.email,
+          password: formData.password,
+          nickname: formData.nickname,
+        },
+      })
+
+      if (response.code !== 200) {
+        throw new Error("회원가입에 실패했습니다.")
+      }
 
       // 성공 시 로그인 페이지로 이동
       alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")

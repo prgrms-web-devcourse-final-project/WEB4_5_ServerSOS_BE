@@ -1,6 +1,6 @@
 import { MemberAPIApi, Configuration } from "./__generated__"
 
-export const BACKEND_API = "https://api.team2.pick-go.shop/"
+export const BACKEND_API = "https://api.team2.pick-go.shop"
 
 // API 클라이언트 설정
 const config = new Configuration({
