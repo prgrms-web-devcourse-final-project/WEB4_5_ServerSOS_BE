@@ -16,9 +16,6 @@ import com.pickgo.domain.post.review.repository.ReviewLikeRepository;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.jwt.JwtProvider;
 import com.pickgo.global.response.RsCode;
-import jakarta.persistence.EntityNotFoundException;
-import com.pickgo.global.exception.BusinessException;
-import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -27,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,8 +66,7 @@ public class PostReviewService {
                 jwtProvider.validateToken(token);
                 Authentication auth = jwtProvider.getAuthentication(token);
                 MemberPrincipal principal = (MemberPrincipal) auth.getPrincipal();
-                currentUser = memberRepository.findById(principal.id())
-                        .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                currentUser = getMemberById(principal.id());
             } catch (Exception ignored) {
                 // 무효한 토큰이면 무시하고 비회원 처리
             }
@@ -93,12 +87,10 @@ public class PostReviewService {
     public PostReviewSimpleResponse createReview(Long id, PostReviewCreateRequest request) {
 
         // 1. post 조회
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        Post post = getPostById(id);
 
         // 2. member 조회
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        Member member = getMemberById(request.getMemberId());
 
         // 3. 리뷰 생성
         Review review = Review.builder()
@@ -117,7 +109,7 @@ public class PostReviewService {
     public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, PostReviewUpdateRequest request) {
         //리뷰 조회 및 게시글 ID 일치 여부 검증
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
-       // 내용 수정
+        // 내용 수정
         review.setContent(request.getContent());
 
         return PostReviewSimpleResponse.fromEntity(review);
@@ -134,12 +126,8 @@ public class PostReviewService {
 
     @Transactional
     public void likeReview(Long postId, Long reviewId, UUID memberId) {
-        Review review = postReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        isEqualId(review, postId);
+        Review review = getReviewByIdAndValidatePost(reviewId, postId);
+        Member member = getMemberById(memberId);
 
         if (reviewLikeRepository.existsByMemberAndReview(member, review)) {
             throw new BusinessException(RsCode.REVIEW_ALREADY_LIKED);
@@ -155,12 +143,8 @@ public class PostReviewService {
 
     @Transactional
     public void cancelLikeReview(Long postId, Long reviewId, UUID memberId) {
-        Review review = postReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        isEqualId(review, postId);
+        Review review = getReviewByIdAndValidatePost(reviewId, postId);
+        Member member = getMemberById(memberId);
 
         ReviewLike like = reviewLikeRepository.findByMemberAndReview(member, review)
                 .orElseThrow(() -> new BusinessException(RsCode.REVIEW_NOT_LIKED_YET));
@@ -177,6 +161,7 @@ public class PostReviewService {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(RsCode.POST_NOT_FOUND));
     }
+
     /*
     회원 ID로 조회 + 예외처리
      */
@@ -184,6 +169,7 @@ public class PostReviewService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(RsCode.MEMBER_NOT_FOUND));
     }
+
     /*
     리뷰 ID로 조회하고 + 해당하는 리뷰가 해당 게시글에 속해 있는지 검증 및 예외처리
      */
