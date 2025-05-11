@@ -1,7 +1,6 @@
 package com.pickgo.domain.reservation.scheduler;
 
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
-import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.payment.repository.PaymentRepository;
@@ -42,18 +41,14 @@ public class ReservationTimeoutScheduler {
             boolean hasPayment = paymentRepository.existsByReservation(reservation);
             if (!hasPayment) {
                 reservation.setStatus(ReservationStatus.EXPIRED);
-                reservation.getReservedSeats().clear();
 
-                for (ReservedSeat seat : reservation.getReservedSeats()) {
-                    seat.setStatus(SeatStatus.PENDING);
-                    reservedSeatRepository.save(seat);
-                    applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+                for (ReservedSeat seat : reservation.getReservedSeats()) { //예약에 연결된 모든 좌석 반복
+                    applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트 발행
+                    reservedSeatRepository.delete(seat); //DB 좌석 삭제
                 }
-
-
+                //DB 삭제 후 객체 내부 상태 맞춰주기
+                reservation.getReservedSeats().clear();
             }
-            // 이후 좌석 연결 제거
-            reservation.getReservedSeats().clear();
 
         }
     }

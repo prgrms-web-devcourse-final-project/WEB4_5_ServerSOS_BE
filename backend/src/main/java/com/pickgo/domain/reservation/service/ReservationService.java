@@ -91,8 +91,9 @@ public class ReservationService {
                     .build();
 
             reservedSeats.add(reservedSeat);
-
-            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(reservedSeat));
+            reservedSeats.forEach(
+                    seat -> applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat))
+            );
         }
 
         // 여기부터 예약 트랜지션이므로 하나로 묶어야함
