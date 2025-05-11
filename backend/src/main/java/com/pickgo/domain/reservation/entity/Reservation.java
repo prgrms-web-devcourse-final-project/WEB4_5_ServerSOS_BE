@@ -1,5 +1,6 @@
 package com.pickgo.domain.reservation.entity;
 
+import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.performance.entity.PerformanceSession;
@@ -39,11 +40,11 @@ public class Reservation extends BaseEntity {
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PendingSeat> pendingSeats = new ArrayList<>();
+    private List<ReservedSeat> reservedSeats = new ArrayList<>();
 
-    public void updatePendingSeats(List<PendingSeat> seats) {
-        this.pendingSeats.clear();
-        this.pendingSeats.addAll(seats);
+    public void updateReservedSeats(List<ReservedSeat> seats) {
+        this.reservedSeats.clear();
+        this.reservedSeats.addAll(seats);
     }
 
     public void cancel() {
@@ -53,14 +54,7 @@ public class Reservation extends BaseEntity {
         this.status = ReservationStatus.CANCELED;
     }
 
-    public void releaseSeats() {
-        for (PendingSeat pendingSeat : this.getPendingSeats()) {
-            pendingSeat.getSeat().setStatus(SeatStatus.AVAILABLE);
-        }
-        this.pendingSeats.clear();
-    }
-
     public void completeSeats() {
-        this.pendingSeats.forEach(ps -> ps.getSeat().setStatus(SeatStatus.RESERVED));
+        this.reservedSeats.forEach(rs -> rs.setStatus(SeatStatus.RESERVED));
     }
 }

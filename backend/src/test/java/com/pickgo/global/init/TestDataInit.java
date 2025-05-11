@@ -4,9 +4,7 @@ import com.pickgo.domain.area.area.entity.AreaGrade;
 import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
-import com.pickgo.domain.area.seat.entity.Seat;
-import com.pickgo.domain.area.seat.entity.SeatStatus;
-import com.pickgo.domain.area.seat.repository.SeatRepository;
+import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -41,7 +38,7 @@ public class TestDataInit {
     private final PerformanceRepository performanceRepository;
     private final PerformanceSessionRepository sessionRepository;
     private final PerformanceAreaRepository areaRepository;
-    private final SeatRepository seatRepository;
+    private final ReservedSeatRepository seatRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -59,7 +56,7 @@ public class TestDataInit {
             PerformanceRepository performanceRepository,
             PerformanceSessionRepository sessionRepository,
             PerformanceAreaRepository areaRepository,
-            SeatRepository seatRepository
+            ReservedSeatRepository seatRepository
     ) {
         this.memberRepository = memberRepository;
         this.venueRepository = venueRepository;
@@ -119,39 +116,21 @@ public class TestDataInit {
                         .build()
         );
 
-        // 5. 구역 및 좌석
+        // 5. 구역
         PerformanceArea area = areaRepository.save(
                 PerformanceArea.builder()
                         .performance(performance)
                         .name(AreaName.A)
                         .grade(AreaGrade.ROYAL)
                         .price(10000)
+                        .rowCount(15)
+                        .colCount(10)
                         .build()
         );
 
-        Seat seat1 = seatRepository.save(
-                Seat.builder()
-                        .row("A")
-                        .number(1)
-                        .status(SeatStatus.AVAILABLE)
-                        .performanceArea(area)
-                        .performanceSession(session)
-                        .build()
-        );
-
-        Seat seat2 = seatRepository.save(
-                Seat.builder()
-                        .row("A")
-                        .number(2)
-                        .status(SeatStatus.AVAILABLE)
-                        .performanceArea(area)
-                        .performanceSession(session)
-                        .build()
-        );
-
-        return new TestData(member, session, List.of(seat1, seat2));
+        return new TestData(member, session, area);
     }
 
-    public record TestData(Member member, PerformanceSession session, List<Seat> seats) {
+    public record TestData(Member member, PerformanceSession session, PerformanceArea area) {
     }
 }

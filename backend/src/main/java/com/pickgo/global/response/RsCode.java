@@ -48,15 +48,15 @@ public enum RsCode {
     FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
     FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다."),
     // SEAT
-    SEAT_CONFLICT(RsConstant.CONFLICT, "동시 요청으로 인해 좌석 예약에 실패했습니다. 다시 시도해주세요."),
+    SEAT_CONFLICT(RsConstant.CONFLICT, "이미 예약된 좌석이 포함되어 있습니다."),
+    INVALID_SEAT_POSITION(RsConstant.BAD_REQUEST, "유효하지 않은 좌석입니다."),
 
     // Payment
     PAYMENT_INTEGRITY_ERROR(RsConstant.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     PAYMENT_TOSS_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 승인 실패"),
     PAYMENT_TOSS_CANCEL_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 취소 실패"),
-    INVALID_PAYMENT_STATE(RsConstant.BAD_REQUEST,"결제 상태가 부적합 합니다."),
-    PAYMENT_EXPIRED(RsConstant.BAD_REQUEST,"결제 가능 시간이 초과되었습니다."),
-    ;
+    INVALID_PAYMENT_STATE(RsConstant.BAD_REQUEST, "결제 상태가 부적합 합니다."),
+    PAYMENT_EXPIRED(RsConstant.BAD_REQUEST, "결제 가능 시간이 초과되었습니다.");
 
     private final Integer code;
     private final String message;
