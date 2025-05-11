@@ -6,6 +6,8 @@ import SimpleCalendar from "@/components/ui/simple-calendar"
 import ShowInfo from "@/components/show/ShowInfo"
 import ReviewSection from "@/components/review/ReviewSection"
 import { PageLayout } from "@/layout/PageLayout"
+import { usePostDetail } from "@/hooks/usePostDetail"
+import { getDurationStr } from "@/lib/date"
 
 // 공연 데이터 목업
 const getShowData = (id: string) => {
@@ -55,7 +57,7 @@ export function ShowDetail() {
   }
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const showData = getShowData(id)
+  const { post: showData, isLoading, error } = usePostDetail({ id: Number(id) })
 
   // 날짜 선택 핸들러
   const handleDateSelect = (date: Date) => {
@@ -71,6 +73,18 @@ export function ShowDetail() {
     )
   }, [selectedDate])
 
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>
+  }
+
+  if (!showData || !showData.id) {
+    return <div>데이터가 없습니다</div>
+  }
+
   return (
     <PageLayout>
       {/* 공연 상세 정보 */}
@@ -82,7 +96,7 @@ export function ShowDetail() {
           <div className="md:col-span-1">
             <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md">
               <img
-                src={showData.posterUrl || "/placeholder.svg"}
+                src={showData.performance?.poster || "/placeholder.svg"}
                 alt={showData.title}
                 className="object-cover"
               />
@@ -96,38 +110,62 @@ export function ShowDetail() {
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">장소</div>
-                  <div className="col-span-2">{showData.venue}</div>
+                  <div className="col-span-2">
+                    {showData.performance?.venue?.name}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">주소</div>
-                  <div className="col-span-2">{showData.address}</div>
+                  <div className="col-span-2">
+                    {showData.performance?.venue?.address}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">공연 기간</div>
                   <div className="col-span-2">
-                    {showData.startDate} ~ {showData.endDate}
+                    {getDurationStr(
+                      showData.performance?.startDate,
+                      showData.performance?.endDate,
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">공연 시간</div>
-                  <div className="col-span-2">{showData.duration}</div>
+                  <div className="col-span-2">
+                    {showData.performance?.runtime}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">관람 연령</div>
-                  <div className="col-span-2">{showData.ageLimit}</div>
+                  <div className="col-span-2">
+                    최소 {showData.performance?.minAge}세
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">가격</div>
-                  <div className="col-span-2">{showData.price}</div>
+                  <div className="col-span-2">
+                    {showData.performance?.areas?.length &&
+                    showData.performance?.areas?.length > 0
+                      ? `${Math.min(
+                          ...showData.performance.areas.map(
+                            (area) => area.price ?? Number.POSITIVE_INFINITY,
+                          ),
+                        ).toLocaleString()}원`
+                      : "정보 없음"}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">상태</div>
-                  <div className="col-span-2">{showData.status}</div>
+                  <div className="col-span-2">
+                    {showData.performance?.state}
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 border-b pb-2">
+                {/* <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">제작사</div>
-                  <div className="col-span-2">{showData.producer}</div>
-                </div>
+                  <div className="col-span-2">
+                    {showData.performance?.}
+                  </div>
+                </div> */}
               </div>
 
               {/* 캘린더 */}
@@ -168,8 +206,8 @@ export function ShowDetail() {
             </TabsList>
             <TabsContent value="info">
               <ShowInfo
-                description={showData.description}
-                detailImages={showData.detailImages}
+                description={showData.content ?? ""}
+                detailImages={showData.performance?.introImages ?? []}
               />
             </TabsContent>
             <TabsContent value="reviews">
