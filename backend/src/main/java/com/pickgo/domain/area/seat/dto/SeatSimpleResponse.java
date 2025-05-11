@@ -1,6 +1,6 @@
 package com.pickgo.domain.area.seat.dto;
 
-import com.pickgo.domain.area.seat.entity.Seat;
+import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import lombok.Builder;
 
@@ -9,18 +9,20 @@ import java.time.LocalDateTime;
 @Builder
 public record SeatSimpleResponse(
         Long id,
+        String AreaName,
         String row,
         Integer number,
         SeatStatus status,
-        LocalDateTime created_at
+        LocalDateTime createdAt
 ) {
-    public static SeatSimpleResponse from(Seat seat) {
+    public static SeatSimpleResponse from(ReservedSeat seat) {
         return SeatSimpleResponse.builder()
                 .id(seat.getId())
+                .AreaName(seat.getPerformanceArea().getName().getValue())
                 .row(seat.getRow())
                 .number(seat.getNumber())
                 .status(seat.getStatus())
-                .created_at(seat.getCreatedAt())
+                .createdAt(seat.getCreatedAt())
                 .build();
     }
 }

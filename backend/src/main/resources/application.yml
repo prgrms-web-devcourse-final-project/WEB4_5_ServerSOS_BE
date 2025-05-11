@@ -27,6 +27,11 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 custom:
   jwt:
     issuer: ${JWT_ISSUER}
@@ -52,6 +57,10 @@ custom:
       authorize-uri: ${KAKAO_AUTHORIZE_URI:https://kauth.kakao.com/oauth/authorize}
       token-uri: ${KAKAO_TOKEN_URI:https://kauth.kakao.com/oauth/token}
       user-info-uri: ${KAKAO_USER_INFO_URI:https://kapi.kakao.com/v2/user/me}
+
+  toss:
+    client_key: ${TOSS_PAYMENT_CLIENT_KEY}
+    secret_key: ${TOSS_PAYMENT_SECRET_KEY}
 
 kopis:
   apikey: ${KOPIS_APIKEY}

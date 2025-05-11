@@ -18,16 +18,16 @@ public enum RsCode {
     UNAUTHENTICATED(RsConstant.UNAUTHORIZED, "인증이 실패했습니다."),
     UNAUTHORIZED(RsConstant.FORBIDDEN, "접근 권한이 없습니다."),
     //Performance
-    PERFORMANCE_NOT_FOUND(RsConstant.PERFORMANCE_NOT_FOUND, "공연 정보가 없습니다."),
+    PERFORMANCE_NOT_FOUND(RsConstant.NOT_FOUND, "공연 정보가 없습니다."),
 
     //Post
-    POST_NOT_FOUND(RsConstant.POST_NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    POST_NOT_FOUND(RsConstant.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 
-    //Review
-    REVIEW_CREATED(RsConstant.REVIEW_CREATED, "리뷰가 등록되었습니다."),
-    REVIEW_DELETED(RsConstant.REVIEW_DELETED, "리뷰가 삭제되었습니다."),
-    REVIEW_UPDATED(RsConstant.REVIEW_UPDATED, "리뷰가 수정되었습니다."),// Review
-    REVIEW_NOT_BELONG_TO_POST(RsConstant.NOT_FOUND, "리뷰가 해당 게시글에 속해있지 않습니다."),
+	//Review
+	REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
+	REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
+	REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
+	REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
     REVIEW_ALREADY_LIKED(RsConstant.BAD_REQUEST, "이미 좋아요를 눌렀습니다."),
     REVIEW_NOT_LIKED_YET(RsConstant.NOT_FOUND, "좋아요를 누른 상태가 아닙니다."),
 
@@ -43,13 +43,22 @@ public enum RsCode {
     // RESERVATION
     RESERVATION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 예약 내역입니다."),
     RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다."),
+    RESERVATION_EXPIRED(RsConstant.BAD_REQUEST, "예매 가능 시간이 초과되었습니다. 다시 예약해주세요"),
+    INVALID_RESERVATION_STATE(RsConstant.BAD_REQUEST, "예약 상태가 부적합 합니다."),
 
     // S3
     FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
     FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다."),
     // SEAT
-    SEAT_CONFLICT(RsConstant.CONFLICT, "동시 요청으로 인해 좌석 예약에 실패했습니다. 다시 시도해주세요.");
+    SEAT_CONFLICT(RsConstant.CONFLICT, "이미 예약된 좌석이 포함되어 있습니다."),
+    INVALID_SEAT_POSITION(RsConstant.BAD_REQUEST, "유효하지 않은 좌석입니다."),
 
+    // Payment
+    PAYMENT_INTEGRITY_ERROR(RsConstant.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
+    PAYMENT_TOSS_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 승인 실패"),
+    PAYMENT_TOSS_CANCEL_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "토스 결제 취소 실패"),
+    INVALID_PAYMENT_STATE(RsConstant.BAD_REQUEST, "결제 상태가 부적합 합니다."),
+    PAYMENT_EXPIRED(RsConstant.BAD_REQUEST, "결제 가능 시간이 초과되었습니다.");
 
     private final Integer code;
     private final String message;

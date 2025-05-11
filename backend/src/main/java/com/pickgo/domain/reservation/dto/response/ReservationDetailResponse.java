@@ -8,7 +8,6 @@ import com.pickgo.domain.performance.entity.Performance;
 import com.pickgo.domain.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
-import com.pickgo.domain.venue.entity.Venue;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -41,8 +40,8 @@ public record ReservationDetailResponse(
                 .performance(PerformanceInfo.from(performance))
                 .session(PerformanceSessionInfo.from(session))
                 .venue(VenueInfo.from(performance.getVenue()))
-                .seats(reservation.getPendingSeats().stream()
-                        .map(p -> SeatSimpleResponse.from(p.getSeat()))
+                .seats(reservation.getReservedSeats().stream()
+                        .map(SeatSimpleResponse::from)
                         .toList())
                 .build();
     }

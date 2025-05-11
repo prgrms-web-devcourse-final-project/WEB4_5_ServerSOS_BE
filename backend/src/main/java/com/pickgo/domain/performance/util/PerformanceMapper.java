@@ -3,8 +3,6 @@ package com.pickgo.domain.performance.util;
 import com.pickgo.domain.area.area.entity.AreaGrade;
 import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
-import com.pickgo.domain.area.seat.entity.Seat;
-import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.kopis.dto.KopisPerformanceDetailResponse;
 import com.pickgo.domain.performance.entity.*;
 import com.pickgo.domain.venue.entity.Venue;
@@ -44,7 +42,6 @@ public class PerformanceMapper {
         performance.setPerformanceAreas(areas);
 
         List<PerformanceSession> sessions = toPerformanceSession(response.getSchedule(), performance);
-        createPerformanceSessions(sessions, areas);
         performance.setPerformanceSessions(sessions);
 
         return performance;
@@ -94,9 +91,13 @@ public class PerformanceMapper {
             List<LocalTime> times = scheduleMap.get(dayOfWeek);
             if (times != null) {
                 for (LocalTime time : times) {
+                    LocalDateTime performanceTime = LocalDateTime.of(date, time);
+                    LocalDateTime reserveOpenAt = performanceTime.minusDays(30);
+
                     sessions.add(PerformanceSession.builder()
                             .performance(performance)
-                            .performanceTime(LocalDateTime.of(date, time))
+                            .performanceTime(performanceTime)
+                            .reserveOpenAt(reserveOpenAt)
                             .build());
                 }
             }
@@ -191,13 +192,13 @@ public class PerformanceMapper {
         AreaName areaName;
         AreaGrade areaGrade;
         int rowCount;
-        int seatCountPerRow;
+        int colCount;
 
-        public AreaConfig(AreaName areaName, AreaGrade areaGrade, int rowCount, int seatCountPerRow) {
+        public AreaConfig(AreaName areaName, AreaGrade areaGrade, int rowCount, int colCount) {
             this.areaName = areaName;
             this.areaGrade = areaGrade;
             this.rowCount = rowCount;
-            this.seatCountPerRow = seatCountPerRow;
+            this.colCount = colCount;
         }
     }
 
@@ -217,54 +218,15 @@ public class PerformanceMapper {
             PerformanceArea area = PerformanceArea.builder()
                     .name(config.areaName)
                     .grade(config.areaGrade)
-                    .price(100000) // 필요 시 구역별로 다르게
+                    .price(100000)
+                    .rowCount(config.rowCount)
+                    .colCount(config.colCount)
                     .performance(performance)
                     .build();
 
-            List<Seat> seats = createSeats(area, config.rowCount, config.seatCountPerRow);
-            area.setSeats(seats);
             performanceAreas.add(area);
         }
 
         return performanceAreas;
-    }
-
-    // 좌석 생성 및 구역과 연결
-    private static List<Seat> createSeats(PerformanceArea area, int numRows, int numCols) {
-        List<Seat> seats = new ArrayList<>();
-
-        for (int r = 0; r < numRows; r++) {
-            char rowChar = (char) ('A' + r);
-            for (int number = 1; number <= numCols; number++) {
-                seats.add(Seat.builder()
-                        .row(String.valueOf(rowChar))
-                        .number(number)
-                        .performanceArea(area)
-                        .status(SeatStatus.AVAILABLE)
-                        .build());
-            }
-        }
-
-        return seats;
-    }
-
-    // 회차 별 좌석 생성 및 구역과 연결
-    private static void createPerformanceSessions(List<PerformanceSession> sessions, List<PerformanceArea> areas) {
-        for (PerformanceSession session : sessions) {
-            List<Seat> sessionSeats = new ArrayList<>();
-            for (PerformanceArea area : areas) {
-                for (Seat seat : area.getSeats()) {
-                    sessionSeats.add(Seat.builder()
-                            .row(seat.getRow())
-                            .number(seat.getNumber())
-                            .performanceSession(session)
-                            .performanceArea(area)
-                            .status(SeatStatus.AVAILABLE)
-                            .build());
-                    seat.setPerformanceSession(session);
-                }
-            }
-            session.setSeats(sessionSeats);
-        }
     }
 }

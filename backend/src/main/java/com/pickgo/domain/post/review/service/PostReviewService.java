@@ -17,6 +17,8 @@ import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.jwt.JwtProvider;
 import com.pickgo.global.response.RsCode;
 import jakarta.persistence.EntityNotFoundException;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -111,21 +115,20 @@ public class PostReviewService {
 
     @Transactional
     public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, PostReviewUpdateRequest request) {
-        Review review = postReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
-
-        isEqualId(review, postId);
+        //리뷰 조회 및 게시글 ID 일치 여부 검증
+        Review review = getReviewByIdAndValidatePost(reviewId, postId);
+       // 내용 수정
         review.setContent(request.getContent());
 
         return PostReviewSimpleResponse.fromEntity(review);
     }
 
+    /*
+     리뷰 삭제
+     */
     @Transactional
     public void deleteReview(Long postId, Long reviewId) {
-        Review review = postReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
-
-        isEqualId(review, postId); // 리뷰가 해당 게시글에 속해있는지 확인
+        Review review = getReviewByIdAndValidatePost(reviewId, postId);
         postReviewRepository.delete(review);
     }
 
@@ -166,10 +169,32 @@ public class PostReviewService {
         reviewLikeRepository.delete(like);
     }
 
-    public void isEqualId(Review review, Long postId) {
-        if (!review.getPost().getId().equals(postId)) {
-            throw new BusinessException(RsCode.REVIEW_NOT_BELONG_TO_POST);
-        }
+    /*
+     예외처리 메서드
+     게시글 ID로 조회 ,예외처리
+     */
+    private Post getPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(RsCode.POST_NOT_FOUND));
     }
+    /*
+    회원 ID로 조회 + 예외처리
+     */
+    private Member getMemberById(UUID memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(RsCode.MEMBER_NOT_FOUND));
+    }
+    /*
+    리뷰 ID로 조회하고 + 해당하는 리뷰가 해당 게시글에 속해 있는지 검증 및 예외처리
+     */
+    private Review getReviewByIdAndValidatePost(Long reviewId, Long postId) {
+        Review review = postReviewRepository.findById(reviewId)
+                .orElseThrow(() -> new BusinessException(RsCode.REVIEW_NOT_FOUND));
 
+        if (!review.getPost().getId().equals(postId)) {
+            throw new BusinessException(RsCode.REVIEW_NOT_FOUND);
+        }
+
+        return review;
+    }
 }
