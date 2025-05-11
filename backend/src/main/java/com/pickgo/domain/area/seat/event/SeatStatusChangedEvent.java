@@ -9,4 +9,8 @@ public class SeatStatusChangedEvent {
     public SeatStatusChangedEvent(ReservedSeat seat) {
         this.seat = seat;
     }
+
+    public ReservedSeat getSeat() {
+        return seat;
+    }
 }

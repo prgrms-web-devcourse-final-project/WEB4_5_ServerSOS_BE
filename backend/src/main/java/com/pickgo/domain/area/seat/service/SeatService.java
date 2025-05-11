@@ -11,6 +11,7 @@ public class SeatService {
     private final SeatNotificationService seatNotificationService;
 
     public SseEmitter subscribeToSeatUpdates(Long sessionId) {
+
         return seatNotificationService.subscribe(sessionId);
     }
 }

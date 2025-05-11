@@ -4,7 +4,6 @@ import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
-import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -90,10 +89,9 @@ public class ReservationService {
                     .status(SeatStatus.PENDING)
                     .build();
 
+            reservedSeat.setPerformanceSession(performanceSession); //세션 먼저 세팅
             reservedSeats.add(reservedSeat);
-            reservedSeats.forEach(
-                    seat -> applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat))
-            );
+
         }
 
         // 여기부터 예약 트랜지션이므로 하나로 묶어야함
