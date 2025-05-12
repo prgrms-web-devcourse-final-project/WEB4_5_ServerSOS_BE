@@ -4,6 +4,7 @@ import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
@@ -119,6 +120,11 @@ public class ReservationService {
             reservationRepository.save(reservation);
             seatRepository.saveAll(reservedSeats);
 
+            //예약 직후에 이벤트를 발행 (좌석이 점유되었음을 알림)
+            reservedSeats.forEach(seat -> {
+                applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+            });
+
             return ReservationSimpleResponse.from(reservation);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(SEAT_CONFLICT);
@@ -162,6 +168,11 @@ public class ReservationService {
             throw new BusinessException(RsCode.INVALID_RESERVATION_STATE);
         }
 
+        //삭제 되기전에 , 좌석 해제 이벤트를 발행하고, 프론트에서 이벤트를 받으면 좌석을 활성화하는 방식 , 예약 삭제 -> 좌석 선택 가능
+        reservation.getReservedSeats().forEach(seat -> {
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+        });
+
         // 3. 좌석 및 예약 삭제
         reservationRepository.delete(reservation);
     }
@@ -184,8 +195,14 @@ public class ReservationService {
             paymentService.cancelPayment(payment.getId());
         }
 
+
         // 3. 예약 상태 변경
         reservation.cancel();
+
+        //예약 취소시 좌석 해제 했다는 알림 발송,
+        reservation.getReservedSeats().forEach(seat -> {
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+        });
 
         // 4. 좌석 삭제
         reservation.getReservedSeats().clear();
