@@ -21,18 +21,15 @@ public class RedisEntryRepository implements EntryRepository {
 
 	private static final String ENTRY_STATE_PREFIX = "entry_state:"; // 입장 상태 (PENDING, ACTIVE)
 	private static final int MAX_ENTRY_SIZE = 1; // 한번에 입장 가능한 사용자 수
-	private static final int MAX_PENDING_TIMEOUT_MINUTES = 1; // 입장 후 API 호출 전까지 대기시간
-	private static final int MAX_ACTIVE_TIMEOUT_MINUTES = 20; // 입장 후 결제 완료까지 제한시간
+	public static final int MAX_PENDING_TIMEOUT_MINUTES = 1; // 입장 후 API 호출 전까지 대기시간
+	public static final int MAX_ACTIVE_TIMEOUT_MINUTES = 20; // 입장 후 결제 완료까지 제한시간
 
 	private final StringRedisTemplate redisTemplate;
 
 	@Override
 	public void add(UUID userId) {
-		String stateKey = stateKey(userId);
-
 		// PENDING 상태로 입장
-		redisTemplate.opsForValue()
-			.set(stateKey, PENDING.name(), Duration.ofMinutes(MAX_PENDING_TIMEOUT_MINUTES));
+		setState(userId, PENDING, MAX_PENDING_TIMEOUT_MINUTES);
 	}
 
 	@Override
@@ -79,8 +76,8 @@ public class RedisEntryRepository implements EntryRepository {
 	}
 
 	@Override
-	public void setState(UUID userId, EntryState state) {
-		redisTemplate.opsForValue().set(stateKey(userId), state.name());
+	public void setState(UUID userId, EntryState state, int timeout) {
+		redisTemplate.opsForValue().set(stateKey(userId), state.name(), Duration.ofMinutes(timeout));
 	}
 
 	@Override

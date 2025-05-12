@@ -1,6 +1,7 @@
 package com.pickgo.global.jwt;
 
 import static com.pickgo.domain.queue.enums.EntryState.*;
+import static com.pickgo.domain.queue.repository.redis.RedisEntryRepository.*;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -56,7 +57,7 @@ public class EntryAuthenticationFilter extends OncePerRequestFilter {
 
 		// 상태가 null이거나 PENDING인 경우 토큰 검증 후 ACTIVE로 전환
 		validateEntryToken(request);
-		entryRepository.setState(userId, ACTIVE);
+		entryRepository.setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
 		filterChain.doFilter(request, response);
 	}
 

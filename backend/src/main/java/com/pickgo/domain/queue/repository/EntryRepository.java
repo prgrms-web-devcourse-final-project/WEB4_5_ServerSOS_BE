@@ -21,7 +21,7 @@ public interface EntryRepository {
 
 	Set<UUID> getAll();
 
-	void setState(UUID userId, EntryState state);
+	void setState(UUID userId, EntryState state, int timeout);
 
 	EntryState getState(UUID userId);
 

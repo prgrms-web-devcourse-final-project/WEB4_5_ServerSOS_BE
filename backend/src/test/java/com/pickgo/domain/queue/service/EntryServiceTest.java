@@ -1,6 +1,7 @@
 package com.pickgo.domain.queue.service;
 
 import static com.pickgo.domain.queue.enums.EntryState.*;
+import static com.pickgo.domain.queue.repository.redis.RedisEntryRepository.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -62,8 +63,8 @@ class EntryServiceTest {
 
 	@Test
 	void setState_success() {
-		entryService.setState(userId, ACTIVE);
-		verify(entryRepository).setState(userId, ACTIVE);
+		entryService.setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
+		verify(entryRepository).setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
 	}
 
 	@Test

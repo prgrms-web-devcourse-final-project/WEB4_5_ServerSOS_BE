@@ -36,8 +36,8 @@ public class EntryService {
 		return entryRepository.getAll();
 	}
 
-	public void setState(UUID userId, EntryState state) {
-		entryRepository.setState(userId, state);
+	public void setState(UUID userId, EntryState state, int timeout) {
+		entryRepository.setState(userId, state, timeout);
 	}
 
 	public EntryState getState(UUID userId) {
