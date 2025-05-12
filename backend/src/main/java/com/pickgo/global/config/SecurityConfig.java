@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.pickgo.global.exception.jwt.JwtAccessDeniedHandler;
 import com.pickgo.global.exception.jwt.JwtAuthenticationEntryPoint;
+import com.pickgo.global.jwt.EntryAuthenticationFilter;
 import com.pickgo.global.jwt.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+	private final EntryAuthenticationFilter entryAuthenticationFilter;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -48,6 +50,7 @@ public class SecurityConfig {
 			.sessionManagement(configurer ->
 				configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // STATELESS 방식
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // jwt 필터 추가
+			.addFilterAfter(entryAuthenticationFilter, JwtAuthenticationFilter.class) // 인증 필터 추가
 			.exceptionHandling(exceptionHandling ->
 				exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)) // 인증 실패 시 수행할 작업 설정
 			.exceptionHandling(exceptionHandling ->
@@ -62,7 +65,7 @@ public class SecurityConfig {
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 사용
 		configuration.setAllowCredentials(true); // 헤더에 인증정보 포함 허용
-		configuration.addExposedHeader("Authorization"); // 브라우저가 Authorization 헤더를 읽을 수 있음
+		configuration.setExposedHeaders(List.of("Authorization", "EntryAuth")); // 브라우저가 지정한 헤더를 읽을 수 있음
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration); // 모든 엔드포인트에 대해 CORS 설정 적용
