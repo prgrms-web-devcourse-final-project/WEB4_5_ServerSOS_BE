@@ -7,6 +7,7 @@ import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import com.pickgo.global.response.RsData;
@@ -27,6 +28,11 @@ public class GlobalExceptionHandler {
             final BusinessException exception
     ) {
         return RsData.from(exception.getRsCode());
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncTimeout(AsyncRequestNotUsableException exception) {
+        logWarn(exception);
     }
 
     @ExceptionHandler(AsyncRequestTimeoutException.class)
