@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SSE 좌석 상태 실시간 테스트</title>
+    <style>
+        .seat {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            border: 1px solid #333;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+        }
+        .available { background-color: #d4edda; } /* 초록색 */
+        .pending { background-color: #fff3cd; }    /* 연노랑 */
+        .reserved { background-color: #f8d7da; }   /* 연분홍 */
+    </style>
+</head>
+<body>
+<h2>실시간 좌석 상태</h2>
+<div id="seat-container">
+    <!-- 좌석 예시 (row=A, number=1~5) -->
+    <div class="seat pending" id="seat-A-1">A1</div>
+    <div class="seat pending" id="seat-A-2">A2</div>
+    <div class="seat pending" id="seat-A-3">A3</div>
+    <div class="seat pending" id="seat-A-4">A4</div>
+    <div class="seat pending" id="seat-A-5">A5</div>
+</div>
+
+<script>
+    const sessionId = 1;
+    const eventSource = new EventSource(`http://localhost:8080/api/areas/subscribe?sessionId=${sessionId}`);
+
+    eventSource.addEventListener("seat-update", (event) => {
+        const data = JSON.parse(event.data);
+
+        const row = data.row;
+        const number = data.number;
+        const statusEnum = data.status; // SeatStatus (예: "PENDING", "RESERVED", null)
+
+        const status = statusEnum ? statusEnum.toLowerCase() : null;
+
+        console.log(`[DEBUG] 수신된 좌석: ${row}${number}, 상태: ${statusEnum}`);
+
+        const seatElement = document.getElementById(`seat-${row}-${number}`);
+        if (!seatElement) return;
+
+        seatElement.classList.remove("pending", "reserved", "available");
+
+        if (status === "pending" || status === "reserved") {
+            seatElement.classList.add(status);
+        } else {
+            seatElement.classList.add("available");
+        }
+    });
+
+    eventSource.onerror = (e) => {
+        console.error("SSE 연결 오류", e);
+    };
+</script>
+</body>
+</html>

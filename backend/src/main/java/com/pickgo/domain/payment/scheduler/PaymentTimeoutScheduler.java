@@ -41,6 +41,7 @@ public class PaymentTimeoutScheduler {
 
             // 좌석 해제 알림 이벤트 발행 (결제가 생성된지 10분이 지난 경우 이벤트 발행)
             reservation.getReservedSeats().forEach(seat -> {
+                reservation.setStatus(ReservationStatus.EXPIRED);
                 applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
             });
 
