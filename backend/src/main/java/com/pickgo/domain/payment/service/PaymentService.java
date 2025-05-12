@@ -1,5 +1,6 @@
 package com.pickgo.domain.payment.service;
 
+import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
@@ -14,6 +15,7 @@ import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +34,7 @@ public class PaymentService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final TossService tossService;
+    private final LogWriter logWriter;
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
@@ -47,6 +50,8 @@ public class PaymentService {
 
         Payment payment = request.toEntity(reservation, orderId);
         paymentRepository.save(payment);
+
+        logWriter.writePaymentLog(payment, ActionType.PAYMENT_CREATED);
 
         return PaymentDetailResponse.from(payment);
     }
@@ -93,6 +98,8 @@ public class PaymentService {
 
         // 상태 변경
         payment.cancel();
+
+        logWriter.writePaymentLog(payment,ActionType.PAYMENT_CANCELED);
     }
 
     // BusinessException이 발생하면 트랜잭션이 롤백되므로 noRollbackFor 설정. FAILED 상태 저장용
@@ -140,6 +147,8 @@ public class PaymentService {
 
         // 3. 좌석 상태 변경
         reservation.completeSeats();
+
+        logWriter.writePaymentLog(payment,ActionType.PAYMENT_COMPLETED);
 
         return PaymentDetailResponse.from(payment);
     }

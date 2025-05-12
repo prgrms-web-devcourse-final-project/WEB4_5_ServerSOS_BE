@@ -1,11 +1,16 @@
 package com.pickgo.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.entity.MemberHistory;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.dto.MemberPasswordUpdateRequest;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.global.logging.service.HistorySaveService;
 import com.pickgo.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.pickgo.domain.member.entity.enums.Authority.USER;
 import static com.pickgo.domain.member.entity.enums.SocialProvider.NONE;
 import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +56,12 @@ public class MemberControllerTest {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private HistorySaveService historySaveService;
+
+	@Autowired
+	private MemberHistoryRepository memberHistoryRepository;
 
 	// 회원가입된 기존 유저
 	private final String testEmail = "test@example.com";
@@ -96,6 +108,11 @@ public class MemberControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
 			.andExpect(jsonPath("$.data.email").value(NEW_EMAIL));
+
+		MemberHistory history = memberHistoryRepository.findAll().get(0);
+		assertThat(history.getEmail()).isEqualTo(NEW_EMAIL);
+		assertThat(history.getAction()).isEqualTo(ActionType.MEMBER_SIGNUP);
+		assertThat(history.getActorType()).isEqualTo(ActorType.GUEST);
 	}
 
 	@Test
@@ -123,6 +140,10 @@ public class MemberControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
 			.andExpect(jsonPath("$.data.accessToken").exists());
+
+		MemberHistory history = memberHistoryRepository.findAll().get(0);
+		assertThat(history.getAction()).isEqualTo(ActionType.MEMBER_SIGNUP);
+		assertThat(history.getActorType()).isEqualTo(ActorType.GUEST);
 	}
 
 	@Test
