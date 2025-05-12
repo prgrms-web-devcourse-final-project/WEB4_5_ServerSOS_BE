@@ -148,7 +148,7 @@ public class PaymentService {
         reservation.getReservedSeats().forEach(seat -> {
             seat.setStatus(SeatStatus.RESERVED);        // 1. 좌석 상태 변경
             reservedSeatRepository.save(seat);          // 2. 좌석 상태 DB 반영
-            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트를 spring에 발행, 구독하고 있는 SSE리스너가 변경 감지 -> 알림 발송
         });
 
         return PaymentDetailResponse.from(payment);

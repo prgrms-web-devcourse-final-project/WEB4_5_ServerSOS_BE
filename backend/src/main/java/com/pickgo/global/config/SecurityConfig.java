@@ -41,7 +41,7 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable) // Form 기반 로그인 비활성화
 			.anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 처리 비활성화
 			.authorizeHttpRequests(auth -> auth
-					.requestMatchers("/api/areas/subscribe").permitAll()
+					.requestMatchers("/api/areas/subscribe").permitAll() // 자유롭게 구독하기 위해서 열어둠
 				.requestMatchers("/api/admin/**").hasRole("ADMIN") // 권한 검증
 				.anyRequest().permitAll()) // 그 외는 jwt 필터로 인증 검증
 			.sessionManagement(configurer ->
