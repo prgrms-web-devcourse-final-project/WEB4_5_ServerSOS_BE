@@ -13,27 +13,27 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class SwaggerConfig {
 
-	@Bean
-	public OpenAPI openApi() {
-		Info info = new Info()
-			.title("PickGO API Document")
-			.version("1.0.0");
+    @Bean
+    public OpenAPI openApi() {
+        Info info = new Info()
+            .title("PickGO API Document")
+            .version("1.0.0");
 
-		String jwtSchemeName = "Authorization";
+        String jwtSchemeName = "Authorization";
 
-		SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
 
-		Components components = new Components()
-			.addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-				.name(jwtSchemeName)
-				.type(SecurityScheme.Type.HTTP)
-				.scheme("Bearer")
-				.bearerFormat("JWT"));
+        Components components = new Components()
+            .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                .name(jwtSchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("Bearer")
+                .bearerFormat("JWT"));
 
-		return new OpenAPI()
-			.addServersItem(new Server().url("/"))
-			.addSecurityItem(securityRequirement)
-			.components(components)
-			.info(info);
-	}
+        return new OpenAPI()
+            .addServersItem(new Server().url("/"))
+            .addSecurityItem(securityRequirement)
+            .components(components)
+            .info(info);
+    }
 }

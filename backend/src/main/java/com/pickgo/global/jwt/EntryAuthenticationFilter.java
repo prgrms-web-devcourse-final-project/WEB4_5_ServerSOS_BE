@@ -26,50 +26,50 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EntryAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final String HEADER_ENTRY_AUTH = "EntryAuth";
-	private final JwtProvider jwtProvider;
-	private final EntryRepository entryRepository;
+    private static final String HEADER_ENTRY_AUTH = "EntryAuth";
+    private final JwtProvider jwtProvider;
+    private final EntryRepository entryRepository;
 
-	@Override
-	protected void doFilterInternal(
-		HttpServletRequest request,
-		@NonNull HttpServletResponse response,
-		@NonNull FilterChain filterChain) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        @NonNull HttpServletResponse response,
+        @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-		// 인증할 경로 설정
-		if (!(request.getRequestURI().equals("/api/payments")
-			|| request.getRequestURI().equals("/api/payments/confirm")
-			|| request.getRequestURI().equals("/api/areas")
-			|| request.getRequestURI().equals("/api/reservations")
-		)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+        // 인증할 경로 설정
+        if (!(request.getRequestURI().equals("/api/payments")
+            || request.getRequestURI().equals("/api/payments/confirm")
+            || request.getRequestURI().equals("/api/areas")
+            || request.getRequestURI().equals("/api/reservations")
+        )) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-		UUID userId = getUserIdFromSecurityContext();
-		EntryState state = entryRepository.getState(userId);
+        UUID userId = getUserIdFromSecurityContext();
+        EntryState state = entryRepository.getState(userId);
 
-		// ACTIVE 상태인 경우 통과
-		if (state == ACTIVE) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+        // ACTIVE 상태인 경우 통과
+        if (state == ACTIVE) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-		// 상태가 null이거나 PENDING인 경우 토큰 검증 후 ACTIVE로 전환
-		validateEntryToken(request);
-		entryRepository.setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
-		filterChain.doFilter(request, response);
-	}
+        // 상태가 null이거나 PENDING인 경우 토큰 검증 후 ACTIVE로 전환
+        validateEntryToken(request);
+        entryRepository.setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
+        filterChain.doFilter(request, response);
+    }
 
-	private void validateEntryToken(HttpServletRequest request) {
-		String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
-		String entryToken = jwtProvider.getAccessToken(entryAuthHeader);
-		jwtProvider.validateToken(entryToken);
-	}
+    private void validateEntryToken(HttpServletRequest request) {
+        String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
+        String entryToken = jwtProvider.getAccessToken(entryAuthHeader);
+        jwtProvider.validateToken(entryToken);
+    }
 
-	private UUID getUserIdFromSecurityContext() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		MemberPrincipal principal = (MemberPrincipal)authentication.getPrincipal();
-		return principal.id();
-	}
+    private UUID getUserIdFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MemberPrincipal principal = (MemberPrincipal)authentication.getPrincipal();
+        return principal.id();
+    }
 }

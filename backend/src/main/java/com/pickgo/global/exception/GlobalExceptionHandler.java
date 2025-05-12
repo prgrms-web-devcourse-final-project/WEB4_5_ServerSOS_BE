@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public RsData<?> handleBusinessException(
-            final BusinessException exception
+        final BusinessException exception
     ) {
         return RsData.from(exception.getRsCode());
     }
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public RsData<?> handleIllegalArgumentException(
-            final IllegalArgumentException exception
+        final IllegalArgumentException exception
     ) {
         logWarn(exception);
         return RsData.from(BAD_REQUEST);
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public RsData<?> handleMethodArgumentNotValidException(
-            final MethodArgumentNotValidException exception
+        final MethodArgumentNotValidException exception
     ) {
         logWarn(exception);
         return RsData.from(BAD_REQUEST);
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public RsData<?> handleInternalException(
-            final Exception exception
+        final Exception exception
     ) {
         logError(exception);
         return RsData.from(INTERNAL_SERVER);

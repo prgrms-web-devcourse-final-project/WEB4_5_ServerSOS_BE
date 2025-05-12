@@ -27,29 +27,29 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws
-		IOException {
-		writeUnauthorizedResponse(response, e);
-	}
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws
+        IOException {
+        writeUnauthorizedResponse(response, e);
+    }
 
-	public void commence(HttpServletRequest request, HttpServletResponse response, BusinessException e) throws
-		IOException {
-		writeUnauthorizedResponse(response, e);
-	}
+    public void commence(HttpServletRequest request, HttpServletResponse response, BusinessException e) throws
+        IOException {
+        writeUnauthorizedResponse(response, e);
+    }
 
-	private void writeUnauthorizedResponse(HttpServletResponse response, Exception e) throws IOException {
-		log.error("[AuthenticationException] ex", e);
+    private void writeUnauthorizedResponse(HttpServletResponse response, Exception e) throws IOException {
+        log.error("[AuthenticationException] ex", e);
 
-		response.setStatus(RsConstant.UNAUTHORIZED);
-		response.setContentType("application/json;charset=UTF-8");
-		String json = objectMapper.writeValueAsString(RsData.from(UNAUTHENTICATED));
+        response.setStatus(RsConstant.UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        String json = objectMapper.writeValueAsString(RsData.from(UNAUTHENTICATED));
 
-		try (PrintWriter writer = response.getWriter()) {
-			writer.write(json);
-			writer.flush(); // WAS가 클라이언트에게 즉시 응답
-		}
-	}
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(json);
+            writer.flush(); // WAS가 클라이언트에게 즉시 응답
+        }
+    }
 }

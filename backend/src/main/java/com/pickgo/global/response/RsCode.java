@@ -1,6 +1,7 @@
 package com.pickgo.global.response;
 
 import com.pickgo.global.exception.BusinessException;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,17 +24,16 @@ public enum RsCode {
     //Post
     POST_NOT_FOUND(RsConstant.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 
-	//Review
-	REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
-	REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
-	REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
-	REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
+    //Review
+    REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
+    REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
+    REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
+    REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
 
     // Member
     MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
     MEMBER_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 유저입니다."),
     MEMBER_ALREADY_EXISTS(RsConstant.BAD_REQUEST, "이미 존재하는 유저입니다."),
-
 
     // Performance
     PERFORMANCE_SESSION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 공연 회차입니다."),

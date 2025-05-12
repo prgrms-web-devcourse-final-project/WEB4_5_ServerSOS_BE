@@ -24,69 +24,65 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenService {
 
-	@Value("${custom.jwt.access_token.expiration_minutes}")
-	private long accessTokenExpirationMinutes;
+    private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
+    @Value("${custom.jwt.access_token.expiration_minutes}")
+    private long accessTokenExpirationMinutes;
+    @Value("${custom.jwt.refresh_token.expiration_minutes}")
+    private long refreshTokenExpirationMinutes;
+    @Value("${custom.jwt.entry_token.expiration_minutes}")
+    private long entryTokenExpirationMinutes;
+    @Value("${custom.http.secure}")
+    private boolean secure;
 
-	@Value("${custom.jwt.refresh_token.expiration_minutes}")
-	private long refreshTokenExpirationMinutes;
+    public TokenDetailResponse createAccessToken(String refreshToken) {
+        jwtProvider.validateToken(refreshToken);
 
-	@Value("${custom.jwt.entry_token.expiration_minutes}")
-	private long entryTokenExpirationMinutes;
+        UUID userId = jwtProvider.getUserId(refreshToken);
+        Member member = memberRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException(NOT_FOUND));
 
-	@Value("${custom.http.secure}")
-	private boolean secure;
+        return TokenDetailResponse.of(genAccessToken(member));
+    }
 
-	private final JwtProvider jwtProvider;
-	private final MemberRepository memberRepository;
+    public void createRefreshToken(Member member, HttpServletResponse response) {
+        String newRefreshToken = genRefreshToken(member);
+        addRefreshTokenCookie(response, newRefreshToken);
+    }
 
-	public TokenDetailResponse createAccessToken(String refreshToken) {
-		jwtProvider.validateToken(refreshToken);
+    public String genAccessToken(Member member) {
+        return jwtProvider.generateToken(member, Duration.ofMinutes(accessTokenExpirationMinutes));
+    }
 
-		UUID userId = jwtProvider.getUserId(refreshToken);
-		Member member = memberRepository.findById(userId)
-			.orElseThrow(() -> new BusinessException(NOT_FOUND));
+    public String genRefreshToken(Member member) {
+        return jwtProvider.generateToken(member, Duration.ofMinutes(refreshTokenExpirationMinutes));
+    }
 
-		return TokenDetailResponse.of(genAccessToken(member));
-	}
+    public String genEntryToken(Member member) {
+        return jwtProvider.generateToken(member, Duration.ofMinutes(entryTokenExpirationMinutes));
+    }
 
-	public void createRefreshToken(Member member, HttpServletResponse response) {
-		String newRefreshToken = genRefreshToken(member);
-		addRefreshTokenCookie(response, newRefreshToken);
-	}
+    private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+            .httpOnly(true)
+            .secure(secure)
+            .path("/")
+            .sameSite("None")
+            .maxAge(Duration.ofMinutes(refreshTokenExpirationMinutes))
+            .build();
 
-	public String genAccessToken(Member member) {
-		return jwtProvider.generateToken(member, Duration.ofMinutes(accessTokenExpirationMinutes));
-	}
+        response.setHeader("Set-Cookie", cookie.toString());
+    }
 
-	public String genRefreshToken(Member member) {
-		return jwtProvider.generateToken(member, Duration.ofMinutes(refreshTokenExpirationMinutes));
-	}
+    public void removeRefreshTokenCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(secure)
+            .path("/")
+            .sameSite("None")
+            .maxAge(0)
+            .build();
 
-	public String genEntryToken(Member member) {
-		return jwtProvider.generateToken(member, Duration.ofMinutes(entryTokenExpirationMinutes));
-	}
-
-	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-		ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-			.httpOnly(true)
-			.secure(secure)
-			.path("/")
-			.sameSite("None")
-			.maxAge(Duration.ofMinutes(refreshTokenExpirationMinutes))
-			.build();
-
-		response.setHeader("Set-Cookie", cookie.toString());
-	}
-
-	public void removeRefreshTokenCookie(HttpServletResponse response) {
-		ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-			.httpOnly(true)
-			.secure(secure)
-			.path("/")
-			.sameSite("None")
-			.maxAge(0)
-			.build();
-
-		response.setHeader("Set-Cookie", cookie.toString());
-	}
+        response.setHeader("Set-Cookie", cookie.toString());
+    }
 }

@@ -25,19 +25,19 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
-	private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws
-		IOException {
-		log.error("[AccessDeniedException] ex", e);
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws
+        IOException {
+        log.error("[AccessDeniedException] ex", e);
 
-		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-		response.setContentType("application/json;charset=UTF-8");
-		String json = objectMapper.writeValueAsString(RsData.from(UNAUTHORIZED));
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json;charset=UTF-8");
+        String json = objectMapper.writeValueAsString(RsData.from(UNAUTHORIZED));
 
-		PrintWriter writer = response.getWriter();
-		writer.write(json);
-		writer.flush(); // WAS가 클라이언트에게 즉시 응답
-	}
+        PrintWriter writer = response.getWriter();
+        writer.write(json);
+        writer.flush(); // WAS가 클라이언트에게 즉시 응답
+    }
 }

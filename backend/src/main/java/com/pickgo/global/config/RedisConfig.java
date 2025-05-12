@@ -12,22 +12,22 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Configuration
 public class RedisConfig {
 
-	@Value("${spring.data.redis.host}")
-	private String host;
+    @Value("${spring.data.redis.host}")
+    private String host;
 
-	@Value("${spring.data.redis.port}")
-	private int port;
+    @Value("${spring.data.redis.port}")
+    private int port;
 
-	@Bean
-	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
-		return new StringRedisTemplate(connectionFactory);
-	}
+    @Bean
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
+        return new StringRedisTemplate(connectionFactory);
+    }
 
-	@Bean
-	public RedissonClient redissonClient() {
-		Config config = new Config();
-		config.useSingleServer()
-			.setAddress("redis://" + host + ":" + port);
-		return Redisson.create(config);
-	}
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useSingleServer()
+            .setAddress("redis://" + host + ":" + port);
+        return Redisson.create(config);
+    }
 }
