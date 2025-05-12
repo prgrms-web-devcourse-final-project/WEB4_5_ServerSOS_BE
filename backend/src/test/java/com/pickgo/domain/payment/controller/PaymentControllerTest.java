@@ -182,6 +182,7 @@ public class PaymentControllerTest {
 
         mockMvc.perform(post("/api/payments")
                         .header("Authorization", "Bearer " + userToken)
+                .header("EntryAuth", "Bearer " + userToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())

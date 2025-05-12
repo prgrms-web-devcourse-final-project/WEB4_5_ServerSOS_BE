@@ -20,14 +20,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pickgo.domain.auth.service.TokenService;
 import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.queue.dto.AccessRequest;
 import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.queue.service.WaitingService;
 import com.pickgo.domain.queue.sse.SseEmitterHandler;
@@ -86,35 +84,12 @@ class WaitingControllerTest {
 	}
 
 	@Test
-	@DisplayName("대기열 입장 성공")
-	void enterWaitingLine_success() throws Exception {
-		mockMvc.perform(post("/api/queue/enter")
-				.header("Authorization", "Bearer " + token.userToken))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
-			.andExpect(jsonPath("$.data.position").exists());
-	}
-
-	@Test
-	@DisplayName("SSE 구독 성공")
+	@DisplayName("대기열 입장 및 SSE 구독 성공")
 	void subscribeWaitingStatus_success() throws Exception {
 		waitingService.enterWaitingLine(userIds.getFirst());
 		mockMvc.perform(get("/api/queue/stream")
 				.header("Authorization", "Bearer " + accessTokens.getFirst()))
 			.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("자원 접근 성공")
-	void accessResource_success() throws Exception {
-		AccessRequest request = new AccessRequest(token.userToken);
-
-		mockMvc.perform(post("/api/queue/access")
-				.header("Authorization", "Bearer " + token.userToken)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()));
 	}
 
 	@DisplayName("동시에 여러명 입장 요청 시 한명만 입장 처리")
@@ -127,7 +102,7 @@ class WaitingControllerTest {
 			final int idx = i;
 			executor.submit(() -> {
 				try {
-					mockMvc.perform(post("/api/queue/enter")
+					mockMvc.perform(get("/api/queue/stream")
 							.header("Authorization", "Bearer " + accessTokens.get(idx)))
 						.andExpect(status().isOk());
 
@@ -149,5 +124,16 @@ class WaitingControllerTest {
 
 		assertThat(entryService.getAll()).hasSize(1);
 		assertThat(waitingService.getLine()).hasSize(THREAD_COUNT - 1);
+	}
+
+	@Test
+	@DisplayName("결제 후 퇴장 성공")
+	void exit_success() throws Exception {
+		entryService.add(userIds.getFirst());
+
+		mockMvc.perform(post("/api/queue/exit")
+				.header("Authorization", "Bearer " + accessTokens.getFirst()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()));
 	}
 }
