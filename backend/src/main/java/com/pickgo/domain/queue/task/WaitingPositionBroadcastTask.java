@@ -20,29 +20,29 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class WaitingPositionBroadcastTask {
 
-	private final WaitingService waitingService;
-	private final SseEmitterHandler sseEmitterHandler;
+    private final WaitingService waitingService;
+    private final SseEmitterHandler sseEmitterHandler;
 
-	/**
-	 * 대기열 번호 브로드캐스트
-	 */
-	@Scheduled(fixedRate = 1000)
-	public void broadcast() throws IOException {
-		List<UUID> queue = waitingService.getLine();
-		for (int i = 0; i < queue.size(); i++) {
-			sendWaitingPosition(queue, i);
-		}
-	}
+    /**
+     * 대기열 번호 브로드캐스트
+     */
+    @Scheduled(fixedRate = 1000)
+    public void broadcast() throws IOException {
+        List<UUID> queue = waitingService.getLine();
+        for (int i = 0; i < queue.size(); i++) {
+            sendWaitingPosition(queue, i);
+        }
+    }
 
-	private void sendWaitingPosition(List<UUID> queue, int i) throws IOException {
-		UUID userId = queue.get(i);
-		SseEmitter emitter = sseEmitterHandler.getEmitter(userId);
-		if (emitter != null) {
-			emitter.send(
-				SseEmitter.event()
-					.name("wait")
-					.data(WaitingPosition.of(i + 1))
-			);
-		}
-	}
+    private void sendWaitingPosition(List<UUID> queue, int i) throws IOException {
+        UUID userId = queue.get(i);
+        SseEmitter emitter = sseEmitterHandler.getEmitter(userId);
+        if (emitter != null) {
+            emitter.send(
+                SseEmitter.event()
+                    .name("wait")
+                    .data(WaitingPosition.of(i + 1))
+            );
+        }
+    }
 }

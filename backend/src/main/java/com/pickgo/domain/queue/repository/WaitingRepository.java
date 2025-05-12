@@ -7,21 +7,21 @@ import java.util.UUID;
  * 대기열
  */
 public interface WaitingRepository {
-	int add(UUID userId);
+    int add(UUID userId);
 
-	UUID peek();
+    UUID peek();
 
-	boolean isEmpty();
+    boolean isEmpty();
 
-	Long getSize();
+    Long getSize();
 
-	void remove(UUID userId);
+    void remove(UUID userId);
 
-	int getPosition(UUID userId);
+    int getPosition(UUID userId);
 
-	List<UUID> getLine();
+    List<UUID> getLine();
 
-	void clear();
+    void clear();
 
-	boolean isIn(UUID userId);
+    boolean isIn(UUID userId);
 }

@@ -19,76 +19,74 @@ import com.pickgo.domain.queue.repository.WaitingRepository;
 @ExtendWith(MockitoExtension.class)
 class WaitingServiceTest {
 
-	@Mock
-	private WaitingRepository waitingRepository;
+    private final UUID userId = UUID.randomUUID();
+    @Mock
+    private WaitingRepository waitingRepository;
+    @InjectMocks
+    private WaitingService waitingService;
 
-	@InjectMocks
-	private WaitingService waitingService;
+    @Test
+    @DisplayName("대기열 입장 시 위치 반환")
+    void enterWaitingLine_success() {
+        when(waitingRepository.add(userId)).thenReturn(3);
 
-	private final UUID userId = UUID.randomUUID();
+        WaitingPosition result = waitingService.enterWaitingLine(userId);
 
-	@Test
-	@DisplayName("대기열 입장 시 위치 반환")
-	void enterWaitingLine_success() {
-		when(waitingRepository.add(userId)).thenReturn(3);
+        assertThat(result.position()).isEqualTo(3);
+        verify(waitingRepository).add(userId);
+    }
 
-		WaitingPosition result = waitingService.enterWaitingLine(userId);
+    @Test
+    void peek_success() {
+        waitingService.peek();
+        verify(waitingRepository).peek();
+    }
 
-		assertThat(result.position()).isEqualTo(3);
-		verify(waitingRepository).add(userId);
-	}
+    @Test
+    void isEmpty_success() {
+        when(waitingRepository.isEmpty()).thenReturn(true);
 
-	@Test
-	void peek_success() {
-		waitingService.peek();
-		verify(waitingRepository).peek();
-	}
+        boolean result = waitingService.isEmpty();
 
-	@Test
-	void isEmpty_success() {
-		when(waitingRepository.isEmpty()).thenReturn(true);
+        assertThat(result).isTrue();
+        verify(waitingRepository).isEmpty();
+    }
 
-		boolean result = waitingService.isEmpty();
+    @Test
+    void remove_success() {
+        waitingService.remove(userId);
+        verify(waitingRepository).remove(userId);
+    }
 
-		assertThat(result).isTrue();
-		verify(waitingRepository).isEmpty();
-	}
+    @Test
+    void getSize_success() {
+        when(waitingRepository.getSize()).thenReturn(5L);
 
-	@Test
-	void remove_success() {
-		waitingService.remove(userId);
-		verify(waitingRepository).remove(userId);
-	}
+        Long size = waitingService.getSize();
+        assertThat(size).isEqualTo(5L);
+        verify(waitingRepository).getSize();
+    }
 
-	@Test
-	void getSize_success() {
-		when(waitingRepository.getSize()).thenReturn(5L);
+    @Test
+    void getLine_success() {
+        List<UUID> list = List.of(UUID.randomUUID(), UUID.randomUUID());
+        when(waitingRepository.getLine()).thenReturn(list);
 
-		Long size = waitingService.getSize();
-		assertThat(size).isEqualTo(5L);
-		verify(waitingRepository).getSize();
-	}
+        List<UUID> result = waitingService.getLine();
+        assertThat(result).hasSize(2);
+        verify(waitingRepository).getLine();
+    }
 
-	@Test
-	void getLine_success() {
-		List<UUID> list = List.of(UUID.randomUUID(), UUID.randomUUID());
-		when(waitingRepository.getLine()).thenReturn(list);
+    @Test
+    void clear_success() {
+        waitingService.clear();
+        verify(waitingRepository).clear();
+    }
 
-		List<UUID> result = waitingService.getLine();
-		assertThat(result).hasSize(2);
-		verify(waitingRepository).getLine();
-	}
-
-	@Test
-	void clear_success() {
-		waitingService.clear();
-		verify(waitingRepository).clear();
-	}
-
-	@Test
-	void isIn_success() {
-		when(waitingRepository.isIn(userId)).thenReturn(false);
-		assertThat(waitingService.isIn(userId)).isFalse();
-	}
+    @Test
+    void isIn_success() {
+        when(waitingRepository.isIn(userId)).thenReturn(false);
+        assertThat(waitingService.isIn(userId)).isFalse();
+    }
 }
 

@@ -17,17 +17,17 @@ import lombok.Getter;
 @Component
 public class SseEntryMessageRegistry {
 
-	private final ConcurrentMap<UUID, EntryPermission> messageMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, EntryPermission> messageMap = new ConcurrentHashMap<>();
 
-	public void addMessage(UUID userId, EntryPermission message) {
-		messageMap.put(userId, message);
-	}
+    public void addMessage(UUID userId, EntryPermission message) {
+        messageMap.put(userId, message);
+    }
 
-	public EntryPermission getMessage(UUID userId) {
-		return messageMap.get(userId);
-	}
+    public EntryPermission getMessage(UUID userId) {
+        return messageMap.get(userId);
+    }
 
-	public void removeMessage(UUID userId) {
-		messageMap.remove(userId);
-	}
+    public void removeMessage(UUID userId) {
+        messageMap.remove(userId);
+    }
 }
