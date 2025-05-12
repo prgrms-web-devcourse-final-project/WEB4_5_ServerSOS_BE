@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.init.TestDataInit;
@@ -49,6 +51,9 @@ class ReservationControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    EntryService entryService;
+
     private Member member;
     private PerformanceSession session;
     private PerformanceArea area;
@@ -59,6 +64,11 @@ class ReservationControllerTest {
         this.member = data.member();
         this.session = data.session();
         this.area = data.area();
+    }
+
+    @AfterEach
+    void tearDown() {
+        entryService.clear();
     }
 
     @Test
