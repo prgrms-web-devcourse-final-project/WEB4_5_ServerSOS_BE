@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,6 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.pickgo.domain.member.dto.MemberPrincipal;
 import com.pickgo.domain.queue.enums.EntryState;
 import com.pickgo.domain.queue.repository.EntryRepository;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.exception.jwt.JwtAuthenticationEntryPoint;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,6 +32,7 @@ public class EntryAuthenticationFilter extends OncePerRequestFilter {
     private static final String HEADER_ENTRY_AUTH = "EntryAuth";
     private final JwtProvider jwtProvider;
     private final EntryRepository entryRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Override
     protected void doFilterInternal(
@@ -56,15 +60,25 @@ public class EntryAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // 상태가 null이거나 PENDING인 경우 토큰 검증 후 ACTIVE로 전환
-        validateEntryToken(request);
-        entryRepository.setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
-        filterChain.doFilter(request, response);
+        if (isValidToken(request, response)) {
+            entryRepository.setState(userId, ACTIVE, MAX_ACTIVE_TIMEOUT_MINUTES);
+            filterChain.doFilter(request, response);
+        }
     }
 
-    private void validateEntryToken(HttpServletRequest request) {
-        String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
-        String entryToken = jwtProvider.getAccessToken(entryAuthHeader);
-        jwtProvider.validateToken(entryToken);
+    private boolean isValidToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
+            String entryToken = jwtProvider.getAccessToken(entryAuthHeader);
+            jwtProvider.validateToken(entryToken);
+            return true;
+        } catch (BusinessException e) {
+            jwtAuthenticationEntryPoint.commence(request, response, e);
+            return false;
+        } catch (AuthenticationException e) {
+            jwtAuthenticationEntryPoint.commence(request, response, e);
+            return false;
+        }
     }
 
     private UUID getUserIdFromSecurityContext() {
