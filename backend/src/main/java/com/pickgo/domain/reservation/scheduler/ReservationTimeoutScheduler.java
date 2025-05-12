@@ -43,7 +43,7 @@ public class ReservationTimeoutScheduler {
                 reservation.setStatus(ReservationStatus.EXPIRED);
 
                 for (ReservedSeat seat : reservation.getReservedSeats()) { //예약에 연결된 모든 좌석 반복
-                    applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트 발행
+                    applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트 발행(5분이 지난 예약 중 결제 되지 않은 예약)
                     reservedSeatRepository.delete(seat); //DB 좌석 삭제
                 }
                 //DB 삭제 후 객체 내부 상태 맞춰주기
