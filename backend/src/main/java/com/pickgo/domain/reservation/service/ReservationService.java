@@ -68,8 +68,8 @@ public class ReservationService {
                 () -> new BusinessException(PERFORMANCE_SESSION_NOT_FOUND)
         );
 
-        if (performanceSession.getReserveOpenAt().isBefore(LocalDateTime.now())
-                || performanceSession.getPerformanceTime().isAfter(LocalDateTime.now())) {
+        if (performanceSession.getReserveOpenAt().isAfter(LocalDateTime.now())
+                || performanceSession.getPerformanceTime().isBefore(LocalDateTime.now())) {
             throw new BusinessException(RESERVATION_UNAVAILABLE);
         }
 
