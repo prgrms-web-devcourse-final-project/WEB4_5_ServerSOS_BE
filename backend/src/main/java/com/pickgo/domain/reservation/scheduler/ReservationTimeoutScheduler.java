@@ -1,13 +1,18 @@
 package com.pickgo.domain.reservation.scheduler;
 
+
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,8 +29,11 @@ import java.util.List;
 public class ReservationTimeoutScheduler {
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
+
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ReservedSeatRepository reservedSeatRepository;
+
+    private final LogWriter logWriter;
 
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
     @Transactional
@@ -49,8 +57,20 @@ public class ReservationTimeoutScheduler {
                 }
                 //DB 삭제 후 객체 내부 상태 맞춰주기
                 reservation.getReservedSeats().clear();
+
+                // 3. 로그 저장
+                LogContext systemContext = new LogContext(
+                        "Scheduler",
+                        "SCHEDULED",
+                        "scheduler",
+                        ActorType.SYSTEM
+                );
+
+                logWriter.writeReservationLog(reservation, ActionType.RESERVATION_EXPIRED, systemContext);
             }
 
         }
+
+
     }
 }

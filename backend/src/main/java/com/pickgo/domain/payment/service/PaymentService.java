@@ -1,8 +1,12 @@
 package com.pickgo.domain.payment.service;
 
+
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
+
+import com.pickgo.domain.log.enums.ActionType;
+
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
@@ -17,6 +21,7 @@ import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,6 +43,8 @@ public class PaymentService {
     private final TossService tossService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ReservedSeatRepository reservedSeatRepository;
+    private final LogWriter logWriter;
+
 
     @Transactional
     public PaymentDetailResponse createPayment(PaymentCreateRequest request) {
@@ -53,6 +60,8 @@ public class PaymentService {
 
         Payment payment = request.toEntity(reservation, orderId);
         paymentRepository.save(payment);
+
+        logWriter.writePaymentLog(payment, ActionType.PAYMENT_CREATED);
 
         return PaymentDetailResponse.from(payment);
     }
@@ -99,6 +108,8 @@ public class PaymentService {
 
         // 상태 변경
         payment.cancel();
+
+        logWriter.writePaymentLog(payment,ActionType.PAYMENT_CANCELED);
     }
 
     // BusinessException이 발생하면 트랜잭션이 롤백되므로 noRollbackFor 설정. FAILED 상태 저장용
@@ -150,6 +161,8 @@ public class PaymentService {
             reservedSeatRepository.save(seat);          // 2. 좌석 상태 DB 반영
             applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트를 spring에 발행, 구독하고 있는 SSE리스너가 변경 감지 -> 알림 발송
         });
+
+        logWriter.writePaymentLog(payment,ActionType.PAYMENT_COMPLETED);
 
         return PaymentDetailResponse.from(payment);
     }
