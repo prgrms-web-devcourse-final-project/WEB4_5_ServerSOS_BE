@@ -3,6 +3,8 @@ package com.pickgo.domain.post.review.entity;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.global.entity.BaseEntity;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(indexes = @Index(name = "idx_like_count", columnList = "likeCount"))
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +34,27 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private int likeCount = 0;
+
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void canAccess(Member actor) {
+        if (!this.member.equals(actor)) {
+            throw new BusinessException(RsCode.FORBIDDEN);
+        }
     }
 }

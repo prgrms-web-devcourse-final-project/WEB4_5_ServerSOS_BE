@@ -28,6 +28,8 @@ public enum RsCode {
 	REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
 	REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
 	REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
+    REVIEW_ALREADY_LIKED(RsConstant.BAD_REQUEST, "이미 좋아요를 눌렀습니다."),
+    REVIEW_NOT_LIKED_YET(RsConstant.NOT_FOUND, "좋아요를 누른 상태가 아닙니다."),
 
     // Member
     MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),

@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @Builder
-public class PostReviewSimpleResponse {
+public class PostReviewWithLikeResponse {
 
     private Long reviewId;
     private UUID userId;
@@ -18,15 +18,17 @@ public class PostReviewSimpleResponse {
     private String nickname;
     private String content;
     private int likeCount;
+    private boolean likedByCurrentUser;
 
-    public static PostReviewSimpleResponse fromEntity(Review review) {
-        return PostReviewSimpleResponse.builder()
+    public static PostReviewWithLikeResponse fromEntity(Review review, boolean likedByCurrentUser) {
+        return PostReviewWithLikeResponse.builder()
                 .reviewId(review.getId())
                 .userId(review.getMember().getId())
                 .profile(review.getMember().getProfile())
                 .nickname(review.getMember().getNickname())
                 .content(review.getContent())
                 .likeCount(review.getLikeCount())
+                .likedByCurrentUser(likedByCurrentUser)
                 .build();
     }
 }
