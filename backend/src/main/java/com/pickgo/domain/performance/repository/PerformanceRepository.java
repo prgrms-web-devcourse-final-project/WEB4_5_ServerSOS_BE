@@ -20,7 +20,7 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     @Modifying
     @Query("""
             UPDATE Performance p SET p.state = 'ONGOING'
-            WHERE p.startDate <= :today AND p.state <> 'SCHEDULED'
+            WHERE p.startDate <= :today AND p.state = 'SCHEDULED'
             """)
     void UpdateToOngoing(LocalDate today);
 }
