@@ -1,14 +1,14 @@
 package com.pickgo.domain.payment.service;
 
 
-import com.pickgo.domain.area.seat.entity.SeatStatus;
-import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
-import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
+import com.pickgo.domain.performance.area.seat.entity.SeatStatus;
+import com.pickgo.domain.performance.area.seat.event.SeatStatusChangedEvent;
+import com.pickgo.domain.performance.area.seat.repository.ReservedSeatRepository;
 
 import com.pickgo.domain.log.enums.ActionType;
 
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
 import com.pickgo.domain.payment.dto.PaymentCreateRequest;
 import com.pickgo.domain.payment.dto.PaymentDetailResponse;
@@ -19,7 +19,7 @@ import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;

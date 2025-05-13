@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.review.entity;
 
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

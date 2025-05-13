@@ -1,7 +1,7 @@
 package com.pickgo.global.logging.util;
 
 import com.pickgo.domain.log.enums.ActorType;
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.global.logging.dto.LogContext;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

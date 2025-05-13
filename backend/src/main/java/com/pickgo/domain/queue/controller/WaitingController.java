@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.queue.service.WaitingService;
 import com.pickgo.domain.queue.sse.SseEmitterHandler;

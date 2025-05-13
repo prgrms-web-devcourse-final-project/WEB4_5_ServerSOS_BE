@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.post.dto;
 
-import com.pickgo.domain.performance.dto.PerformanceDetailResponse;
+import com.pickgo.domain.performance.performance.dto.PerformanceDetailResponse;
 import com.pickgo.domain.post.post.entity.Post;
 
 import java.time.LocalDateTime;

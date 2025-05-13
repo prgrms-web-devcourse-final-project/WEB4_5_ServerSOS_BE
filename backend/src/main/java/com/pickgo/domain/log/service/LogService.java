@@ -9,7 +9,7 @@ import com.pickgo.domain.log.entity.ReservationHistory;
 import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.log.repository.PaymentHistoryRepository;
 import com.pickgo.domain.log.repository.ReservationHistoryRepository;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

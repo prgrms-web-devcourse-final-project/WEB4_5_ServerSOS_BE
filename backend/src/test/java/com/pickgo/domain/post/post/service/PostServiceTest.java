@@ -1,15 +1,15 @@
 package com.pickgo.domain.post.post.service;
 
-import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.performance.entity.PerformanceState;
-import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.performance.performance.entity.Performance;
+import com.pickgo.domain.performance.performance.entity.PerformanceState;
+import com.pickgo.domain.performance.performance.entity.PerformanceType;
 import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.repository.PostRepository;
-import com.pickgo.domain.venue.entity.Venue;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.domain.performance.venue.entity.Venue;
+import com.pickgo.global.response.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

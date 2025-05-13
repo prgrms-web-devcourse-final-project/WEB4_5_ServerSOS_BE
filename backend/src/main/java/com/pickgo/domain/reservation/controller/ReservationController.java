@@ -1,11 +1,11 @@
 package com.pickgo.domain.reservation.controller;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.dto.response.ReservationDetailResponse;
 import com.pickgo.domain.reservation.dto.response.ReservationSimpleResponse;
 import com.pickgo.domain.reservation.service.ReservationService;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

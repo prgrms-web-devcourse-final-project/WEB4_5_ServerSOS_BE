@@ -1,9 +1,9 @@
 package com.pickgo.global.init;
 
-import com.pickgo.domain.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.service.MemberService;
-import com.pickgo.domain.performance.repository.PerformanceRepository;
-import com.pickgo.domain.performance.service.PerformanceService;
+import com.pickgo.domain.member.member.dto.MemberCreateRequest;
+import com.pickgo.domain.member.member.service.MemberService;
+import com.pickgo.domain.performance.performance.repository.PerformanceRepository;
+import com.pickgo.domain.performance.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;

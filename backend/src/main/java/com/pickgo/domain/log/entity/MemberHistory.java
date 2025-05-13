@@ -2,8 +2,8 @@ package com.pickgo.domain.log.entity;
 
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
-import com.pickgo.domain.member.entity.enums.Authority;
-import com.pickgo.domain.member.entity.enums.SocialProvider;
+import com.pickgo.domain.member.member.entity.enums.Authority;
+import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

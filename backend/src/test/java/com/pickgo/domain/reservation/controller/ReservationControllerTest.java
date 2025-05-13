@@ -20,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.pickgo.domain.area.area.entity.PerformanceArea;
+import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
 import com.pickgo.domain.log.entity.ReservationHistory;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.repository.ReservationHistoryRepository;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.member.member.repository.MemberRepository;
+import com.pickgo.domain.performance.performance.entity.PerformanceSession;
 import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.entity.Reservation;

@@ -1,8 +1,8 @@
 package com.pickgo.domain.reservation.service;
 
-import com.pickgo.domain.area.area.entity.PerformanceArea;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.performance.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.dto.response.ReservationSimpleResponse;
 import com.pickgo.domain.reservation.entity.Reservation;

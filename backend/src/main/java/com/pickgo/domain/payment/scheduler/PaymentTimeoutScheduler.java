@@ -1,8 +1,8 @@
 package com.pickgo.domain.payment.scheduler;
 
 
-import com.pickgo.domain.area.seat.entity.SeatStatus;
-import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
+import com.pickgo.domain.performance.area.seat.entity.SeatStatus;
+import com.pickgo.domain.performance.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.entity.Payment;

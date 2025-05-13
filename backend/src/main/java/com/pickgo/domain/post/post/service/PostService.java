@@ -1,13 +1,13 @@
 package com.pickgo.domain.post.post.service;
 
-import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.performance.performance.entity.Performance;
+import com.pickgo.domain.performance.performance.entity.PerformanceType;
 import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.repository.PostRepository;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;

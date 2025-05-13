@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.post.util;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
