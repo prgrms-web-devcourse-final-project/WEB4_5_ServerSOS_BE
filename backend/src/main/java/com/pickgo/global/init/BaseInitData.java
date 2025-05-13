@@ -4,6 +4,7 @@ import com.pickgo.domain.member.member.dto.MemberCreateRequest;
 import com.pickgo.domain.member.member.service.MemberService;
 import com.pickgo.domain.performance.performance.repository.PerformanceRepository;
 import com.pickgo.domain.performance.performance.service.PerformanceService;
+import com.pickgo.global.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ public class BaseInitData {
     private final PerformanceService performanceService;
     private final PerformanceRepository performanceRepository;
     private final MemberService memberService;
+    private final EmailService emailService;
 
 
     @Bean
