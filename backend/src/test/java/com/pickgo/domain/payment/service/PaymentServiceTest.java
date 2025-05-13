@@ -1,5 +1,6 @@
 package com.pickgo.domain.payment.service;
 
+import static com.pickgo.domain.member.member.entity.enums.Authority.USER;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +91,7 @@ class PaymentServiceTest {
                 .password(password)
                 .nickname(nickname)
                 .authority(USER)
-                .socialProvider(NONE)
+                .socialProvider(SocialProvider.NONE)
                 .build();
 
         // 수동으로 createdAt / modifiedAt 설정

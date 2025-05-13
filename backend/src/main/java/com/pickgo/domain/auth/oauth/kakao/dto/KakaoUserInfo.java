@@ -5,6 +5,9 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pickgo.domain.member.member.entity.Member;
 
+import static com.pickgo.domain.member.member.entity.enums.Authority.USER;
+import static com.pickgo.domain.member.member.entity.enums.SocialProvider.KAKAO;
+
 public record KakaoUserInfo(
     @JsonProperty("id") Long id,
     @JsonProperty("kakao_account") KakaoAccount kakaoAccount

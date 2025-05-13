@@ -1,10 +1,18 @@
 package com.pickgo.domain.member.member.controller;
 
-import static com.pickgo.global.response.RsCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.entity.MemberHistory;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
+import com.pickgo.domain.member.member.dto.MemberCreateRequest;
+import com.pickgo.domain.member.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.member.member.entity.enums.SocialProvider;
+import com.pickgo.domain.member.member.repository.MemberRepository;
+import com.pickgo.global.jwt.JwtProvider;
+import com.pickgo.global.logging.service.HistorySaveService;
+import com.pickgo.global.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,18 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.log.entity.MemberHistory;
-import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.log.enums.ActorType;
-import com.pickgo.domain.log.repository.MemberHistoryRepository;
-import com.pickgo.domain.member.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.domain.member.member.entity.Member;
-import com.pickgo.domain.member.member.repository.MemberRepository;
-import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.global.logging.service.HistorySaveService;
-import com.pickgo.global.token.TestToken;
+import static com.pickgo.domain.member.member.entity.enums.Authority.USER;
+import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -74,7 +76,7 @@ public class MemberControllerTest {
 			.nickname(testNickname)
 			.profile("profile.jpg")
 			.authority(USER)
-			.socialProvider(NONE)
+			.socialProvider(SocialProvider.NONE)
 			.build();
 	}
 

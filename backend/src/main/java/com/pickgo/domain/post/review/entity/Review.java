@@ -6,10 +6,7 @@ import com.pickgo.global.entity.BaseEntity;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -32,15 +29,13 @@ public class Review extends BaseEntity {
     private Post post;
 
     @Column(nullable = false)
+    @Setter
     private String content;
 
     @Column(nullable = false)
+    @Builder.Default
     private int likeCount = 0;
 
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 
     public void incrementLikeCount() {
         this.likeCount++;

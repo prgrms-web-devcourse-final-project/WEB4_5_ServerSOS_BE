@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.pickgo.domain.member.member.entity.enums.Authority;
+import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,8 +65,8 @@ class AdminControllerTest {
                     .email("test" + i + "@example.com")
                     .password("password" + i)
                     .nickname("testUser" + i)
-                    .authority(USER)
-                    .socialProvider(NONE)
+                    .authority(Authority.USER)
+                    .socialProvider(SocialProvider.NONE)
                     .build();
             members.add(member);
         }

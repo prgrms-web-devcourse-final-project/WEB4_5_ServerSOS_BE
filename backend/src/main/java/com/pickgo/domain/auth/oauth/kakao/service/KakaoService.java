@@ -1,5 +1,6 @@
 package com.pickgo.domain.auth.oauth.kakao.service;
 
+import static com.pickgo.domain.member.member.entity.enums.SocialProvider.KAKAO;
 import static com.pickgo.global.response.RsCode.*;
 
 import java.net.URI;

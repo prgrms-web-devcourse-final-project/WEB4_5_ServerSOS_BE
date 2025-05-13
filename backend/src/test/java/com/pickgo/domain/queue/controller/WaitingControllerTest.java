@@ -1,17 +1,13 @@
 package com.pickgo.domain.queue.controller;
 
-import static com.pickgo.global.response.RsCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.queue.service.EntryService;
+import com.pickgo.domain.queue.service.WaitingService;
+import com.pickgo.domain.queue.sse.SseEmitterHandler;
+import com.pickgo.domain.queue.task.EntryPermissionTask;
+import com.pickgo.global.token.TestToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,14 +18,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.auth.token.service.TokenService;
-import com.pickgo.domain.member.member.entity.Member;
-import com.pickgo.domain.queue.service.EntryService;
-import com.pickgo.domain.queue.service.WaitingService;
-import com.pickgo.domain.queue.sse.SseEmitterHandler;
-import com.pickgo.domain.queue.task.EntryPermissionTask;
-import com.pickgo.global.token.TestToken;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static com.pickgo.domain.member.member.entity.enums.Authority.USER;
+import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
