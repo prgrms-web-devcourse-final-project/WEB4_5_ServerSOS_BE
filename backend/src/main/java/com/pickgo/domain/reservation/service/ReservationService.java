@@ -33,6 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -66,6 +67,11 @@ public class ReservationService {
         PerformanceSession performanceSession = sessionRepository.findById(request.performance_session_id()).orElseThrow(
                 () -> new BusinessException(PERFORMANCE_SESSION_NOT_FOUND)
         );
+
+        if (performanceSession.getReserveOpenAt().isBefore(LocalDateTime.now())
+                || performanceSession.getPerformanceTime().isAfter(LocalDateTime.now())) {
+            throw new BusinessException(RESERVATION_UNAVAILABLE);
+        }
 
         // 2. 좌석 생성
         List<ReservedSeat> reservedSeats = new ArrayList<>();
