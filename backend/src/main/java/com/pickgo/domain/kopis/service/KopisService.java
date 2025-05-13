@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -22,12 +24,15 @@ public class KopisService {
 
     // 공연 목록
     public List<String> fetchPerformanceIds(int page, int size) {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(3);
+
         String xml = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pblprfr")
                         .queryParam("service", apikey)
-                        .queryParam("stdate", "20250101")
-                        .queryParam("eddate", "20251231")
+                        .queryParam("stdate", startDate.format(DateTimeFormatter.BASIC_ISO_DATE))
+                        .queryParam("eddate", endDate.format(DateTimeFormatter.BASIC_ISO_DATE))
                         .queryParam("cpage", page)
                         .queryParam("rows", size)
                         .build())

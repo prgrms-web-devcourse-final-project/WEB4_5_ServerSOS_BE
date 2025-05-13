@@ -1,4 +1,4 @@
-package com.pickgo.global.scheduler;
+package com.pickgo.domain.performance.scheduler;
 
 import com.pickgo.domain.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ public class PerformanceScheduler {
     private final PerformanceService performanceService;
 
     // 매일 자정에 업데이트
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void updatePerformanceDaily() {
         try {
             performanceService.fetchAndSavePerformances();
