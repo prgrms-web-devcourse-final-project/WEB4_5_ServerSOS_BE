@@ -1,7 +1,6 @@
 package com.pickgo.domain.performance.kopis.service;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.pickgo.domain.kopis.dto.*;
 import com.pickgo.domain.performance.kopis.dto.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
