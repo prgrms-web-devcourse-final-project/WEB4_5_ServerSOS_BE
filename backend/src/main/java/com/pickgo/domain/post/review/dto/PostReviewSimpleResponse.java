@@ -17,6 +17,7 @@ public class PostReviewSimpleResponse {
     private String profile;
     private String nickname;
     private String content;
+    private int likeCount;
 
     public static PostReviewSimpleResponse fromEntity(Review review) {
         return PostReviewSimpleResponse.builder()
@@ -25,6 +26,7 @@ public class PostReviewSimpleResponse {
                 .profile(review.getMember().getProfile())
                 .nickname(review.getMember().getNickname())
                 .content(review.getContent())
+                .likeCount(review.getLikeCount())
                 .build();
     }
 }

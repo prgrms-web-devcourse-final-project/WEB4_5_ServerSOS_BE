@@ -28,8 +28,6 @@ public class KopisPerformanceDetailResponse {
     String minAge;
     @JacksonXmlProperty(localName = "prfcast")
     String casts;
-    @JacksonXmlProperty(localName = "entrpsnm")
-    String productionCompany;
     @JacksonXmlProperty(localName = "genrenm")
     String type;
     @JacksonXmlProperty(localName = "mt10id")

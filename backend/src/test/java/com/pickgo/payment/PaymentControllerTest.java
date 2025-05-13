@@ -2,6 +2,10 @@ package com.pickgo.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.entity.PaymentHistory;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
+import com.pickgo.domain.log.repository.PaymentHistoryRepository;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.entity.enums.Authority;
 import com.pickgo.domain.member.entity.enums.SocialProvider;
@@ -21,6 +25,7 @@ import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
+import com.pickgo.global.logging.service.HistorySaveService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +48,7 @@ import java.util.UUID;
 
 import static com.pickgo.global.response.RsCode.CREATED;
 import static com.pickgo.global.response.RsCode.SUCCESS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -84,6 +90,12 @@ public class PaymentControllerTest {
     private PerformanceSessionRepository performanceSessionRepository;
 
     private PerformanceSession performanceSession;
+
+    @Autowired
+    private HistorySaveService historySaveService;
+
+    @Autowired
+    private PaymentHistoryRepository paymentHistoryRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -140,7 +152,6 @@ public class PaymentControllerTest {
                 .state(PerformanceState.SCHEDULED)
                 .minAge("전체관람가")
                 .casts("홍길동 외")
-                .productionCompany("테스트컴퍼니")
                 .type(PerformanceType.MUSICAL)
                 .venue(venue)
                 .build()
@@ -195,6 +206,10 @@ public class PaymentControllerTest {
                 .andExpect(jsonPath("$.data.paymentStatus").value(PaymentStatus.PENDING.toString()))
                 .andExpect(jsonPath("$.data.createdAt").value(Matchers.matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*")))
                 .andDo(print());
+
+        PaymentHistory history = paymentHistoryRepository.findAll().get(0);
+        assertThat(history.getAction()).isEqualTo(ActionType.PAYMENT_CREATED);
+        assertThat(history.getActorType()).isEqualTo(ActorType.USER);
     }
 
     @Test

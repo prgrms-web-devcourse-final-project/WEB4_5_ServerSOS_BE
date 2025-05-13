@@ -28,7 +28,6 @@ public class PerformanceMapper {
                 .state(convertState(response.getState()))
                 .minAge(response.getMinAge())
                 .casts(response.getCasts())
-                .productionCompany(response.getProductionCompany())
                 .type(convertType(response.getType()))
                 .venue(venue)
                 .performanceIntros(toPerformanceIntros(response.getIntroImages()))

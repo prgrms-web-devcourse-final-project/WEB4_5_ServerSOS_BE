@@ -23,11 +23,13 @@ public enum RsCode {
     //Post
     POST_NOT_FOUND(RsConstant.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 
-	//Review
-	REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
-	REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
-	REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
-	REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
+	  //Review
+	  REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
+	  REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
+	  REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
+	  REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
+    REVIEW_ALREADY_LIKED(RsConstant.BAD_REQUEST, "이미 좋아요를 눌렀습니다."),
+    REVIEW_NOT_LIKED_YET(RsConstant.NOT_FOUND, "좋아요를 누른 상태가 아닙니다."),
 
     // Member
     MEMBER_LOGIN_FAILED(RsConstant.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
@@ -42,7 +44,8 @@ public enum RsCode {
     RESERVATION_NOT_FOUND(RsConstant.NOT_FOUND, "존재하지 않는 예약 내역입니다."),
     RESERVATION_CANCEL(RsConstant.SUCCESS, "예매가 취소되었습니다."),
     RESERVATION_EXPIRED(RsConstant.BAD_REQUEST, "예매 가능 시간이 초과되었습니다. 다시 예약해주세요"),
-    INVALID_RESERVATION_STATE(RsConstant.BAD_REQUEST, "예약 상태가 부적합 합니다."),
+    INVALID_RESERVATION_STATE(RsConstant.BAD_REQUEST, "예약 상태가 부적합합니다."),
+    RESERVATION_UNAVAILABLE(RsConstant.FORBIDDEN, "예매가 불가능한 회차입니다."),
 
     // S3
     FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),

@@ -30,7 +30,7 @@ public class PostService {
     @Transactional
     public void createPost(Performance performance) {
         Post post = Post.builder()
-                .title("게시글: " + performance.getName())
+                .title(performance.getName())
                 .content("임시 게시글 본문")
                 .isPublished(false)
                 .views(0L)
@@ -43,7 +43,7 @@ public class PostService {
     @Transactional
     public void createPostPublished(Performance performance) {
         Post post = Post.builder()
-                .title("게시글: " + performance.getName())
+                .title(performance.getName())
                 .content("임시 게시글 본문")
                 .isPublished(true)
                 .views(0L)

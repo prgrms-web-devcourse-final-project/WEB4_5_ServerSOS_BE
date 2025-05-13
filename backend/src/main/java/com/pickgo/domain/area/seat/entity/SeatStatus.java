@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 public enum SeatStatus {
     PENDING("예약중"),
-    RESERVED("예약완료");
+    RESERVED("예약완료"),
+    RELEASED("선택 가능");
 
     private final String value;
 }

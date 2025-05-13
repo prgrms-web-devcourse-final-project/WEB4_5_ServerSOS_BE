@@ -1,8 +1,9 @@
 package com.pickgo.domain.post.review.controller;
 
-import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
+import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.post.review.dto.PostReviewContentRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
 import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/{id}/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Admin Review API", description = "리뷰 관련 API 엔드포인트")
+@Tag(name = "리뷰 API", description = "리뷰 관련 API 엔드포인트")
 public class PostReviewController {
 
     private final PostReviewService postReviewService;
@@ -27,10 +29,22 @@ public class PostReviewController {
             description = "특정 게시글 ID에 해당하는 리뷰 목록을 조회합니다."
     )
     @GetMapping
-    public RsData<List<PostReviewSimpleResponse>> getReviews(
-            @PathVariable("id") Long id
+    public RsData<List<PostReviewWithLikeResponse>> getReviews(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(required = false) Integer cursorLikeCount,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "latest") String sort,
+            @RequestHeader(value = "Authorization", required = false) String authHeader
     ) {
-        List<PostReviewSimpleResponse> reviews = postReviewService.getReviewsByPostId(id);
+        List<PostReviewWithLikeResponse> reviews = postReviewService.getReviewsByPostId(
+                id,
+                cursorId == null ? Long.MAX_VALUE : cursorId,
+                cursorLikeCount == null ? Integer.MAX_VALUE : cursorLikeCount,
+                size,
+                sort,
+                authHeader
+        );
         return RsData.from(RsCode.SUCCESS, reviews);
     }
 
@@ -42,13 +56,10 @@ public class PostReviewController {
     @ResponseStatus(HttpStatus.CREATED)
     public RsData<PostReviewSimpleResponse> createReview(
             @PathVariable("id") Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "작성할 리뷰 정보",
-                    required = true
-            )
-            @RequestBody PostReviewCreateRequest request
+            @AuthenticationPrincipal MemberPrincipal principal,
+            @RequestBody PostReviewContentRequest request
     ) {
-        PostReviewSimpleResponse response = postReviewService.createReview(id, request);
+        PostReviewSimpleResponse response = postReviewService.createReview(id, principal.id(), request.content());
         return RsData.from(RsCode.REVIEW_CREATED, response);
     }
 
@@ -61,9 +72,10 @@ public class PostReviewController {
     public RsData<PostReviewSimpleResponse> updateReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
-            @RequestBody PostReviewUpdateRequest request
+            @RequestBody PostReviewContentRequest request,
+            @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request);
+        PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request.content(), principal.id());
         return RsData.from(RsCode.REVIEW_UPDATED, response);
     }
 
@@ -75,9 +87,34 @@ public class PostReviewController {
     @ResponseStatus(HttpStatus.OK)
     public RsData<String> deleteReview(
             @PathVariable("id") Long id,
-            @PathVariable("reviewId") Long reviewId
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        postReviewService.deleteReview(id, reviewId);
+        postReviewService.deleteReview(id, reviewId, principal.id());
         return RsData.from(RsCode.REVIEW_DELETED, null);
+    }
+
+    @Operation(summary = "리뷰 좋아요")
+    @PostMapping("/{reviewId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<String> likeReview(
+            @PathVariable("id") Long id,
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal MemberPrincipal principal
+    ) {
+        postReviewService.likeReview(id, reviewId, principal.id());
+        return RsData.from(RsCode.SUCCESS, "리뷰에 좋아요를 추가했습니다.");
+    }
+
+    @Operation(summary = "리뷰 좋아요 취소")
+    @DeleteMapping("/{reviewId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public RsData<String> unlikeReview(
+            @PathVariable("id") Long id,
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal MemberPrincipal principal
+    ) {
+        postReviewService.cancelLikeReview(id, reviewId, principal.id());
+        return RsData.from(RsCode.SUCCESS, "리뷰 좋아요를 취소했습니다.");
     }
 }

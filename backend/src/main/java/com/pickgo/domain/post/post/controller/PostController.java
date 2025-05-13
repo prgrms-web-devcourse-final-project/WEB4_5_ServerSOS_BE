@@ -8,7 +8,7 @@ import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.service.PostService;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.response.RsData;
-import com.pickgo.global.util.IdentifierResolver;
+import com.pickgo.domain.post.post.util.IdentifierResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -22,6 +22,7 @@ import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
 import com.pickgo.global.dto.PageResponse;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,6 +73,9 @@ class PaymentServiceTest {
     private MemberRepository memberRepository;
 
     @Mock
+    private LogWriter logWriter;
+
+    @Mock
     private VenueRepository venueRepository;
 
     @Mock
@@ -114,7 +118,6 @@ class PaymentServiceTest {
                 .state(PerformanceState.SCHEDULED)
                 .minAge("전체관람가")
                 .casts("홍길동 외")
-                .productionCompany("테스트컴퍼니")
                 .type(PerformanceType.MUSICAL)
                 .venue(venue)
                 .build();
