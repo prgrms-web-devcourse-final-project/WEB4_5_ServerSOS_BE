@@ -1,9 +1,8 @@
 package com.pickgo.domain.post.review.controller;
 
 import com.pickgo.domain.member.dto.MemberPrincipal;
-import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
+import com.pickgo.domain.post.review.dto.PostReviewContentRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
 import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.response.RsCode;
@@ -57,9 +56,10 @@ public class PostReviewController {
     @ResponseStatus(HttpStatus.CREATED)
     public RsData<PostReviewSimpleResponse> createReview(
             @PathVariable("id") Long id,
-            @RequestBody PostReviewCreateRequest request
+            @AuthenticationPrincipal MemberPrincipal principal,
+            @RequestBody PostReviewContentRequest request
     ) {
-        PostReviewSimpleResponse response = postReviewService.createReview(id, request);
+        PostReviewSimpleResponse response = postReviewService.createReview(id, principal.id(), request.content());
         return RsData.from(RsCode.REVIEW_CREATED, response);
     }
 
@@ -72,9 +72,10 @@ public class PostReviewController {
     public RsData<PostReviewSimpleResponse> updateReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
-            @RequestBody PostReviewUpdateRequest request
+            @RequestBody PostReviewContentRequest request,
+            @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request);
+        PostReviewSimpleResponse response = postReviewService.updateReview(id, reviewId, request.content(), principal.id());
         return RsData.from(RsCode.REVIEW_UPDATED, response);
     }
 
@@ -86,9 +87,10 @@ public class PostReviewController {
     @ResponseStatus(HttpStatus.OK)
     public RsData<String> deleteReview(
             @PathVariable("id") Long id,
-            @PathVariable("reviewId") Long reviewId
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal MemberPrincipal principal
     ) {
-        postReviewService.deleteReview(id, reviewId);
+        postReviewService.deleteReview(id, reviewId, principal.id());
         return RsData.from(RsCode.REVIEW_DELETED, null);
     }
 

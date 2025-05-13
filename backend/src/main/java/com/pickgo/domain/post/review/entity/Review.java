@@ -3,6 +3,8 @@ package com.pickgo.domain.post.review.entity;
 import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.global.entity.BaseEntity;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.response.RsCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +49,12 @@ public class Review extends BaseEntity {
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;
+        }
+    }
+
+    public void canAccess(Member actor) {
+        if (!this.member.equals(actor)) {
+            throw new BusinessException(RsCode.FORBIDDEN);
         }
     }
 }

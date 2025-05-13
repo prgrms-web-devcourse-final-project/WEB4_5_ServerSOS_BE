@@ -5,9 +5,7 @@ import com.pickgo.domain.member.entity.Member;
 import com.pickgo.domain.member.repository.MemberRepository;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.domain.post.post.repository.PostRepository;
-import com.pickgo.domain.post.review.dto.PostReviewCreateRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
-import com.pickgo.domain.post.review.dto.PostReviewUpdateRequest;
 import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
 import com.pickgo.domain.post.review.entity.Review;
 import com.pickgo.domain.post.review.entity.ReviewLike;
@@ -27,6 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostReviewService {
 
     private final PostReviewRepository postReviewRepository;
@@ -84,33 +83,40 @@ public class PostReviewService {
                 .toList();
     }
 
-    public PostReviewSimpleResponse createReview(Long id, PostReviewCreateRequest request) {
+    public PostReviewSimpleResponse createReview(Long id, UUID memberId, String content) {
 
         // 1. post 조회
         Post post = getPostById(id);
 
         // 2. member 조회
-        Member member = getMemberById(request.getMemberId());
+        Member member = getMemberById(memberId);
 
         // 3. 리뷰 생성
         Review review = Review.builder()
                 .post(post)
                 .member(member)
-                .content(request.getContent())
+                .content(content)
                 .build();
 
         Review savedReview = postReviewRepository.save(review);
 
-        // 4. 응답 반환
+        // 4. 연관 관계 설정
+        post.addReview(savedReview);
+
+        // 5. 응답 반환
         return PostReviewSimpleResponse.fromEntity(savedReview);
     }
 
-    @Transactional
-    public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, PostReviewUpdateRequest request) {
-        //리뷰 조회 및 게시글 ID 일치 여부 검증
+    public PostReviewSimpleResponse updateReview(Long postId, Long reviewId, String content, UUID memberId) {
+        // 1. 리뷰 조회 및 게시글 ID 일치 여부 검증
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
-        // 내용 수정
-        review.setContent(request.getContent());
+
+        // 2. 유저 본인인지 검증
+        Member actor = getMemberById(memberId);
+        review.canAccess(actor);
+
+        // 3. 내용 수정
+        review.setContent(content);
 
         return PostReviewSimpleResponse.fromEntity(review);
     }
@@ -118,13 +124,16 @@ public class PostReviewService {
     /*
      리뷰 삭제
      */
-    @Transactional
-    public void deleteReview(Long postId, Long reviewId) {
+    public void deleteReview(Long postId, Long reviewId,UUID memberId) {
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
+
+        // 2. 유저 본인인지 검증
+        Member actor = getMemberById(memberId);
+        review.canAccess(actor);
+
         postReviewRepository.delete(review);
     }
 
-    @Transactional
     public void likeReview(Long postId, Long reviewId, UUID memberId) {
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
         Member member = getMemberById(memberId);
@@ -140,8 +149,6 @@ public class PostReviewService {
                 .build());
     }
 
-
-    @Transactional
     public void cancelLikeReview(Long postId, Long reviewId, UUID memberId) {
         Review review = getReviewByIdAndValidatePost(reviewId, postId);
         Member member = getMemberById(memberId);
