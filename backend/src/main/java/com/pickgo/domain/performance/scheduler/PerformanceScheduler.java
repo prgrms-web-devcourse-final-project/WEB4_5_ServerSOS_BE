@@ -22,13 +22,9 @@ public class PerformanceScheduler {
         }
     }
 
-    // 자정에 업데이트
+    // 매일 자정에 업데이트
     @Scheduled(cron = "0 0 0 * * *")
     public void updatePerformanceState() {
-        try {
-            performanceService.updatePerformanceState();
-        } catch (Exception e) {
-            System.out.println("업데이트 중 에러 발생: " + e.getMessage());
-        }
+        performanceService.updatePerformanceState();
     }
 }
