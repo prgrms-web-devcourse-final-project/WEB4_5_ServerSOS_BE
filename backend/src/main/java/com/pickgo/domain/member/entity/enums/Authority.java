@@ -1,17 +1,17 @@
 package com.pickgo.domain.member.entity.enums;
 
 public enum Authority {
-	ADMIN("ROLE_ADMIN"),
-	USER("ROLE_USER");
+    ADMIN("ROLE_ADMIN"),
+    USER("ROLE_USER");
 
-	private final String role;
+    private final String role;
 
-	Authority(String role) {
-		this.role = role;
-	}
+    Authority(String role) {
+        this.role = role;
+    }
 
-	@Override
-	public String toString() {
-		return role;
-	}
+    @Override
+    public String toString() {
+        return role;
+    }
 }

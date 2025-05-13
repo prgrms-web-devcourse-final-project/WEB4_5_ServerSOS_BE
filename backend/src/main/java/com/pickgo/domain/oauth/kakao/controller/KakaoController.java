@@ -19,19 +19,19 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Kakao API", description = "Kakao API 엔드포인트")
 public class KakaoController {
 
-	private final KakaoService kakaoService;
+    private final KakaoService kakaoService;
 
-	@GetMapping("/login")
-	public RedirectView redirectToKakaoLogin() {
-		return kakaoService.redirectToKakaoLogin();
-	}
+    @GetMapping("/login")
+    public RedirectView redirectToKakaoLogin() {
+        return kakaoService.redirectToKakaoLogin();
+    }
 
-	@GetMapping("/login/redirect")
-	public RedirectView login(
-		@RequestParam("code") String code,
-		HttpServletRequest request,
-		HttpServletResponse response
-	) {
-		return kakaoService.login(code, request, response);
-	}
+    @GetMapping("/login/redirect")
+    public RedirectView login(
+        @RequestParam("code") String code,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) {
+        return kakaoService.login(code, request, response);
+    }
 }

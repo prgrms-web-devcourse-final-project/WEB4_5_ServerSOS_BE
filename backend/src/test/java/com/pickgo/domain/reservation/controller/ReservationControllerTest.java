@@ -1,19 +1,12 @@
 package com.pickgo.domain.reservation.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
-import com.pickgo.domain.area.area.entity.PerformanceArea;
-import com.pickgo.domain.log.entity.ReservationHistory;
-import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.log.repository.ReservationHistoryRepository;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
-import com.pickgo.domain.performance.entity.PerformanceSession;
-import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
-import com.pickgo.domain.reservation.entity.Reservation;
-import com.pickgo.global.init.TestDataInit;
-import com.pickgo.global.logging.service.HistorySaveService;
-import com.pickgo.token.TestToken;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,13 +18,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.pickgo.domain.area.area.entity.PerformanceArea;
+import com.pickgo.domain.log.entity.ReservationHistory;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.repository.ReservationHistoryRepository;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.queue.service.EntryService;
+import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
+import com.pickgo.domain.reservation.entity.Reservation;
+import com.pickgo.global.init.TestDataInit;
+import com.pickgo.global.logging.service.HistorySaveService;
+import com.pickgo.global.token.TestToken;
 
 @SpringBootTest
 @Transactional
@@ -60,6 +61,9 @@ class ReservationControllerTest {
     @Autowired
     private ReservationHistoryRepository reservationHistoryRepository;
 
+    @Autowired
+    EntryService entryService;
+
     private Member member;
     private PerformanceSession session;
     private PerformanceArea area;
@@ -77,6 +81,11 @@ class ReservationControllerTest {
         reservationHistoryRepository.deleteAll();
     }
 
+    @AfterEach
+    void tearDown() {
+        entryService.clear();
+    }
+
     @Test
     @DisplayName("예약 성공 - 유저")
     void reserve_success() throws Exception {
@@ -92,6 +101,7 @@ class ReservationControllerTest {
         mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.userToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
@@ -100,10 +110,10 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.data.status").value("RESERVED"))
                 .andExpect(jsonPath("$.data.total_price").value(expectedTotalPrice))
                 .andExpect(jsonPath("$.data.seats.length()").value(seatDtos.size()))
-                .andExpect(jsonPath("$.data.seats[0].row").value(String.valueOf((char) ('A' + seatDtos.get(0).row() - 1))))
+                .andExpect(
+                        jsonPath("$.data.seats[0].row").value(String.valueOf((char)('A' + seatDtos.get(0).row() - 1))))
                 .andExpect(jsonPath("$.data.seats[0].status").value("PENDING"))
                 .andExpect(jsonPath("$.data.seats[0].number").value(seatDtos.get(0).column()));
-
 
         // 💡 멤버의 연관관계 확인
         Member foundMember = memberRepository.findById(member.getId()).orElseThrow();
@@ -134,6 +144,7 @@ class ReservationControllerTest {
         mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.userToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
@@ -153,6 +164,7 @@ class ReservationControllerTest {
         mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.userToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
@@ -173,6 +185,7 @@ class ReservationControllerTest {
         String reservationId = mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.userToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -180,7 +193,7 @@ class ReservationControllerTest {
                 .getContentAsString();
 
         // reservationId 파싱
-        Long id = ((Integer) JsonPath.read(reservationId, "$.data.id")).longValue();
+        Long id = ((Integer)JsonPath.read(reservationId, "$.data.id")).longValue();
 
         // when & then: 상세 조회
         mvc.perform(get("/api/reservations/{id}", id)
@@ -221,13 +234,14 @@ class ReservationControllerTest {
         String responseBody = mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.userToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        Long reservationId = ((Integer) JsonPath.read(responseBody, "$.data.id")).longValue();
+        Long reservationId = ((Integer)JsonPath.read(responseBody, "$.data.id")).longValue();
 
         // when & then: 다른 사용자 토큰으로 요청
         mvc.perform(get("/api/reservations/{id}", reservationId)
@@ -250,6 +264,7 @@ class ReservationControllerTest {
 
         mvc.perform(post("/api/reservations")
                         .header("Authorization", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.userToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
@@ -263,32 +278,32 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.data.items.length()").value(0));
     }
 
-//    @Test
-//    @DisplayName("예약 취소 성공")
-//    void cancelReservation_success() throws Exception {
-//        // given: 예약 생성
-//        ReservationCreateRequest request = new ReservationCreateRequest(
-//                session.getId(),
-//                seats.stream().map(Seat::getId).toList()
-//        );
-//
-//        String reservationResult = mvc.perform(post("/api/reservations")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .header("Authorization", "Bearer " + token.userToken)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        Long reservationId = ((Integer) JsonPath.read(reservationResult, "$.data.id")).longValue();
-//
-//        // when & then: 예약 취소
-//        mvc.perform(post("/api/reservations/{id}/cancel", reservationId)
-//                        .header("Authorization", "Bearer " + token.userToken))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.code").value("200"))
-//                .andExpect(jsonPath("$.message").value("예매가 취소되었습니다."));
-//    }
+    //    @Test
+    //    @DisplayName("예약 취소 성공")
+    //    void cancelReservation_success() throws Exception {
+    //        // given: 예약 생성
+    //        ReservationCreateRequest request = new ReservationCreateRequest(
+    //                session.getId(),
+    //                seats.stream().map(Seat::getId).toList()
+    //        );
+    //
+    //        String reservationResult = mvc.perform(post("/api/reservations")
+    //                        .contentType(MediaType.APPLICATION_JSON)
+    //                        .header("Authorization", "Bearer " + token.userToken)
+    //                        .content(objectMapper.writeValueAsString(request)))
+    //                .andExpect(status().isOk())
+    //                .andReturn()
+    //                .getResponse()
+    //                .getContentAsString();
+    //
+    //        Long reservationId = ((Integer) JsonPath.read(reservationResult, "$.data.id")).longValue();
+    //
+    //        // when & then: 예약 취소
+    //        mvc.perform(post("/api/reservations/{id}/cancel", reservationId)
+    //                        .header("Authorization", "Bearer " + token.userToken))
+    //                .andExpect(status().isOk())
+    //                .andExpect(jsonPath("$.code").value("200"))
+    //                .andExpect(jsonPath("$.message").value("예매가 취소되었습니다."));
+    //    }
 
 }
