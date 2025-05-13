@@ -1,5 +1,15 @@
 package com.pickgo.global.init;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.pickgo.domain.area.area.entity.AreaGrade;
 import com.pickgo.domain.area.area.entity.AreaName;
 import com.pickgo.domain.area.area.entity.PerformanceArea;
@@ -18,16 +28,7 @@ import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.venue.entity.Venue;
 import com.pickgo.domain.venue.repository.VenueRepository;
 import com.pickgo.global.jwt.JwtProvider;
-import com.pickgo.token.TestToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import com.pickgo.global.token.TestToken;
 
 @Component
 @Profile("test")

@@ -10,25 +10,25 @@ import com.pickgo.domain.member.entity.enums.SocialProvider;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record MemberDetailResponse(
-	UUID id,
-	String email,
-	String nickname,
-	Authority authority,
-	String profile,
-	SocialProvider socialProvider,
-	LocalDateTime createdAt,
-	LocalDateTime modifiedAt
+    UUID id,
+    String email,
+    String nickname,
+    Authority authority,
+    String profile,
+    SocialProvider socialProvider,
+    LocalDateTime createdAt,
+    LocalDateTime modifiedAt
 ) {
-	public static MemberDetailResponse from(Member member) {
-		return new MemberDetailResponse(
-			member.getId(),
-			member.getEmail(),
-			member.getNickname(),
-			member.getAuthority(),
-			member.getProfile(),
-			member.getSocialProvider(),
-			member.getCreatedAt(),
-			member.getModifiedAt()
-		);
-	}
+    public static MemberDetailResponse from(Member member) {
+        return new MemberDetailResponse(
+            member.getId(),
+            member.getEmail(),
+            member.getNickname(),
+            member.getAuthority(),
+            member.getProfile(),
+            member.getSocialProvider(),
+            member.getCreatedAt(),
+            member.getModifiedAt()
+        );
+    }
 }
