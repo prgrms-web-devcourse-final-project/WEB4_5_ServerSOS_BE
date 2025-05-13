@@ -1,7 +1,5 @@
 package com.pickgo.domain.queue.task;
 
-import static com.pickgo.domain.member.entity.enums.Authority.*;
-
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -12,8 +10,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.queue.dto.EntryPermission;
 import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.queue.service.WaitingService;

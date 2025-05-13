@@ -1,6 +1,5 @@
 package com.pickgo.domain.queue.controller;
 
-import static com.pickgo.domain.member.entity.enums.Authority.*;
 import static com.pickgo.global.response.RsCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -24,8 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.queue.service.WaitingService;
 import com.pickgo.domain.queue.sse.SseEmitterHandler;

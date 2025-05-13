@@ -1,7 +1,7 @@
 package com.pickgo.global.logging.util;
 
 import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.logging.dto.LogContext;

@@ -10,7 +10,7 @@ import com.pickgo.domain.log.repository.ExceptionLogRepository;
 import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.log.repository.PaymentHistoryRepository;
 import com.pickgo.domain.log.repository.ReservationHistoryRepository;
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.logging.dto.LogContext;

@@ -1,11 +1,11 @@
 package com.pickgo.domain.reservation.dto.response;
 
-import com.pickgo.domain.area.seat.dto.SeatSimpleResponse;
-import com.pickgo.domain.performance.dto.PerformanceInfo;
-import com.pickgo.domain.performance.dto.PerformanceSessionInfo;
-import com.pickgo.domain.performance.dto.VenueInfo;
-import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.performance.area.seat.dto.SeatSimpleResponse;
+import com.pickgo.domain.performance.performance.dto.PerformanceInfo;
+import com.pickgo.domain.performance.performance.dto.PerformanceSessionInfo;
+import com.pickgo.domain.performance.performance.dto.VenueInfo;
+import com.pickgo.domain.performance.performance.entity.Performance;
+import com.pickgo.domain.performance.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import lombok.Builder;

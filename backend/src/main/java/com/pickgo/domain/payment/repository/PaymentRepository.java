@@ -1,6 +1,6 @@
 package com.pickgo.domain.payment.repository;
 
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.reservation.entity.Reservation;

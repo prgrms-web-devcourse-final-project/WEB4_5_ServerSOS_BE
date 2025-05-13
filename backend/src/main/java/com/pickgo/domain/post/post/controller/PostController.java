@@ -1,12 +1,12 @@
 package com.pickgo.domain.post.post.controller;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
-import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
+import com.pickgo.domain.performance.performance.entity.PerformanceType;
 import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.service.PostService;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.response.RsData;
 import com.pickgo.domain.post.post.util.IdentifierResolver;
 import io.swagger.v3.oas.annotations.Operation;
