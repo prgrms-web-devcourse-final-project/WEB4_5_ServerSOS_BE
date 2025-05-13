@@ -1,6 +1,7 @@
 package com.pickgo.domain.reservation.scheduler;
 
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.payment.repository.PaymentRepository;
@@ -29,7 +30,7 @@ public class ReservationTimeoutScheduler {
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
     @Transactional
     public void cancelExpiredReservations() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(2);
 
         // 1. 5분 넘었고, RESERVED 상태인 것 조회
         List<Reservation> expired = reservationRepository
@@ -43,9 +44,8 @@ public class ReservationTimeoutScheduler {
                 reservation.setStatus(ReservationStatus.EXPIRED);
 
                 for (ReservedSeat seat : reservation.getReservedSeats()) { //예약에 연결된 모든 좌석 반복
-                    reservation.setStatus(ReservationStatus.EXPIRED);
+                    seat.setStatus(SeatStatus.RELEASED);
                     applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트 발행(5분이 지난 예약 중 결제 되지 않은 예약)
-                    reservedSeatRepository.delete(seat); //DB 좌석 삭제
                 }
                 //DB 삭제 후 객체 내부 상태 맞춰주기
                 reservation.getReservedSeats().clear();

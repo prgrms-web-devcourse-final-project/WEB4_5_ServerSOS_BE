@@ -170,7 +170,7 @@ public class ReservationService {
 
         //삭제 되기전에 , 좌석 해제 이벤트를 발행하고, 프론트에서 이벤트를 받으면 좌석을 활성화하는 방식 , 예약 삭제 -> 좌석 선택 가능
         reservation.getReservedSeats().forEach(seat -> {
-            reservation.setStatus(ReservationStatus.EXPIRED);
+            seat.setStatus(SeatStatus.RELEASED);
             applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
         });
 
@@ -196,13 +196,12 @@ public class ReservationService {
             paymentService.cancelPayment(payment.getId());
         }
 
-
         // 3. 예약 상태 변경
         reservation.cancel();
 
         //예약 취소시 좌석 해제 했다는 알림 발송,
         reservation.getReservedSeats().forEach(seat -> {
-            reservation.setStatus(ReservationStatus.EXPIRED);
+            seat.setStatus(SeatStatus.RELEASED);
             applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
         });
 
