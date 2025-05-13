@@ -16,8 +16,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.global.exception.BusinessException;
 
 import io.jsonwebtoken.Claims;

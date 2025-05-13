@@ -1,12 +1,12 @@
 package com.pickgo.domain.payment.controller;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.payment.dto.PaymentConfirmRequest;
 import com.pickgo.domain.payment.dto.PaymentCreateRequest;
 import com.pickgo.domain.payment.dto.PaymentDetailResponse;
 import com.pickgo.domain.payment.dto.PaymentSimpleResponse;
 import com.pickgo.domain.payment.service.PaymentService;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.response.RsCode;
 import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;

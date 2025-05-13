@@ -1,6 +1,6 @@
 package com.pickgo.domain.reservation.dto.response;
 
-import com.pickgo.domain.area.seat.dto.SeatSimpleResponse;
+import com.pickgo.domain.performance.area.seat.dto.SeatSimpleResponse;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import lombok.Builder;

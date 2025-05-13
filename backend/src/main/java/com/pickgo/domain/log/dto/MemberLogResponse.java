@@ -1,8 +1,8 @@
 package com.pickgo.domain.log.dto;
 
 import com.pickgo.domain.log.entity.MemberHistory;
-import com.pickgo.domain.member.entity.enums.Authority;
-import com.pickgo.domain.member.entity.enums.SocialProvider;
+import com.pickgo.domain.member.member.entity.enums.Authority;
+import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 
 public record MemberLogResponse(
         String email,

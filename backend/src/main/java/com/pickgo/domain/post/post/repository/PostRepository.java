@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.post.repository;
 
-import com.pickgo.domain.performance.entity.PerformanceType;
+import com.pickgo.domain.performance.performance.entity.PerformanceType;
 import com.pickgo.domain.post.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,7 +1,6 @@
 package com.pickgo.domain.payment.service;
 
-import static com.pickgo.domain.member.entity.enums.Authority.*;
-import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
+import static com.pickgo.domain.member.member.entity.enums.Authority.USER;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,26 +23,26 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.repository.MemberRepository;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.domain.payment.dto.PaymentCreateRequest;
 import com.pickgo.domain.payment.dto.PaymentDetailResponse;
 import com.pickgo.domain.payment.dto.PaymentSimpleResponse;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.payment.entity.PaymentStatus;
 import com.pickgo.domain.payment.repository.PaymentRepository;
-import com.pickgo.domain.performance.entity.Performance;
-import com.pickgo.domain.performance.entity.PerformanceSession;
-import com.pickgo.domain.performance.entity.PerformanceState;
-import com.pickgo.domain.performance.entity.PerformanceType;
-import com.pickgo.domain.performance.repository.PerformanceRepository;
-import com.pickgo.domain.performance.repository.PerformanceSessionRepository;
+import com.pickgo.domain.performance.performance.entity.Performance;
+import com.pickgo.domain.performance.performance.entity.PerformanceSession;
+import com.pickgo.domain.performance.performance.entity.PerformanceState;
+import com.pickgo.domain.performance.performance.entity.PerformanceType;
+import com.pickgo.domain.performance.performance.repository.PerformanceRepository;
+import com.pickgo.domain.performance.performance.repository.PerformanceSessionRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
-import com.pickgo.domain.venue.entity.Venue;
-import com.pickgo.domain.venue.repository.VenueRepository;
-import com.pickgo.global.dto.PageResponse;
+import com.pickgo.domain.performance.venue.entity.Venue;
+import com.pickgo.domain.performance.venue.repository.VenueRepository;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
@@ -91,7 +91,7 @@ class PaymentServiceTest {
                 .password(password)
                 .nickname(nickname)
                 .authority(USER)
-                .socialProvider(NONE)
+                .socialProvider(SocialProvider.NONE)
                 .build();
 
         // 수동으로 createdAt / modifiedAt 설정

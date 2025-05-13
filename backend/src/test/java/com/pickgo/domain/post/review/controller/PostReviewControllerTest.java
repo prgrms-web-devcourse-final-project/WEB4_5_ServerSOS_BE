@@ -20,7 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
 import com.pickgo.domain.post.review.service.PostReviewService;
 import com.pickgo.global.exception.BusinessException;

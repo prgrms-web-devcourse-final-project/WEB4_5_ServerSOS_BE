@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.post.entity;
 
-import com.pickgo.domain.performance.entity.Performance;
+import com.pickgo.domain.performance.performance.entity.Performance;
 import com.pickgo.domain.post.review.entity.Review;
 import com.pickgo.global.entity.BaseEntity;
 import jakarta.persistence.*;

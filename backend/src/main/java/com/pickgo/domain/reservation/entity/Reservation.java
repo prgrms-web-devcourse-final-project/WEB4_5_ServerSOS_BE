@@ -1,10 +1,9 @@
 package com.pickgo.domain.reservation.entity;
 
-import com.pickgo.domain.area.seat.entity.ReservedSeat;
-import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.performance.area.seat.entity.ReservedSeat;
 
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.performance.entity.PerformanceSession;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.performance.performance.entity.PerformanceSession;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.global.entity.BaseEntity;
 import com.pickgo.global.exception.BusinessException;

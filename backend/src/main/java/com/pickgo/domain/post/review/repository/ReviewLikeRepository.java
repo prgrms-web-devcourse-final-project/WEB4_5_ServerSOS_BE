@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.review.repository;
 
-import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.post.review.entity.Review;
 import com.pickgo.domain.post.review.entity.ReviewLike;
 import org.springframework.data.jpa.repository.JpaRepository;

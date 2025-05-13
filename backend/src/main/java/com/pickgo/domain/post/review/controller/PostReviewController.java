@@ -1,6 +1,6 @@
 package com.pickgo.domain.post.review.controller;
 
-import com.pickgo.domain.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.post.review.dto.PostReviewContentRequest;
 import com.pickgo.domain.post.review.dto.PostReviewSimpleResponse;
 import com.pickgo.domain.post.review.dto.PostReviewWithLikeResponse;
