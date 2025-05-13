@@ -118,7 +118,6 @@ class PaymentServiceTest {
                 .state(PerformanceState.SCHEDULED)
                 .minAge("전체관람가")
                 .casts("홍길동 외")
-                .productionCompany("테스트컴퍼니")
                 .type(PerformanceType.MUSICAL)
                 .venue(venue)
                 .build();

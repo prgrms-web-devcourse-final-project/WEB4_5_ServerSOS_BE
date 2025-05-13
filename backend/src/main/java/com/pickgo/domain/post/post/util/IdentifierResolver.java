@@ -1,4 +1,4 @@
-package com.pickgo.global.util;
+package com.pickgo.domain.post.post.util;
 
 import com.pickgo.domain.member.dto.MemberPrincipal;
 import jakarta.servlet.http.HttpServletRequest;

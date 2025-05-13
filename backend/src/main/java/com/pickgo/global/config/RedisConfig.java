@@ -1,4 +1,4 @@
-package com.pickgo.global.redis;
+package com.pickgo.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -97,5 +98,14 @@ public class PerformanceService {
 
         // 6. 임시 게시글 생성
         postService.createPostPublished(saved);
+    }
+
+    @Transactional
+    public void updatePerformanceState() {
+        LocalDate today = LocalDate.now();
+
+        // 공연 상태 업데이트
+        performanceRepository.UpdateToCompleted(today);
+        performanceRepository.UpdateToOngoing(today);
     }
 }

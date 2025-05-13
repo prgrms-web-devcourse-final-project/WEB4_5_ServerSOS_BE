@@ -48,9 +48,6 @@ public class Performance extends BaseEntity {
     private String casts;
 
     @Column(nullable = false)
-    private String productionCompany;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PerformanceType type;
 

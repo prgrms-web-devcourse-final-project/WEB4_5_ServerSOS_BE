@@ -61,7 +61,6 @@ class PostControllerTest {
                 .state(PerformanceState.SCHEDULED)
                 .minAge("전체 이용가")
                 .casts("")
-                .productionCompany("")
                 .type(PerformanceType.MUSICAL)
                 .venue(Venue.builder().name("공연장명").build())
                 .build();

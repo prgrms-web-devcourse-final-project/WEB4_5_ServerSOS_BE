@@ -1,4 +1,4 @@
-package com.pickgo.global.scheduler;
+package com.pickgo.domain.performance.scheduler;
 
 import com.pickgo.domain.performance.service.PerformanceService;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +12,19 @@ import org.springframework.stereotype.Component;
 public class PerformanceScheduler {
     private final PerformanceService performanceService;
 
-    // 매일 자정에 업데이트
-    @Scheduled(cron = "0 0 0 * * *")
+    // 매일 정오에 업데이트
+    @Scheduled(cron = "0 0 12 * * *")
     public void updatePerformanceDaily() {
         try {
             performanceService.fetchAndSavePerformances();
         } catch (Exception e) {
             System.out.println("업데이트 중 에러 발생: " + e.getMessage());
         }
+    }
+
+    // 매일 자정에 업데이트
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updatePerformanceState() {
+        performanceService.updatePerformanceState();
     }
 }

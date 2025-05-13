@@ -1,4 +1,4 @@
-package com.pickgo.global.scheduler;
+package com.pickgo.domain.post.post.scheduler;
 
 import com.pickgo.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
