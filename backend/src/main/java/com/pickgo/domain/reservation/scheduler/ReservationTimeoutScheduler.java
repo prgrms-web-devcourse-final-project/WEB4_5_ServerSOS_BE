@@ -29,7 +29,7 @@ public class ReservationTimeoutScheduler {
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
     @Transactional
     public void cancelExpiredReservations() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(1);
 
         // 1. 5분 넘었고, RESERVED 상태인 것 조회
         List<Reservation> expired = reservationRepository
