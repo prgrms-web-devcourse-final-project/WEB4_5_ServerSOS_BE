@@ -1,5 +1,9 @@
 package com.pickgo.domain.reservation.scheduler;
 
+
+import com.pickgo.domain.area.seat.entity.ReservedSeat;
+import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.repository.PaymentRepository;
@@ -10,6 +14,7 @@ import com.pickgo.global.logging.dto.LogContext;
 import com.pickgo.global.logging.util.LogWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +28,10 @@ import java.util.List;
 public class ReservationTimeoutScheduler {
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+
     private final LogWriter logWriter;
 
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
@@ -40,6 +49,12 @@ public class ReservationTimeoutScheduler {
             boolean hasPayment = paymentRepository.existsByReservation(reservation);
             if (!hasPayment) {
                 reservation.setStatus(ReservationStatus.EXPIRED);
+
+                for (ReservedSeat seat : reservation.getReservedSeats()) { //예약에 연결된 모든 좌석 반복
+                    seat.setStatus(SeatStatus.RELEASED);
+                    applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트 발행(5분이 지난 예약 중 결제 되지 않은 예약)
+                }
+                //DB 삭제 후 객체 내부 상태 맞춰주기
                 reservation.getReservedSeats().clear();
 
                 // 3. 로그 저장
@@ -52,6 +67,7 @@ public class ReservationTimeoutScheduler {
 
                 logWriter.writeReservationLog(reservation, ActionType.RESERVATION_EXPIRED, systemContext);
             }
+
         }
 
 

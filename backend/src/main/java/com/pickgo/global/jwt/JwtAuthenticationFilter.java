@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+
     /**
      * 스프링 시큐리티 필터에서 인증 처리
      **/
@@ -45,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || request.getRequestURI().startsWith("/swagger-ui")
                 || request.getRequestURI().startsWith("/v3/api-docs")
                 || (request.getRequestURI().startsWith("/api/posts") && "GET".equals(request.getMethod()))
+                || request.getRequestURI().startsWith("/api/areas/subscribe")
         ) {
             filterChain.doFilter(request, response);
             return;
@@ -72,3 +74,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+

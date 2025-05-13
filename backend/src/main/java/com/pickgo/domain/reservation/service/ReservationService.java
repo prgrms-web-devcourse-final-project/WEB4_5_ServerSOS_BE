@@ -4,6 +4,7 @@ import com.pickgo.domain.area.area.entity.PerformanceArea;
 import com.pickgo.domain.area.area.repository.PerformanceAreaRepository;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.entity.Member;
@@ -25,6 +26,7 @@ import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +53,7 @@ public class ReservationService {
     private final PaymentRepository paymentRepository;
     private final LogWriter logWriter;
     private final PerformanceAreaRepository areaRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ReservationSimpleResponse createReservation(
             UUID memberId,
@@ -90,7 +93,9 @@ public class ReservationService {
                     .status(SeatStatus.PENDING)
                     .build();
 
+            reservedSeat.setPerformanceSession(performanceSession); //세션 먼저 세팅
             reservedSeats.add(reservedSeat);
+
         }
 
         // 여기부터 예약 트랜지션이므로 하나로 묶어야함
@@ -117,6 +122,12 @@ public class ReservationService {
             // 5. 좌석 및 예약 저장
             reservationRepository.save(reservation);
             seatRepository.saveAll(reservedSeats);
+
+
+            //예약 직후에 이벤트를 발행 (좌석이 점유되었음을 알림)
+            reservedSeats.forEach(seat -> {
+                applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+            });
 
             logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CREATED);
 
@@ -163,7 +174,17 @@ public class ReservationService {
             throw new BusinessException(RsCode.INVALID_RESERVATION_STATE);
         }
 
+
+        //삭제 되기전에 , 좌석 해제 이벤트를 발행하고, 프론트에서 이벤트를 받으면 좌석을 활성화하는 방식 , 예약 삭제 -> 좌석 선택 가능
+        reservation.getReservedSeats().forEach(seat -> {
+            seat.setStatus(SeatStatus.RELEASED);
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+        });
+
+      
+
         // 3. 예약 삭제
+
         reservationRepository.delete(reservation);
 
         // 4. 로깅
@@ -190,6 +211,13 @@ public class ReservationService {
 
         // 3. 예약 상태 변경
         reservation.cancel();
+
+
+        //예약 취소시 좌석 해제 했다는 알림 발송,
+        reservation.getReservedSeats().forEach(seat -> {
+            seat.setStatus(SeatStatus.RELEASED);
+            applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+        });
 
         // 4. 예약된 좌석 복구
         reservation.getReservedSeats().clear();

@@ -1,5 +1,8 @@
 package com.pickgo.domain.payment.scheduler;
 
+
+import com.pickgo.domain.area.seat.entity.SeatStatus;
+import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.entity.Payment;
@@ -11,6 +14,7 @@ import com.pickgo.global.logging.dto.LogContext;
 import com.pickgo.global.logging.util.LogWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +28,9 @@ import java.util.List;
 public class PaymentTimeoutScheduler {
 
     private final PaymentRepository paymentRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final LogWriter logWriter;
+
 
 
     @Scheduled(fixedRate = 60_000)
@@ -41,6 +47,13 @@ public class PaymentTimeoutScheduler {
 
             Reservation reservation = payment.getReservation();
             reservation.setStatus(ReservationStatus.EXPIRED);
+
+            // 좌석 해제 알림 이벤트 발행 (결제가 생성된지 10분이 지난 경우 이벤트 발행)
+            reservation.getReservedSeats().forEach(seat -> {
+                seat.setStatus(SeatStatus.RELEASED);
+                applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
+            });
+
             reservation.getReservedSeats().clear();
 
             // 3. 로그 저장
