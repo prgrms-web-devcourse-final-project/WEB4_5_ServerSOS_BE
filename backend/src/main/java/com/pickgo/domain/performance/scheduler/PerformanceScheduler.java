@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class PerformanceScheduler {
     private final PerformanceService performanceService;
 
-    // 매일 자정에 업데이트
+    // 매일 정오에 업데이트
     @Scheduled(cron = "0 0 12 * * *")
     public void updatePerformanceDaily() {
         try {
