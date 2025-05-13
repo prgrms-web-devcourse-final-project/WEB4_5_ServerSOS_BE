@@ -14,37 +14,37 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EntryService {
 
-	private final EntryRepository entryRepository;
+    private final EntryRepository entryRepository;
 
-	public void add(UUID userId) {
-		entryRepository.add(userId);
-	}
+    public void add(UUID userId) {
+        entryRepository.add(userId);
+    }
 
-	public void remove(UUID userId) {
-		entryRepository.remove(userId);
-	}
+    public void remove(UUID userId) {
+        entryRepository.remove(userId);
+    }
 
-	public Long getSize() {
-		return entryRepository.getSize();
-	}
+    public Long getSize() {
+        return entryRepository.getSize();
+    }
 
-	public boolean isFull() {
-		return entryRepository.isFull();
-	}
+    public boolean isFull() {
+        return entryRepository.isFull();
+    }
 
-	public Set<UUID> getAll() {
-		return entryRepository.getAll();
-	}
+    public Set<UUID> getAll() {
+        return entryRepository.getAll();
+    }
 
-	public void setState(UUID userId, EntryState state) {
-		entryRepository.setState(userId, state);
-	}
+    public void setState(UUID userId, EntryState state, int timeout) {
+        entryRepository.setState(userId, state, timeout);
+    }
 
-	public EntryState getState(UUID userId) {
-		return entryRepository.getState(userId);
-	}
+    public EntryState getState(UUID userId) {
+        return entryRepository.getState(userId);
+    }
 
-	public void clear() {
-		entryRepository.clear();
-	}
+    public void clear() {
+        entryRepository.clear();
+    }
 }

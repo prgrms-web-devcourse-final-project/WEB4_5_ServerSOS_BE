@@ -19,11 +19,11 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
-	@CreatedDate
-	@Column(name = "created_at", columnDefinition = "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'")
-	private LocalDateTime createdAt;
+    @CreatedDate
+    @Column(name = "created_at", columnDefinition = "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'")
+    private LocalDateTime createdAt;
 
-	@UpdateTimestamp
-	@Column(name = "modified_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시'")
-	private LocalDateTime modifiedAt;
+    @UpdateTimestamp
+    @Column(name = "modified_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시'")
+    private LocalDateTime modifiedAt;
 }

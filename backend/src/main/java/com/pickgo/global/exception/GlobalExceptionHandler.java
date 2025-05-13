@@ -7,6 +7,7 @@ import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import com.pickgo.domain.log.enums.ActionType;
@@ -39,13 +40,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public RsData<?> handleBusinessException(
-            final BusinessException exception
+        final BusinessException exception
     ) {
         logWriter.writeExceptionLog(
                 exception,
                 ActionType.EXCEPTION
         );
         return RsData.from(exception.getRsCode());
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncTimeout(AsyncRequestNotUsableException exception) {
+        logWarn(exception);
     }
 
     @ExceptionHandler(AsyncRequestTimeoutException.class)
@@ -75,7 +81,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public RsData<?> handleIllegalArgumentException(
-            final IllegalArgumentException exception
+        final IllegalArgumentException exception
     ) {
         logWriter.writeExceptionLog(
                 exception,
@@ -87,7 +93,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public RsData<?> handleMethodArgumentNotValidException(
-            final MethodArgumentNotValidException exception
+        final MethodArgumentNotValidException exception
     ) {
         logWriter.writeExceptionLog(
                 exception,

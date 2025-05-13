@@ -9,21 +9,21 @@ import com.pickgo.domain.queue.enums.EntryState;
  * 입장한 사용자 집합
  */
 public interface EntryRepository {
-	void add(UUID userId);
+    void add(UUID userId);
 
-	boolean isIn(UUID userId);
+    boolean isIn(UUID userId);
 
-	void remove(UUID userId);
+    void remove(UUID userId);
 
-	Long getSize();
+    Long getSize();
 
-	boolean isFull();
+    boolean isFull();
 
-	Set<UUID> getAll();
+    Set<UUID> getAll();
 
-	void setState(UUID userId, EntryState state);
+    void setState(UUID userId, EntryState state, int timeout);
 
-	EntryState getState(UUID userId);
+    EntryState getState(UUID userId);
 
-	void clear();
+    void clear();
 }

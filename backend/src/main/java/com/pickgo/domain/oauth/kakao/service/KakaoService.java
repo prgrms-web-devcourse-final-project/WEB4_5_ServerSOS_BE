@@ -1,16 +1,10 @@
 package com.pickgo.domain.oauth.kakao.service;
 
-import com.pickgo.domain.auth.service.TokenService;
-import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.member.entity.Member;
-import com.pickgo.domain.member.service.MemberService;
-import com.pickgo.domain.oauth.kakao.dto.KakaoToken;
-import com.pickgo.domain.oauth.kakao.dto.KakaoUserInfo;
-import com.pickgo.global.exception.BusinessException;
-import com.pickgo.global.logging.util.LogWriter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import static com.pickgo.domain.member.entity.enums.SocialProvider.*;
+import static com.pickgo.global.response.RsCode.*;
+
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,129 +18,131 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
+import com.pickgo.domain.auth.service.TokenService;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.member.entity.Member;
+import com.pickgo.domain.member.service.MemberService;
+import com.pickgo.domain.oauth.kakao.dto.KakaoToken;
+import com.pickgo.domain.oauth.kakao.dto.KakaoUserInfo;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.util.LogWriter;
 
-import static com.pickgo.domain.member.entity.enums.SocialProvider.KAKAO;
-import static com.pickgo.global.response.RsCode.BAD_REQUEST;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class KakaoService {
 
-	@Value("${custom.oauth.kakao.redirect-uri}")
-	private String redirectUri;
+    private final RestTemplate restTemplate;
+    private final TokenService tokenService;
+    private final MemberService memberService;
+    private final LogWriter logWriter;
+    @Value("${custom.oauth.kakao.redirect-uri}")
+    private String redirectUri;
+    @Value("${custom.oauth.kakao.api-key}")
+    private String apiKey;
+    @Value("${custom.oauth.kakao.authorize-uri}")
+    private String authorizeUri;
+    @Value("${custom.oauth.kakao.token-uri}")
+    private String tokenUri;
+    @Value("${custom.oauth.kakao.user-info-uri}")
+    private String userInfoUri;
+    @Value("${custom.member.profile}")
+    private String profile;
 
-	@Value("${custom.oauth.kakao.api-key}")
-	private String apiKey;
+    public RedirectView redirectToKakaoLogin() {
+        String kakaoAuthUrl = UriComponentsBuilder.fromUriString(authorizeUri)
+            .queryParam("client_id", apiKey)
+            .queryParam("redirect_uri", redirectUri)
+            .queryParam("response_type", "code")
+            .build()
+            .toString();
 
-	@Value("${custom.oauth.kakao.authorize-uri}")
-	private String authorizeUri;
+        return new RedirectView(kakaoAuthUrl);
+    }
 
-	@Value("${custom.oauth.kakao.token-uri}")
-	private String tokenUri;
+    @Transactional
+    public RedirectView login(String code, HttpServletRequest request, HttpServletResponse response) {
+        KakaoToken kakaoToken = getToken(code);
+        KakaoUserInfo userInfo = getUserInfo(kakaoToken.accessToken());
 
-	@Value("${custom.oauth.kakao.user-info-uri}")
-	private String userInfoUri;
+        Member member = getOrCreateMember(userInfo);
+        tokenService.createRefreshToken(member, response);
 
-	@Value("${custom.member.profile}")
-	private String profile;
+        String origin = getOriginFromRequest(request);
+        String homeUrl = UriComponentsBuilder.fromUriString(origin)
+            .build()
+            .toString();
 
-	private final RestTemplate restTemplate;
-	private final TokenService tokenService;
-	private final MemberService memberService;
-	private final LogWriter logWriter;
+        logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN_KAKAO);
 
-	public RedirectView redirectToKakaoLogin() {
-		String kakaoAuthUrl = UriComponentsBuilder.fromUriString(authorizeUri)
-			.queryParam("client_id", apiKey)
-			.queryParam("redirect_uri", redirectUri)
-			.queryParam("response_type", "code")
-			.build()
-			.toString();
+        return new RedirectView(homeUrl);
+    }
 
-		return new RedirectView(kakaoAuthUrl);
-	}
+    private KakaoToken getToken(String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-	@Transactional
-	public RedirectView login(String code, HttpServletRequest request, HttpServletResponse response) {
-		KakaoToken kakaoToken = getToken(code);
-		KakaoUserInfo userInfo = getUserInfo(kakaoToken.accessToken());
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "authorization_code");
+        body.add("client_id", apiKey);
+        body.add("redirect_uri", redirectUri);
+        body.add("code", code);
 
-		Member member = getOrCreateMember(userInfo);
-		tokenService.createRefreshToken(member, response);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
-		String origin = getOriginFromRequest(request);
-		String homeUrl = UriComponentsBuilder.fromUriString(origin)
-			.build()
-			.toString();
+        ResponseEntity<KakaoToken> response = restTemplate.postForEntity(
+            tokenUri,
+            request,
+            KakaoToken.class
+        );
 
-		logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN_KAKAO);
+        return response.getBody();
+    }
 
-		return new RedirectView(homeUrl);
-	}
+    private KakaoUserInfo getUserInfo(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("Authorization", "Bearer " + accessToken);
 
-	private KakaoToken getToken(String code) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
 
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-		body.add("grant_type", "authorization_code");
-		body.add("client_id", apiKey);
-		body.add("redirect_uri", redirectUri);
-		body.add("code", code);
+        ResponseEntity<KakaoUserInfo> response = restTemplate.postForEntity(
+            userInfoUri,
+            request,
+            KakaoUserInfo.class
+        );
 
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+        return response.getBody();
+    }
 
-		ResponseEntity<KakaoToken> response = restTemplate.postForEntity(
-			tokenUri,
-			request,
-			KakaoToken.class
-		);
+    private Member getOrCreateMember(KakaoUserInfo userInfo) {
+        try {
+            Member member = memberService.getEntity(userInfo.kakaoAccount().email());
+            member.setSocialProvider(KAKAO);
+            return member;
+        } catch (BusinessException e) {
+            Member newMember = userInfo.toEntity(profile);
+            return memberService.saveEntity(newMember);
+        }
+    }
 
-		return response.getBody();
-	}
+    private String getOriginFromRequest(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        if (origin != null)
+            return origin;
 
-	private KakaoUserInfo getUserInfo(String accessToken) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.set("Authorization", "Bearer " + accessToken);
+        String referer = request.getHeader("Referer");
+        if (referer == null)
+            throw new BusinessException(BAD_REQUEST);
 
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
-
-		ResponseEntity<KakaoUserInfo> response = restTemplate.postForEntity(
-			userInfoUri,
-			request,
-			KakaoUserInfo.class
-		);
-
-		return response.getBody();
-	}
-
-	private Member getOrCreateMember(KakaoUserInfo userInfo) {
-		try {
-			Member member = memberService.getEntity(userInfo.kakaoAccount().email());
-			member.setSocialProvider(KAKAO);
-			return member;
-		} catch (BusinessException e) {
-			Member newMember = userInfo.toEntity(profile);
-			return memberService.saveEntity(newMember);
-		}
-	}
-
-	private String getOriginFromRequest(HttpServletRequest request) {
-		String origin = request.getHeader("Origin");
-		if (origin != null)
-			return origin;
-
-		String referer = request.getHeader("Referer");
-		if (referer == null)
-			throw new BusinessException(BAD_REQUEST);
-
-		URI uri = URI.create(referer);
-		String result = uri.getScheme() + "://" + uri.getHost();
-		if (uri.getPort() != -1) {
-			result += ":" + uri.getPort();
-		}
-		return result;
-	}
+        URI uri = URI.create(referer);
+        String result = uri.getScheme() + "://" + uri.getHost();
+        if (uri.getPort() != -1) {
+            result += ":" + uri.getPort();
+        }
+        return result;
+    }
 }

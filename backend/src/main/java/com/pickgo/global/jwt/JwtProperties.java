@@ -11,6 +11,6 @@ import lombok.Setter;
 @Component
 @ConfigurationProperties("custom.jwt") // application.yml에서 토큰 속성을 가져옴
 public class JwtProperties {
-	private String issuer;
-	private String secretKey;
+    private String issuer;
+    private String secretKey;
 }
