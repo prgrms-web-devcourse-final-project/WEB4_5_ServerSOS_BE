@@ -4,7 +4,6 @@ package com.pickgo.domain.reservation.scheduler;
 import com.pickgo.domain.area.seat.entity.ReservedSeat;
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
-import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.repository.PaymentRepository;
@@ -31,14 +30,14 @@ public class ReservationTimeoutScheduler {
     private final PaymentRepository paymentRepository;
 
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final ReservedSeatRepository reservedSeatRepository;
+
 
     private final LogWriter logWriter;
 
     @Scheduled(fixedRate = 60_000) // 매 1분마다 실행
     @Transactional
     public void cancelExpiredReservations() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
 
         // 1. 5분 넘었고, RESERVED 상태인 것 조회
         List<Reservation> expired = reservationRepository

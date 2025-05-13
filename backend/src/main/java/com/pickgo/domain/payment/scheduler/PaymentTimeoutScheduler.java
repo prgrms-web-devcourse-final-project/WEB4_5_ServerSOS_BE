@@ -3,7 +3,6 @@ package com.pickgo.domain.payment.scheduler;
 
 import com.pickgo.domain.area.seat.entity.SeatStatus;
 import com.pickgo.domain.area.seat.event.SeatStatusChangedEvent;
-import com.pickgo.domain.area.seat.repository.ReservedSeatRepository;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.payment.entity.Payment;
@@ -30,7 +29,6 @@ public class PaymentTimeoutScheduler {
 
     private final PaymentRepository paymentRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final ReservedSeatRepository reservedSeatRepository;
     private final LogWriter logWriter;
 
 
@@ -38,7 +36,7 @@ public class PaymentTimeoutScheduler {
     @Scheduled(fixedRate = 60_000)
     @Transactional
     public void deleteStalePayments() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(10);
 
         List<Payment> stalePayments = paymentRepository.findByStatusAndCreatedAtBefore(
                 PaymentStatus.PENDING, threshold
