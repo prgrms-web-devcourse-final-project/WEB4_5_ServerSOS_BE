@@ -1,15 +1,9 @@
 package com.pickgo.global.logging.service;
 
 
-import com.pickgo.domain.log.entity.ExceptionLog;
-import com.pickgo.domain.log.entity.MemberHistory;
-import com.pickgo.domain.log.entity.PaymentHistory;
-import com.pickgo.domain.log.entity.ReservationHistory;
+import com.pickgo.domain.log.entity.*;
 import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.log.repository.ExceptionLogRepository;
-import com.pickgo.domain.log.repository.MemberHistoryRepository;
-import com.pickgo.domain.log.repository.PaymentHistoryRepository;
-import com.pickgo.domain.log.repository.ReservationHistoryRepository;
+import com.pickgo.domain.log.repository.*;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.payment.entity.Payment;
 import com.pickgo.domain.reservation.entity.Reservation;
@@ -27,6 +21,7 @@ public class HistorySaveService {
     private final MemberHistoryRepository memberHistoryRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final ExceptionLogRepository exceptionLogRepository;
+    private final AccessHistoryRepository accessHistoryRepository;
 
     /***
      * 로깅에서 오류가 나도 메소드가 정상 작동할 수 있도록 별도 트랜잭션 생성
@@ -35,10 +30,13 @@ public class HistorySaveService {
     public void saveReservationHistory(Reservation reservation, LogContext ctx, ActionType actionType) {
         ReservationHistory history = new ReservationHistory(
                 reservation.getId(),
-                reservation.getStatus(),
+                reservation.getStatus().name(),
                 reservation.getTotalPrice(),
                 reservation.getCreatedAt(),
                 reservation.getPerformanceSession().getId(),
+                reservation.getPerformanceSession().getPerformance().getName(),
+                reservation.getPerformanceSession().getPerformance().getType().name(),
+                reservation.getPerformanceSession().getPerformance().getVenue().getName(),
                 ctx.actorId(),
                 ctx.actorType(),
                 actionType,
@@ -88,7 +86,7 @@ public class HistorySaveService {
 
     @Transactional
     public void saveExceptionLog(Exception e, LogContext ctx, ActionType actionType) {
-        ExceptionLog exceptionLog = new ExceptionLog(
+        ExceptionHistory exceptionHistory = new ExceptionHistory(
                 e.getClass().getSimpleName(),
                 ctx.actorId(),
                 ctx.actorType(),
@@ -98,6 +96,18 @@ public class HistorySaveService {
                 "예외 메시지 : " + e.getMessage()
         );
 
-        exceptionLogRepository.save(exceptionLog);
+        exceptionLogRepository.save(exceptionHistory);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveAccessHistory(LogContext ctx) {
+        AccessHistory accessHistory = new AccessHistory(
+                ctx.actorId(),
+                ctx.actorType(),
+                ctx.requestUri(),
+                ctx.httpMethod()
+        );
+
+        accessHistoryRepository.save(accessHistory);
     }
 }
