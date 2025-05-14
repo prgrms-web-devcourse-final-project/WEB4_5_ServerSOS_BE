@@ -55,6 +55,7 @@ class TokenServiceTest {
 		given(jwtProvider.getUserId(refreshToken)).willReturn(mockMember.getId());
 		given(memberRepository.findById(mockMember.getId())).willReturn(Optional.of(mockMember));
 		given(jwtProvider.generateToken(eq(mockMember.getId().toString()), any(), eq(claims))).willReturn(accessToken);
+		given(jwtProvider.isValidToken(refreshToken)).willReturn(true);
 
 		// when
 		TokenDetailResponse response = tokenService.createAccessToken(refreshToken);
@@ -71,6 +72,7 @@ class TokenServiceTest {
 
 		given(jwtProvider.getUserId(refreshToken)).willReturn(userId);
 		given(memberRepository.findById(userId)).willReturn(Optional.empty());
+		given(jwtProvider.isValidToken(refreshToken)).willReturn(true);
 
 		// when & then
 		assertThatThrownBy(() -> tokenService.createAccessToken(refreshToken))
