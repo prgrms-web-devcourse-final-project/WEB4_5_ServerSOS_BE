@@ -19,6 +19,7 @@ import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.global.email.EmailService;
 import com.pickgo.global.logging.dto.LogContext;
 import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.response.PageResponse;
@@ -46,6 +47,7 @@ public class PaymentService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ReservedSeatRepository reservedSeatRepository;
     private final LogWriter logWriter;
+    private final EmailService emailService;
     private final LogContextUtil logContextUtil;
 
 
@@ -143,8 +145,7 @@ public class PaymentService {
 
         try {
             tossService.confirmPayment(req.paymentKey(), req.orderId(), req.amount());
-        }
-        catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             payment.setStatus(PaymentStatus.FAILED);
             paymentRepository.save(payment);
             throw new BusinessException(RsCode.PAYMENT_TOSS_FAILED);
@@ -166,6 +167,9 @@ public class PaymentService {
             reservedSeatRepository.save(seat);          // 2. 좌석 상태 DB 반영
             applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트를 spring에 발행, 구독하고 있는 SSE리스너가 변경 감지 -> 알림 발송
         });
+
+        // 4. 예약 메일 발송
+        emailService.sendReservationEmail(reservation, payment);
 
         LogContext logContext = logContextUtil.extract();
         logWriter.writePaymentLog(payment,ActionType.PAYMENT_COMPLETED, logContext);
