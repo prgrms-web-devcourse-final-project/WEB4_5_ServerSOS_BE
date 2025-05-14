@@ -18,20 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.member.member.dto.LoginRequest;
-import com.pickgo.domain.member.member.dto.LoginResponse;
-import com.pickgo.domain.member.member.dto.MemberCreateRequest;
-import com.pickgo.domain.member.member.dto.MemberDetailResponse;
-import com.pickgo.domain.member.member.dto.MemberPasswordUpdateRequest;
-import com.pickgo.domain.member.member.dto.MemberSimpleResponse;
-import com.pickgo.domain.member.member.dto.MemberUpdateRequest;
+import com.pickgo.domain.member.member.dto.*;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
-import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
+import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.s3.S3Uploader;
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +37,7 @@ public class MemberService {
     private final TokenService tokenService;
     private final S3Uploader s3Uploader;
     private final LogWriter logWriter;
+    private final EmailAuthService emailAuthService;
     private final LogContextUtil logContextUtil;
     @Value("${custom.member.profile}")
     private String profile;
@@ -53,6 +47,12 @@ public class MemberService {
         boolean isPresent = memberRepository.findByEmail(request.email()).isPresent();
         if (isPresent) {
             throw new BusinessException(MEMBER_ALREADY_EXISTS);
+        }
+
+        // 이메일 인증 여부 체크
+        boolean verified = emailAuthService.isVerified(request.email());
+        if (!verified) {
+            throw new BusinessException(EMAIL_VERIFICATION_FAILED);
         }
 
         Member member = request.toEntity(passwordEncoder, profile);
@@ -155,19 +155,19 @@ public class MemberService {
 
     public Member getEntity(UUID id) {
         return memberRepository.findById(id)
-            .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
     }
 
     public Member getEntity(String email) {
         return memberRepository.findByEmail(email)
-            .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
     }
 
     private Member getCurrentMember() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UUID memberId = UUID.fromString(auth.getName());
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
     }
 
     public boolean existsByEmail(String email) {
