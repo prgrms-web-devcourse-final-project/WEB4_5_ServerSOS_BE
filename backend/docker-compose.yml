@@ -61,10 +61,29 @@ services:
       redis:
         condition: service_started
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: ${GF_SIGNUP}
+      GF_SECURITY_COOKIE_SAMESITE: ${GF_COOKIE_SAMESITE}
+      GF_SECURITY_COOKIE_SECURE: ${GF_COOKIE_SECURE}
+      GF_SERVER_DOMAIN: ${GF_DOMAIN}
+    volumes:
+      - grafana_data:/var/lib/grafana
+
 
 volumes:
   db_data:
   redis_data:
   npm_data:
   npm_letsencrypt:
+  grafana_data:
 
