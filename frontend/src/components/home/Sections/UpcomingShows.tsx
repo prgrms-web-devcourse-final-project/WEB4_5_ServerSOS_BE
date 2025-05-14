@@ -14,13 +14,13 @@ export default function UpcomingShows() {
       {openPost.map((show) => (
         <Link key={show.id} to={`/upcoming/${show.id}`} className="group">
           <div className="flex flex-col items-center text-center">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-md group-hover:shadow-lg transition-shadow">
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-md group-hover:shadow-lg transition-shadow overflow-hidden">
               <img
                 src={show.poster || "/placeholder.svg"}
                 alt={show.title}
                 width={60}
                 height={60}
-                className="object-contain"
+                className="object-cover w-full h-full"
               />
             </div>
 

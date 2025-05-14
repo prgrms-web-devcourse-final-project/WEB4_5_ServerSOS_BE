@@ -35,12 +35,14 @@ export default function RankingBanner() {
     <div className="relative">
       {/* 메인 배너 */}
       <div className="relative w-full h-[500px] bg-black">
-        <img
-          src={bannerData?.poster ? bannerData?.poster : "/placeholder.svg"}
-          alt={bannerData?.title}
-          className="object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+        <div className="container mx-auto px-4 h-full relative">
+          <img
+            src={bannerData?.poster ? bannerData?.poster : "/placeholder.svg"}
+            alt={bannerData?.title}
+            className="object-cover opacity-90 h-full"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+        </div>
 
         <div className="absolute inset-0 flex items-center">
           <div className="container mx-auto px-4">
@@ -52,7 +54,9 @@ export default function RankingBanner() {
                 {getDurationStr(bannerData?.startDate, bannerData?.endDate)}
               </p>
               <Link to={`/show/${bannerData?.id}`}>
-                <Button size="lg">예매하기</Button>
+                <Button size="lg" variant="secondary">
+                  예매하기
+                </Button>
               </Link>
             </div>
           </div>
