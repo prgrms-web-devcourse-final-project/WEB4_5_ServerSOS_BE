@@ -29,8 +29,6 @@ spring:
           connection-timeout: 5000
           timeout: 5000
           write-timeout: 5000
-    auth-code-expiration-millis: 600000  # 인증 코드 유효 시간 10분
-
   
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&&allowPublicKeyRetrieval=true
