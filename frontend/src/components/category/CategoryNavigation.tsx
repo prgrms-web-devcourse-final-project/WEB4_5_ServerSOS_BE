@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Link, useParams } from "react-router-dom"
-import { CATEGORIES } from "./constants"
+import { ALL_CATEGORIES } from "./constants"
 
 export default function CategoryNavigation() {
   const { genre } = useParams()
@@ -10,7 +10,7 @@ export default function CategoryNavigation() {
     <nav className="border-b sticky top-0 bg-white z-10">
       <div className="container mx-auto px-4">
         <ul className="flex overflow-x-auto hide-scrollbar py-3 gap-6">
-          {CATEGORIES.map((category) => (
+          {ALL_CATEGORIES.map((category) => (
             <li key={category.id}>
               <Link
                 to={`/category/${category.id}`}

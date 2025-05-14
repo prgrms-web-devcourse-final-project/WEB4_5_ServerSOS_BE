@@ -13,7 +13,7 @@
  */
 
 
-export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
+export const BASE_PATH = "https://api.team2.pick-go.shop".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path

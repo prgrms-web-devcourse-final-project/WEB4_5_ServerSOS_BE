@@ -4,19 +4,16 @@ import { Suspense } from "react"
 import { useParams } from "react-router-dom"
 import ShowList from "@/components/show/ShowList"
 import ShowListSkeleton from "@/components/show/ShowListSkeleton"
-import { CATEGORIES, VALID_GENRES } from "@/components/category/constants"
+import { ALL_CATEGORIES } from "@/components/category/constants"
 
 export default function Category() {
   const { genre } = useParams()
-  const genreValue = genre || "all"
+  const genreValue = genre || "ALL"
 
   // 유효하지 않은 장르인 경우 404 페이지 표시
-  if (!VALID_GENRES.includes(genreValue)) {
+  if (!ALL_CATEGORIES.some((category) => category.id === genreValue)) {
     throw new Error("유효하지않은 장르")
   }
-
-  const genreName =
-    CATEGORIES.find((category) => category.id === genreValue)?.name ?? "전체"
 
   return (
     <PageLayout>
