@@ -38,7 +38,9 @@ public class TokenService {
     private boolean secure;
 
     public TokenDetailResponse createAccessToken(String refreshToken) {
-        jwtProvider.validateToken(refreshToken);
+        if (!jwtProvider.isValidToken(refreshToken)) {
+            throw new BusinessException(UNAUTHENTICATED);
+        }
 
         UUID userId = jwtProvider.getUserId(refreshToken);
         Member member = memberRepository.findById(userId)

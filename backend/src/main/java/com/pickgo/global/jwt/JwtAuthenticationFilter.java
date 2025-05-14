@@ -1,10 +1,11 @@
 package com.pickgo.global.jwt;
 
+import static com.pickgo.global.response.RsCode.*;
+
 import java.io.IOException;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -54,17 +55,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 토큰 검증
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        String accessToken;
-
-        try {
-            accessToken = jwtProvider.getTokenFromHeader(authorizationHeader); // 헤더에서 액세스 토큰 가져옴
-            jwtProvider.validateToken(accessToken);
-        } catch (BusinessException e) {
-            jwtAuthenticationEntryPoint.commence(request, response, e);
-            return;
-        } catch (AuthenticationException e) {
-            jwtAuthenticationEntryPoint.commence(request, response, e);
+        String accessToken = jwtProvider.getTokenFromHeader(authorizationHeader);
+        if (!jwtProvider.isValidToken(accessToken)) {
+            jwtAuthenticationEntryPoint.commence(request, response, new BusinessException(UNAUTHENTICATED));
             return;
         }
 

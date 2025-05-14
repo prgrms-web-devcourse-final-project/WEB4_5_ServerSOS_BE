@@ -1,5 +1,15 @@
 package com.pickgo.domain.post.review.service;
 
+import static com.pickgo.global.response.RsCode.*;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
@@ -14,14 +24,8 @@ import com.pickgo.domain.post.review.repository.ReviewLikeRepository;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.jwt.JwtProvider;
 import com.pickgo.global.response.RsCode;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +78,9 @@ public class PostReviewService {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
                 String token = authHeader.substring("Bearer ".length());
-                jwtProvider.validateToken(token);
+                if (!jwtProvider.isValidToken(token)) {
+                    throw new BusinessException(UNAUTHENTICATED);
+                }
                 Authentication auth = jwtProvider.getAuthentication(token);
                 MemberPrincipal principal = (MemberPrincipal) auth.getPrincipal();
                 return getMemberById(principal.id());

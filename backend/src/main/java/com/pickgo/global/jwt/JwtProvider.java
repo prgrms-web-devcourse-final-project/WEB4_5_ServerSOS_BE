@@ -1,7 +1,5 @@
 package com.pickgo.global.jwt;
 
-import static com.pickgo.global.response.RsCode.*;
-
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Date;
@@ -18,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.pickgo.domain.member.member.dto.MemberPrincipal;
-import com.pickgo.global.exception.BusinessException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -67,15 +64,16 @@ public class JwtProvider {
     /**
      * 유효한 토큰인지 검증 (토큰이 유효하면 사용자 인증 완료)
      **/
-    public void validateToken(String token) { // 검증하려면 token에서 "Bearer " 없어야 됨
+    public boolean isValidToken(String token) { // 검증하려면 token에서 "Bearer " 없어야 됨
         try {
             // 토큰의 서명이 올바른지, 만료되지 않았는지 확인
             Jwts.parser()
                 .verifyWith(getSecretKey()) // secret_key를 사용해서 토큰 복호화
                 .build()
                 .parseSignedClaims(token);
+            return true;
         } catch (Exception e) {
-            throw new BusinessException(UNAUTHENTICATED);
+            return false;
         }
     }
 
@@ -101,11 +99,8 @@ public class JwtProvider {
      * HTTP Header에 정의된 Bearer token 획득
      **/
     public String getTokenFromHeader(String header) {
-        if (header == null)
-            throw new BusinessException(UNAUTHENTICATED);
-        if (!header.startsWith(TOKEN_PREFIX))
-            throw new BusinessException(UNAUTHENTICATED);
-
+        if (header == null || !header.startsWith(TOKEN_PREFIX))
+            return null;
         return header.substring(TOKEN_PREFIX.length());
     }
 

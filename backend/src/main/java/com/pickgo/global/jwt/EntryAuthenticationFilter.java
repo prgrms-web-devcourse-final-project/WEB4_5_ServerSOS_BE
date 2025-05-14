@@ -2,13 +2,13 @@ package com.pickgo.global.jwt;
 
 import static com.pickgo.domain.queue.enums.EntryState.*;
 import static com.pickgo.domain.queue.repository.redis.RedisEntryRepository.*;
+import static com.pickgo.global.response.RsCode.*;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -67,18 +67,13 @@ public class EntryAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isValidToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
-            String entryToken = jwtProvider.getTokenFromHeader(entryAuthHeader);
-            jwtProvider.validateToken(entryToken);
-            return true;
-        } catch (BusinessException e) {
-            jwtAuthenticationEntryPoint.commence(request, response, e);
-            return false;
-        } catch (AuthenticationException e) {
-            jwtAuthenticationEntryPoint.commence(request, response, e);
+        String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
+        String entryToken = jwtProvider.getTokenFromHeader(entryAuthHeader);
+        if (!jwtProvider.isValidToken(entryToken)) {
+            jwtAuthenticationEntryPoint.commence(request, response, new BusinessException(UNAUTHENTICATED));
             return false;
         }
+        return true;
     }
 
     private UUID getUserIdFromSecurityContext() {
