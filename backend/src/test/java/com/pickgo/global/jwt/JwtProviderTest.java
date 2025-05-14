@@ -54,24 +54,24 @@ class JwtProviderTest {
 
 	@Test
 	@DisplayName("Authorization 헤더에서 Bearer 제거하고 액세스 토큰 추출")
-	void getAccessToken_success() {
+	void getToken_FromHeader_success() {
 		String bearer = "Bearer " + token.userToken;
-		String result = jwtProvider.getAccessToken(bearer);
+		String result = jwtProvider.getTokenFromHeader(bearer);
 		assertThat(result).isEqualTo(token.userToken);
 	}
 
 	@Test
 	@DisplayName("Authorization 헤더가 null이면 예외 발생")
-	void getAccessToken_fail_nullHeader() {
-		assertThatThrownBy(() -> jwtProvider.getAccessToken(null))
+	void getToken_FromHeader_fail_nullHeader() {
+		assertThatThrownBy(() -> jwtProvider.getTokenFromHeader(null))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessage(UNAUTHENTICATED.getMessage());
 	}
 
 	@Test
 	@DisplayName("Authorization 헤더에 Bearer 접두어가 없으면 예외 발생")
-	void getAccessToken_fail_invalidPrefix() {
-		assertThatThrownBy(() -> jwtProvider.getAccessToken("InvalidToken"))
+	void getToken_FromHeader_fail_invalidPrefix() {
+		assertThatThrownBy(() -> jwtProvider.getTokenFromHeader("InvalidToken"))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessage(UNAUTHENTICATED.getMessage());
 	}

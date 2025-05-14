@@ -1,14 +1,15 @@
 package com.pickgo.domain.auth.auth.service;
 
+import static com.pickgo.domain.member.member.entity.enums.Authority.*;
 import static com.pickgo.global.response.RsCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.pickgo.domain.auth.token.service.TokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.pickgo.domain.auth.token.dto.TokenDetailResponse;
+import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
@@ -47,12 +49,12 @@ class TokenServiceTest {
 	@DisplayName("refreshToken 으로 accessToken 발급 성공")
 	void createAccessToken_success() {
 		// given
-		UUID userId = UUID.randomUUID();
-		Member mockMember = mock(Member.class);
+		Member mockMember = getMockMember();
+		Map<String, Object> claims = createClaims(mockMember);
 
-		given(jwtProvider.getUserId(refreshToken)).willReturn(userId);
-		given(memberRepository.findById(userId)).willReturn(Optional.of(mockMember));
-		given(jwtProvider.generateToken(eq(mockMember), any())).willReturn(accessToken);
+		given(jwtProvider.getUserId(refreshToken)).willReturn(mockMember.getId());
+		given(memberRepository.findById(mockMember.getId())).willReturn(Optional.of(mockMember));
+		given(jwtProvider.generateToken(eq(mockMember.getId().toString()), any(), eq(claims))).willReturn(accessToken);
 
 		// when
 		TokenDetailResponse response = tokenService.createAccessToken(refreshToken);
@@ -80,13 +82,13 @@ class TokenServiceTest {
 	@DisplayName("createRefreshToken()은 refreshToken을 생성하고 쿠키로 설정한다")
 	void createRefreshToken_setsCookieSuccessfully() {
 		// given
-		Member member = mock(Member.class);
+		Member mockMember = getMockMember();
+		Map<String, Object> claims = createClaims(mockMember);
 
-		given(jwtProvider.generateToken(eq(member), any(Duration.class)))
-			.willReturn(refreshToken);
+		given(jwtProvider.generateToken(eq(mockMember.getId().toString()), any(), eq(claims))).willReturn(refreshToken);
 
 		// when
-		tokenService.createRefreshToken(member, response);
+		tokenService.createRefreshToken(mockMember, response);
 
 		// then
 		ArgumentCaptor<String> headerCaptor = ArgumentCaptor.forClass(String.class);
@@ -99,5 +101,22 @@ class TokenServiceTest {
 		assertThat(valueCaptor.getValue()).contains("HttpOnly");
 		assertThat(valueCaptor.getValue()).contains("Path=/");
 		assertThat(valueCaptor.getValue()).contains("Max-Age=");
+	}
+
+	private Member getMockMember() {
+		return Member.builder()
+				.id(UUID.randomUUID())
+				.email("test@example.com")
+				.password("1234")
+				.nickname("tester")
+				.authority(USER)
+				.build();
+	}
+
+	private Map<String, Object> createClaims(Member member) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", member.getId().toString());
+		claims.put("authority", member.getAuthority().toString());
+		return claims;
 	}
 }
