@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.crypto.SecretKey;
@@ -17,11 +18,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.pickgo.domain.member.member.dto.MemberPrincipal;
-import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.global.exception.BusinessException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -36,26 +37,31 @@ public class JwtProvider {
     /**
      * 토큰 생성
      **/
-    public String generateToken(Member member, Duration expiredAt) {
+    public String generateToken(String subject, Duration expiredAt, Map<String, Object> claims) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiredAt.toMillis());
 
+        // 토큰 헤더 설정
         Header jwtHeader = Jwts.header().type("JWT").build();
+
+        // 서명에 사용할 Secret Key 획득
         SecretKey key = getSecretKey();
 
-        return Jwts.builder()
-            // 토큰 헤더
-            .header().add(jwtHeader).and() // 토큰 타입
-            .signWith(key, Jwts.SIG.HS256) // 암호화 방식, secret key 지정
-            // 토큰 내용(claims)
-            .subject(member.getId().toString()) // 토큰의 제목: id
-            .issuer(jwtProperties.getIssuer()) // 토큰 발급자
-            .issuedAt(now) // 토큰 발급일
-            .expiration(expiryDate) // 토큰 만료일
-            .claim("id", member.getId().toString())
-            .claim("authority", member.getAuthority().toString())
-            .compact();
-        // 토큰 서명은 헤더의 인코딩 값과 내용의 인코딩 값을 합친 후 비밀 키를 사용해 생성된 해시값
+        JwtBuilder builder = Jwts.builder()
+                .header().add(jwtHeader).and()              // 토큰 타입: JWT
+                .signWith(key, Jwts.SIG.HS256)              // 암호화 방식: HMAC-SHA256, secret key 사용
+                .subject(subject)                           // 토큰의 subject (예: 사용자 ID)
+                .issuer(jwtProperties.getIssuer())          // 토큰 발급자
+                .issuedAt(now)                              // 토큰 발급일
+                .expiration(expiryDate);                    // 토큰 만료일
+
+        // 추가로 담을 claims (id, authority 등)
+        if (claims != null && !claims.isEmpty()) {
+            builder.claims(claims);
+        }
+
+        // 토큰 서명 및 최종 문자열 생성
+        return builder.compact();
     }
 
     /**
@@ -92,15 +98,15 @@ public class JwtProvider {
     }
 
     /**
-     * HTTP Header의 Authorization에 정의된 token 획득
+     * HTTP Header에 정의된 Bearer token 획득
      **/
-    public String getAccessToken(String authorizationHeader) {
-        if (authorizationHeader == null)
+    public String getTokenFromHeader(String header) {
+        if (header == null)
             throw new BusinessException(UNAUTHENTICATED);
-        if (!authorizationHeader.startsWith(TOKEN_PREFIX))
+        if (!header.startsWith(TOKEN_PREFIX))
             throw new BusinessException(UNAUTHENTICATED);
 
-        return authorizationHeader.substring(TOKEN_PREFIX.length());
+        return header.substring(TOKEN_PREFIX.length());
     }
 
     /**

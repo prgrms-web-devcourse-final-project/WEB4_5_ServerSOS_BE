@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken;
 
         try {
-            accessToken = jwtProvider.getAccessToken(authorizationHeader); // 헤더에서 액세스 토큰 가져옴
+            accessToken = jwtProvider.getTokenFromHeader(authorizationHeader); // 헤더에서 액세스 토큰 가져옴
             jwtProvider.validateToken(accessToken);
         } catch (BusinessException e) {
             jwtAuthenticationEntryPoint.commence(request, response, e);

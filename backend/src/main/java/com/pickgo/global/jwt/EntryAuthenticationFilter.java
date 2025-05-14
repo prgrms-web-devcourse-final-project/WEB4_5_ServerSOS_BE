@@ -69,7 +69,7 @@ public class EntryAuthenticationFilter extends OncePerRequestFilter {
     private boolean isValidToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String entryAuthHeader = request.getHeader(HEADER_ENTRY_AUTH);
-            String entryToken = jwtProvider.getAccessToken(entryAuthHeader);
+            String entryToken = jwtProvider.getTokenFromHeader(entryAuthHeader);
             jwtProvider.validateToken(entryToken);
             return true;
         } catch (BusinessException e) {

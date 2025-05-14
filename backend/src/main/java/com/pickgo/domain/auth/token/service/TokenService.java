@@ -3,6 +3,8 @@ package com.pickgo.domain.auth.token.service;
 import static com.pickgo.global.response.RsCode.*;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -51,15 +53,18 @@ public class TokenService {
     }
 
     public String genAccessToken(Member member) {
-        return jwtProvider.generateToken(member, Duration.ofMinutes(accessTokenExpirationMinutes));
+        return jwtProvider.generateToken(member.getId().toString(), Duration.ofMinutes(accessTokenExpirationMinutes),
+                genAuthTokenClaims(member));
     }
 
     public String genRefreshToken(Member member) {
-        return jwtProvider.generateToken(member, Duration.ofMinutes(refreshTokenExpirationMinutes));
+        return jwtProvider.generateToken(member.getId().toString(), Duration.ofMinutes(refreshTokenExpirationMinutes),
+                genAuthTokenClaims(member));
     }
 
     public String genEntryToken(Member member) {
-        return jwtProvider.generateToken(member, Duration.ofMinutes(entryTokenExpirationMinutes));
+        return jwtProvider.generateToken(member.getId().toString(), Duration.ofMinutes(entryTokenExpirationMinutes),
+                genAuthTokenClaims(member));
     }
 
     private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
@@ -84,5 +89,12 @@ public class TokenService {
             .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
+    }
+
+    private static Map<String, Object> genAuthTokenClaims(Member member) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", member.getId().toString());
+        claims.put("authority", member.getAuthority().toString());
+        return claims;
     }
 }
