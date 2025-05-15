@@ -39,6 +39,13 @@ public class BaseInitData {
                 memberService.save(new MemberCreateRequest(testEmail, password, nickname));
                 System.out.println("회원가입이 완료되었습니다");
             }
+
+            String adminEmail = "admin@example.com";
+            String adminNickname = "admin1234";
+            if (!memberService.existsByEmail(adminEmail)) {
+                memberService.saveAdmin(new MemberCreateRequest(adminEmail, password, adminNickname));
+                System.out.println("관리자 회원가입이 완료되었습니다");
+            }
         };
     }
 }

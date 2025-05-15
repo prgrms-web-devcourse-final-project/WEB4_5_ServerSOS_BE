@@ -20,6 +20,7 @@ import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.member.dto.*;
 import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.member.member.entity.enums.Authority;
 import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
@@ -62,6 +63,13 @@ public class MemberService {
         logWriter.writeMemberLog(member, ActionType.MEMBER_SIGNUP, logContext);
 
         return MemberDetailResponse.from(member);
+    }
+
+    @Transactional
+    public void saveAdmin(MemberCreateRequest memberCreateRequest) {
+        Member member = memberCreateRequest.toEntity(passwordEncoder, profile);
+        member.setAuthority(Authority.ADMIN);
+        saveEntity(member);
     }
 
     @Transactional(readOnly = true)
