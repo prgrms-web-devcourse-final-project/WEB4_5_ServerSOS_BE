@@ -107,6 +107,7 @@ services:
     volumes:
       - influxdb_data:/var/lib/influxdb
 
+
 volumes:
   db_data:
   redis_data:
@@ -114,4 +115,5 @@ volumes:
   npm_letsencrypt:
   grafana_data:
   influxdb_data:
+
 

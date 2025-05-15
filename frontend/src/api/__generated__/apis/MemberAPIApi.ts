@@ -22,6 +22,8 @@ import type {
   RsDataLoginResponse,
   RsDataMemberDetailResponse,
   RsDataObject,
+  RsDataString,
+  UpdateProfileImageRequest,
 } from '../models/index';
 import {
     LoginRequestFromJSON,
@@ -38,6 +40,10 @@ import {
     RsDataMemberDetailResponseToJSON,
     RsDataObjectFromJSON,
     RsDataObjectToJSON,
+    RsDataStringFromJSON,
+    RsDataStringToJSON,
+    UpdateProfileImageRequestFromJSON,
+    UpdateProfileImageRequestToJSON,
 } from '../models/index';
 
 export interface LoginOperationRequest {
@@ -54,6 +60,10 @@ export interface UpdateMyInfoRequest {
 
 export interface UpdatePasswordRequest {
     memberPasswordUpdateRequest: MemberPasswordUpdateRequest;
+}
+
+export interface UpdateProfileImageOperationRequest {
+    updateProfileImageRequest?: UpdateProfileImageRequest;
 }
 
 /**
@@ -336,6 +346,43 @@ export class MemberAPIApi extends runtime.BaseAPI {
      */
     async updatePassword(requestParameters: UpdatePasswordRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataObject> {
         const response = await this.updatePasswordRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * 프로필 이미지 수정
+     */
+    async updateProfileImageRaw(requestParameters: UpdateProfileImageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataString>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Authorization", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/members/me/profile`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateProfileImageRequestToJSON(requestParameters['updateProfileImageRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataStringFromJSON(jsonValue));
+    }
+
+    /**
+     * 프로필 이미지 수정
+     */
+    async updateProfileImage(requestParameters: UpdateProfileImageOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataString> {
+        const response = await this.updateProfileImageRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -1,17 +1,16 @@
-export const CATEGORIES = [
-  { id: "all", name: "전체" },
-  { id: "musical", name: "뮤지컬" },
-  { id: "concert", name: "콘서트" },
-  { id: "sports", name: "스포츠" },
-  { id: "exhibition", name: "전시/행사" },
-  { id: "classic", name: "클래식/무용" },
-  { id: "theater", name: "연극" },
-  { id: "family", name: "가족/아동" },
-  { id: "leisure", name: "레저/여행" },
-  { id: "md", name: "MD샵" },
-  { id: "promotion", name: "할인" },
-  { id: "membership", name: "멤버십" },
-  { id: "venue", name: "지역별" },
+import type { GetPopularPostsTypeEnum } from "@/api/__generated__"
+
+export type CATEGORY_TYPES = GetPopularPostsTypeEnum | "ALL"
+
+export const CATEGORIES: { id: GetPopularPostsTypeEnum; name: string }[] = [
+  { id: "MUSICAL", name: "뮤지컬" },
+  { id: "CONCERT", name: "콘서트" },
+  { id: "PLAY", name: "연극" },
+  { id: "CLASSIC", name: "클래식/무용" },
+  { id: "DANCE", name: "무용" },
+  { id: "KOREAN", name: "국악" },
+  { id: "ETC", name: "기타" },
 ]
 
-export const VALID_GENRES = CATEGORIES.map((category) => category.id)
+export const ALL_CATEGORY = { id: "ALL", name: "전체" }
+export const ALL_CATEGORIES = [ALL_CATEGORY, ...CATEGORIES]

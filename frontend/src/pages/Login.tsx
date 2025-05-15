@@ -2,6 +2,7 @@ import { PageLayout } from "../layout/PageLayout"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
+import { useUser } from "@/hooks/useUser"
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -12,6 +13,8 @@ export const Login = () => {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const { login } = useUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -64,9 +67,12 @@ export const Login = () => {
       //   })
       // });
 
-      // if (!response.ok) throw new Error('로그인에 실패했습니다.');
-
       console.log("로그인 데이터:", {
+        email: formData.email,
+        password: formData.password,
+      })
+
+      await login({
         email: formData.email,
         password: formData.password,
       })
