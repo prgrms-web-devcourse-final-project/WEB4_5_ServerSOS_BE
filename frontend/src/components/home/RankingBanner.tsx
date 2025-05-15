@@ -1,37 +1,24 @@
 import { useState, useEffect, useCallback } from "react"
 
-import { ChevronLeft, ChevronRight, Image } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-
-const bannerData = {
-  title: "뮤지컬 원스",
-  subtitle: "음악으로 기억될 사랑의 순간",
-  venue: "coex 신한카드 artium",
-  period: "2025.2.19 - 2025.5.31",
-  imageUrl:
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/musical-banner-LWuOqgyzauuTGlndSxbL5kC0knOqtP.png",
-}
-
-const smallPosters = [
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/musical-poster-4-BXwzKJUWbbPZmGdzqAFNOp2E6KqLrQ.png",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/musical-poster-2-190WWCpx1Jf1HQ2WwIuN2ARnhtLoGY.png",
-  "/musical-poster-3.png",
-  "/musical-poster-4.png",
-  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 5",
-  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 6",
-  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 7",
-  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 8",
-  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 9",
-  "https://kzmic3t6xgkg1pjuu2r0.lite.vusercontent.net/placeholder.svg?height=80&width=80&query=musical poster 10",
-]
+import { usePopularPost } from "@/hooks/usePopularPost"
+import { getDurationStr } from "@/lib/date"
 
 export default function RankingBanner() {
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  const { popularPosts } = usePopularPost({})
+
+  const [bannerData, ...smallPosters] =
+    popularPosts && popularPosts.length > 0 ? popularPosts : [null, null]
+
+  console.log("#popularPosts", popularPosts, bannerData, smallPosters)
+
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % smallPosters.length)
-  }, [])
+  }, [smallPosters.length])
 
   const prevSlide = () => {
     setCurrentIndex(
@@ -49,8 +36,8 @@ export default function RankingBanner() {
       {/* 메인 배너 */}
       <div className="relative w-full h-[500px] bg-black">
         <img
-          src={bannerData.imageUrl || "/placeholder.svg"}
-          alt={bannerData.title}
+          src={bannerData?.poster ? bannerData?.poster : "/placeholder.svg"}
+          alt={bannerData?.title}
           className="object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
@@ -58,11 +45,13 @@ export default function RankingBanner() {
         <div className="absolute inset-0 flex items-center">
           <div className="container mx-auto px-4">
             <div className="max-w-lg text-white">
-              <h1 className="text-5xl font-bold mb-2">{bannerData.title}</h1>
-              <p className="text-xl mb-4">{bannerData.subtitle}</p>
-              <p className="text-sm mb-1">{bannerData.venue}</p>
-              <p className="text-sm mb-6">{bannerData.period}</p>
-              <Link to="/reservation">
+              <h1 className="text-5xl font-bold mb-2">{bannerData?.title}</h1>
+              <p className="text-xl mb-4">{bannerData?.views}</p>
+              <p className="text-sm mb-1">{bannerData?.venue}</p>
+              <p className="text-sm mb-6">
+                {getDurationStr(bannerData?.startDate, bannerData?.endDate)}
+              </p>
+              <Link to={`/show/${bannerData?.id}`}>
                 <Button size="lg">예매하기</Button>
               </Link>
             </div>
@@ -87,11 +76,11 @@ export default function RankingBanner() {
               style={{ transform: `translateX(-${currentIndex * 88}px)` }}
             >
               {smallPosters.map((poster, index) => (
-                <Link key={index} to={`/show/${index}`}>
+                <Link key={index} to={`/show/${poster?.id}`}>
                   <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0 border border-gray-700 hover:border-white transition-colors">
                     <img
-                      src={poster || "/placeholder.svg"}
-                      alt={`포스터 ${index + 1}`}
+                      src={poster?.poster || "/placeholder.svg"}
+                      alt={`포스터 ${poster?.title}`}
                       width={80}
                       height={80}
                       className="object-cover"

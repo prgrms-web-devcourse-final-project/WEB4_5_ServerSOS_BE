@@ -9,26 +9,34 @@ import { ShowReservation } from "./pages/ShowReservation"
 import { Footer } from "./layout/Footer"
 import Category from "./pages/Category"
 import { Join } from "./pages/Join"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+
+const queryClient = new QueryClient()
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/join" element={<Join />} />
-            <Route path="/my" element={<My />} />
-            <Route path="/show/:id" element={<ShowDetail />} />
-            <Route path="/category/:genre" element={<Category />} />
-            <Route path="/show/:id/reservation" element={<ShowReservation />} />
-          </Routes>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <div className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/join" element={<Join />} />
+              <Route path="/my" element={<My />} />
+              <Route path="/show/:id" element={<ShowDetail />} />
+              <Route path="/category/:genre" element={<Category />} />
+              <Route
+                path="/show/:id/reservation"
+                element={<ShowReservation />}
+              />
+            </Routes>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 

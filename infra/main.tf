@@ -133,6 +133,14 @@ resource "aws_security_group" "sg_1" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "Grafana (for monitoring)"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # 또는 제한된 IP 대역
+  }
+
   egress {
     from_port   = 0
     to_port     = 0

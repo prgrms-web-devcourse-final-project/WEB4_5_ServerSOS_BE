@@ -34,11 +34,14 @@ public enum ActionType {
     POST_DETAIL_VIEW("게시글 상세 조회"),
 
     // Exception
-    EXCEPTION("예외 발생");
+    EXCEPTION("예외 발생"),
+
+    // NONE
+    NONE("알 수 없음");
 
     private final String description;
 
     ActionType(String description) {
         this.description = description;
     }
-}
+    }

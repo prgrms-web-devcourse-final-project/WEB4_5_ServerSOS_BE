@@ -55,5 +55,6 @@ public abstract class BaseLog {
         this.requestUri = requestUri;
         this.httpMethod = httpMethod;
         this.description = description;
+        this.createdAt = LocalDateTime.now();
     }
 }
