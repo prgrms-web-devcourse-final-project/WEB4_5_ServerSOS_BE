@@ -104,7 +104,8 @@ export const BaseLogResponseActionEnum = {
     PostUpdated: 'POST_UPDATED',
     PostDeleted: 'POST_DELETED',
     PostDetailView: 'POST_DETAIL_VIEW',
-    Exception: 'EXCEPTION'
+    Exception: 'EXCEPTION',
+    None: 'NONE'
 } as const;
 export type BaseLogResponseActionEnum = typeof BaseLogResponseActionEnum[keyof typeof BaseLogResponseActionEnum];
 

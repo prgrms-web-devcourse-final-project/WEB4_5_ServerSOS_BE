@@ -44,7 +44,7 @@ export interface ReservationLogResponse {
      * @type {string}
      * @memberof ReservationLogResponse
      */
-    status?: ReservationLogResponseStatusEnum;
+    status?: string;
     /**
      * 
      * @type {number}
@@ -59,24 +59,29 @@ export interface ReservationLogResponse {
     reservationTime?: Date;
     /**
      * 
+     * @type {string}
+     * @memberof ReservationLogResponse
+     */
+    performanceName?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ReservationLogResponse
+     */
+    performanceType?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ReservationLogResponse
+     */
+    venueName?: string;
+    /**
+     * 
      * @type {BaseLogResponse}
      * @memberof ReservationLogResponse
      */
     base?: BaseLogResponse;
 }
-
-
-/**
- * @export
- */
-export const ReservationLogResponseStatusEnum = {
-    Reserved: 'RESERVED',
-    Canceled: 'CANCELED',
-    Paid: 'PAID',
-    Expired: 'EXPIRED'
-} as const;
-export type ReservationLogResponseStatusEnum = typeof ReservationLogResponseStatusEnum[keyof typeof ReservationLogResponseStatusEnum];
-
 
 /**
  * Check if a given object implements the ReservationLogResponse interface.
@@ -100,6 +105,9 @@ export function ReservationLogResponseFromJSONTyped(json: any, ignoreDiscriminat
         'status': json['status'] == null ? undefined : json['status'],
         'totalPrice': json['totalPrice'] == null ? undefined : json['totalPrice'],
         'reservationTime': json['reservationTime'] == null ? undefined : (new Date(json['reservationTime'])),
+        'performanceName': json['performanceName'] == null ? undefined : json['performanceName'],
+        'performanceType': json['performanceType'] == null ? undefined : json['performanceType'],
+        'venueName': json['venueName'] == null ? undefined : json['venueName'],
         'base': json['base'] == null ? undefined : BaseLogResponseFromJSON(json['base']),
     };
 }
@@ -120,6 +128,9 @@ export function ReservationLogResponseToJSONTyped(value?: ReservationLogResponse
         'status': value['status'],
         'totalPrice': value['totalPrice'],
         'reservationTime': value['reservationTime'] == null ? undefined : ((value['reservationTime']).toISOString()),
+        'performanceName': value['performanceName'],
+        'performanceType': value['performanceType'],
+        'venueName': value['venueName'],
         'base': BaseLogResponseToJSON(value['base']),
     };
 }
