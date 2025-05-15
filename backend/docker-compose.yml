@@ -79,6 +79,33 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+    - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: always
+    ports:
+      - "9100:9100"
+
+  influxdb:     #k6 -> influxdb -> grafana  시각화된 자료를 보기위해서 사용
+    image: influxdb:1.8
+    container_name: influxdb
+    restart: always
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+      - INFLUXDB_HTTP_AUTH_ENABLED=false
+    volumes:
+      - influxdb_data:/var/lib/influxdb
 
 volumes:
   db_data:
@@ -86,4 +113,5 @@ volumes:
   npm_data:
   npm_letsencrypt:
   grafana_data:
+  influxdb_data:
 
