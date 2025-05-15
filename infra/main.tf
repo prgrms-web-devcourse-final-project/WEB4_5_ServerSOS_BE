@@ -141,6 +141,33 @@ resource "aws_security_group" "sg_1" {
     cidr_blocks = ["0.0.0.0/0"] # 또는 제한된 IP 대역
   }
 
+  # Prometheus
+  ingress {
+    description = "Prometheus UI"
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Node Exporter (Prometheus가 수집 가능하게)
+  ingress {
+    description = "Node Exporter"
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # 또는 prom 컨테이너가 접근 가능한 CIDR
+  }
+
+  # Influx DB
+  ingress {
+    description = "InfluxDB (for k6 test result write)"
+    from_port   = 8086
+    to_port     = 8086
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # 또는 제한된 IP (예: 테스트 머신의 IP)
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
