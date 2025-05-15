@@ -2,11 +2,8 @@ package com.pickgo.domain.log.entity;
 
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.enums.ActorType;
-import com.pickgo.domain.reservation.enums.ReservationStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,9 +18,8 @@ public class ReservationHistory extends BaseLog {
     @Column(nullable = false)
     private Long reservationId;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReservationStatus status;
+    private String status;
 
     @Column(nullable = false)
     private int totalPrice;
@@ -34,12 +30,24 @@ public class ReservationHistory extends BaseLog {
     @Column(nullable = false)
     private Long performanceSessionId;
 
+    @Column(nullable = false)
+    private String performanceName;
+
+    @Column(nullable = false)
+    private String performanceType;
+
+    @Column(nullable = false)
+    private String venueName;
+
     public ReservationHistory(
             Long reservationId,
-            ReservationStatus status,
+            String status,
             int totalPrice,
             LocalDateTime reservationTime,
             Long performanceSessionId,
+            String performanceName,
+            String performanceType,
+            String venueName,
             String actorId,
             ActorType actorType,
             ActionType action,
@@ -53,5 +61,8 @@ public class ReservationHistory extends BaseLog {
         this.totalPrice = totalPrice;
         this.reservationTime = reservationTime;
         this.performanceSessionId = performanceSessionId;
+        this.performanceName = performanceName;
+        this.performanceType = performanceType;
+        this.venueName = venueName;
     }
 }

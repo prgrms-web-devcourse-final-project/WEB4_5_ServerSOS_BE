@@ -71,4 +71,13 @@ public class LogWriter {
         LogContext logContext = logContextUtil.extract();
         historySaveService.saveExceptionLog(e, logContext, action);
     }
+
+    public void writeAccessLog() {
+        try {
+            LogContext logContext = logContextUtil.extract();
+            historySaveService.saveAccessHistory(logContext);
+        } catch (Exception e) {
+            System.out.println("접근 로그 저장 실패 : " + e.getMessage());
+        }
+    }
 }
