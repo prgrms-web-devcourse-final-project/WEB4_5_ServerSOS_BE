@@ -153,7 +153,7 @@ public class PaymentService {
         payment.setPaymentKey(req.paymentKey());
 
         // 2. 예약 상태 변경
-        Reservation reservation = payment.getReservation();
+        Reservation reservation = reservationRepository.findWithAllDetails(payment.getReservation().getId());
         reservation.setStatus(ReservationStatus.PAID);
 
         // 3. 좌석 상태 변경
@@ -165,7 +165,7 @@ public class PaymentService {
 
 
         // 4. 예약 메일 발송
-        emailService.sendReservationEmail(reservation, payment);
+        emailService.sendReservationEmail(reservation);
 
         logWriter.writePaymentLog(payment, ActionType.PAYMENT_COMPLETED);
 
