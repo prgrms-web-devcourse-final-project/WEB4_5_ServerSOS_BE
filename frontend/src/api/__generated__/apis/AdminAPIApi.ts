@@ -15,12 +15,26 @@
 
 import * as runtime from '../runtime';
 import type {
+  RsDataPageResponseMemberLogResponse,
   RsDataPageResponseMemberSimpleResponse,
+  RsDataPageResponsePaymentLogResponse,
+  RsDataPageResponseReservationLogResponse,
 } from '../models/index';
 import {
+    RsDataPageResponseMemberLogResponseFromJSON,
+    RsDataPageResponseMemberLogResponseToJSON,
     RsDataPageResponseMemberSimpleResponseFromJSON,
     RsDataPageResponseMemberSimpleResponseToJSON,
+    RsDataPageResponsePaymentLogResponseFromJSON,
+    RsDataPageResponsePaymentLogResponseToJSON,
+    RsDataPageResponseReservationLogResponseFromJSON,
+    RsDataPageResponseReservationLogResponseToJSON,
 } from '../models/index';
+
+export interface GetMemberLogsRequest {
+    page?: number;
+    size?: number;
+}
 
 export interface GetMembersRequest {
     page?: number;
@@ -28,10 +42,64 @@ export interface GetMembersRequest {
     sort?: Array<string>;
 }
 
+export interface GetPaymentLogsRequest {
+    page?: number;
+    size?: number;
+}
+
+export interface GetReservationLogRequest {
+    page?: number;
+    size?: number;
+}
+
 /**
  * 
  */
 export class AdminAPIApi extends runtime.BaseAPI {
+
+    /**
+     * 관리자가 전체 회원 로그를 페이지 단위로 조회합니다.
+     * 회원 로그 조회
+     */
+    async getMemberLogsRaw(requestParameters: GetMemberLogsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataPageResponseMemberLogResponse>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Authorization", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/admin/member-histories`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataPageResponseMemberLogResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * 관리자가 전체 회원 로그를 페이지 단위로 조회합니다.
+     * 회원 로그 조회
+     */
+    async getMemberLogs(requestParameters: GetMemberLogsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataPageResponseMemberLogResponse> {
+        const response = await this.getMemberLogsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Member 페이징 조회
@@ -76,6 +144,94 @@ export class AdminAPIApi extends runtime.BaseAPI {
      */
     async getMembers(requestParameters: GetMembersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataPageResponseMemberSimpleResponse> {
         const response = await this.getMembersRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * 관리자가 전체 결제 로그를 페이지 단위로 조회합니다.
+     * 결제 로그 조회
+     */
+    async getPaymentLogsRaw(requestParameters: GetPaymentLogsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataPageResponsePaymentLogResponse>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Authorization", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/admin/payment-histories`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataPageResponsePaymentLogResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * 관리자가 전체 결제 로그를 페이지 단위로 조회합니다.
+     * 결제 로그 조회
+     */
+    async getPaymentLogs(requestParameters: GetPaymentLogsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataPageResponsePaymentLogResponse> {
+        const response = await this.getPaymentLogsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * 관리자가 전체 예약 로그를 페이지 단위로 조회합니다.
+     * 예약 로그 조회
+     */
+    async getReservationLogRaw(requestParameters: GetReservationLogRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataPageResponseReservationLogResponse>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Authorization", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/admin/reservation-histories`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataPageResponseReservationLogResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * 관리자가 전체 예약 로그를 페이지 단위로 조회합니다.
+     * 예약 로그 조회
+     */
+    async getReservationLog(requestParameters: GetReservationLogRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataPageResponseReservationLogResponse> {
+        const response = await this.getReservationLogRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

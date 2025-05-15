@@ -63,7 +63,8 @@ export interface SeatSimpleResponse {
  */
 export const SeatSimpleResponseStatusEnum = {
     Pending: 'PENDING',
-    Reserved: 'RESERVED'
+    Reserved: 'RESERVED',
+    Released: 'RELEASED'
 } as const;
 export type SeatSimpleResponseStatusEnum = typeof SeatSimpleResponseStatusEnum[keyof typeof SeatSimpleResponseStatusEnum];
 

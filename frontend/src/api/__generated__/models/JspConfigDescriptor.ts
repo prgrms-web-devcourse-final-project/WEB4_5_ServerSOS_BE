@@ -36,16 +36,16 @@ import {
 export interface JspConfigDescriptor {
     /**
      * 
-     * @type {Array<JspPropertyGroupDescriptor>}
-     * @memberof JspConfigDescriptor
-     */
-    jspPropertyGroups?: Array<JspPropertyGroupDescriptor>;
-    /**
-     * 
      * @type {Array<TaglibDescriptor>}
      * @memberof JspConfigDescriptor
      */
     taglibs?: Array<TaglibDescriptor>;
+    /**
+     * 
+     * @type {Array<JspPropertyGroupDescriptor>}
+     * @memberof JspConfigDescriptor
+     */
+    jspPropertyGroups?: Array<JspPropertyGroupDescriptor>;
 }
 
 /**
@@ -65,8 +65,8 @@ export function JspConfigDescriptorFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'jspPropertyGroups': json['jspPropertyGroups'] == null ? undefined : ((json['jspPropertyGroups'] as Array<any>).map(JspPropertyGroupDescriptorFromJSON)),
         'taglibs': json['taglibs'] == null ? undefined : ((json['taglibs'] as Array<any>).map(TaglibDescriptorFromJSON)),
+        'jspPropertyGroups': json['jspPropertyGroups'] == null ? undefined : ((json['jspPropertyGroups'] as Array<any>).map(JspPropertyGroupDescriptorFromJSON)),
     };
 }
 
@@ -81,8 +81,8 @@ export function JspConfigDescriptorToJSONTyped(value?: JspConfigDescriptor | nul
 
     return {
         
-        'jspPropertyGroups': value['jspPropertyGroups'] == null ? undefined : ((value['jspPropertyGroups'] as Array<any>).map(JspPropertyGroupDescriptorToJSON)),
         'taglibs': value['taglibs'] == null ? undefined : ((value['taglibs'] as Array<any>).map(TaglibDescriptorToJSON)),
+        'jspPropertyGroups': value['jspPropertyGroups'] == null ? undefined : ((value['jspPropertyGroups'] as Array<any>).map(JspPropertyGroupDescriptorToJSON)),
     };
 }
 

@@ -58,7 +58,7 @@ export function ShowDetail() {
               <img
                 src={showData.performance?.poster || "/placeholder.svg"}
                 alt={showData.title}
-                className="object-cover"
+                className="object-cover h-full"
               />
             </div>
           </div>
