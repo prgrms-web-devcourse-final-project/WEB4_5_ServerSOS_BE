@@ -168,6 +168,7 @@ public class PaymentService {
             applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트를 spring에 발행, 구독하고 있는 SSE리스너가 변경 감지 -> 알림 발송
         });
 
+
         // 4. 예약 메일 발송
         emailService.sendReservationEmail(reservation, payment);
 
