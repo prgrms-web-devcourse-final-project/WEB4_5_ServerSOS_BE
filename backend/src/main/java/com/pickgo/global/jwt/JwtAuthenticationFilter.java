@@ -17,8 +17,6 @@ import java.io.IOException;
 
 import static com.pickgo.global.response.RsCode.UNAUTHENTICATED;
 
-
-
 /**
  * 토큰 검증 및 사용자 인증 정보를 저장하는 필터
  */
