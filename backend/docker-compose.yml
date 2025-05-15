@@ -76,6 +76,9 @@ services:
       GF_SECURITY_COOKIE_SAMESITE: ${GF_COOKIE_SAMESITE}
       GF_SECURITY_COOKIE_SECURE: ${GF_COOKIE_SECURE}
       GF_SERVER_DOMAIN: ${GF_DOMAIN}
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
       - grafana_data:/var/lib/grafana
 
