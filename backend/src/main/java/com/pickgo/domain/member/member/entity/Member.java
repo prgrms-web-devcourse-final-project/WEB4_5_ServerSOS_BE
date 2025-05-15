@@ -1,28 +1,15 @@
 package com.pickgo.domain.member.member.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.pickgo.domain.member.member.entity.enums.Authority;
 import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -47,6 +34,7 @@ public class Member extends BaseEntity {
     private String nickname;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Setter
     private Authority authority;
     @Setter
     private String profile;
