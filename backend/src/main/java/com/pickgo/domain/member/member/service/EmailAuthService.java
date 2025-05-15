@@ -14,7 +14,7 @@ public class EmailAuthService {
     private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
 
-    private static final Duration EXPIRE_DURATION = Duration.ofMinutes(10);
+    private static final Duration EXPIRE_DURATION = Duration.ofMinutes(5);
 
     public void sendCode(String email) {
         String code = generateCode();
