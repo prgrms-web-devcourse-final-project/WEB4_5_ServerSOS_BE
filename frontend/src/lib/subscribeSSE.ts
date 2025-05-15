@@ -3,11 +3,13 @@ export async function subscribeSSE({
   onMessage,
   onError,
   token,
+  signal,
 }: {
   url: string
   onMessage: (data: any) => void
   onError: (error: any) => void
   token: string
+  signal?: AbortSignal
 }) {
   try {
     const response = await fetch(url, {
@@ -15,6 +17,7 @@ export async function subscribeSSE({
         Authorization: `Bearer ${token}`,
         Accept: "text/event-stream",
       },
+      signal, // AbortSignal 추가
     })
 
     if (!response.body) throw new Error("No response body")
@@ -43,6 +46,10 @@ export async function subscribeSSE({
       }
     }
   } catch (err) {
+    if (err.name === "AbortError") {
+      // 구독이 취소된 경우
+      return
+    }
     if (onError) onError(err)
   }
 }
