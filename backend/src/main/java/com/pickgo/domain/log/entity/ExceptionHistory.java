@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ExceptionLog extends BaseLog {
+public class ExceptionHistory extends BaseLog {
     private String exception;
 
-    public ExceptionLog(
+    public ExceptionHistory(
             String exception,
             String actorId,
             ActorType actorType,

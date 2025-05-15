@@ -1,16 +1,18 @@
 package com.pickgo.domain.log.dto;
 
 import com.pickgo.domain.log.entity.ReservationHistory;
-import com.pickgo.domain.reservation.enums.ReservationStatus;
 
 import java.time.LocalDateTime;
 
 public record ReservationLogResponse(
         Long reservationId,
         Long performanceSessionId,
-        ReservationStatus status,
+        String status,
         int totalPrice,
         LocalDateTime reservationTime,
+        String performanceName,
+        String performanceType,
+        String venueName,
         BaseLogResponse base
 ) {
     public static ReservationLogResponse from(ReservationHistory h) {
@@ -20,6 +22,9 @@ public record ReservationLogResponse(
                 h.getStatus(),
                 h.getTotalPrice(),
                 h.getReservationTime(),
+                h.getPerformanceName(),
+                h.getPerformanceType(),
+                h.getVenueName(),
                 BaseLogResponse.from(h)
         );
     }
