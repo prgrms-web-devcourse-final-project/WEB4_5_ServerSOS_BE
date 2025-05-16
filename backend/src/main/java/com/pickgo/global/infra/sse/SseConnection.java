@@ -1,4 +1,4 @@
-package com.pickgo.global.sse;
+package com.pickgo.global.infra.sse;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

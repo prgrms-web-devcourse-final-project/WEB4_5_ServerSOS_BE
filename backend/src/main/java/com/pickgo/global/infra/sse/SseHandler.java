@@ -1,4 +1,4 @@
-package com.pickgo.global.sse;
+package com.pickgo.global.infra.sse;
 
 import java.io.IOException;
 import java.util.UUID;

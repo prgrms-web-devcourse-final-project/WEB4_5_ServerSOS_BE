@@ -1,4 +1,4 @@
-package com.pickgo.global.sse;
+package com.pickgo.global.infra.sse;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

@@ -2,7 +2,7 @@ package com.pickgo.domain.queue.dto;
 
 import java.util.UUID;
 
-import com.pickgo.global.sse.SseConnection;
+import com.pickgo.global.infra.sse.SseConnection;
 
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
