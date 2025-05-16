@@ -1,81 +1,61 @@
 package com.pickgo.domain.queue.stream;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.springframework.data.redis.connection.stream.Consumer;
 import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
-import org.springframework.data.redis.connection.stream.StreamReadOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.pickgo.domain.queue.dto.EntryPermission;
 import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.global.infra.sse.SseHandler;
+import com.pickgo.global.infra.stream.redis.RedisStreamConsumer;
 import com.pickgo.global.init.ServerIdProvider;
-import com.pickgo.global.sse.SseHandler;
 
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 대기열 Stream Consumer
+ */
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class QueueStreamConsumer {
+public class QueueStreamConsumer extends RedisStreamConsumer {
 
-    private static final String GROUP_NAME = "queue-consumer-group";
-    private static final int READ_COUNT = 10; // 한번에 처리할 메시지 개수
-    private final StringRedisTemplate redisTemplate;
+    private static final String QUEUE_CONSUMER_GROUP_NAME = "queue_consumer_group"; // 대기열 Consumer Group 이름
+    public static final String QUEUE_STREAM_PREFIX = "queue_stream"; // 대기열 Stream
     private final ServerIdProvider serverIdProvider;
     private final SseHandler sseHandler;
 
-    /**
-     * Consumer Group 기반 메시지 소비
-     */
-    @Scheduled(fixedRate = 100)
-    public void consume() throws IOException {
+    public QueueStreamConsumer(StringRedisTemplate redisTemplate,
+            ServerIdProvider serverIdProvider,
+            SseHandler sseHandler
+    ) {
+        super(redisTemplate);
+        this.serverIdProvider = serverIdProvider;
+        this.sseHandler = sseHandler;
+    }
+
+    @Override
+    protected String getConsumerGroupName() {
+        return QUEUE_CONSUMER_GROUP_NAME;
+    }
+
+    @Override
+    protected String getConsumerName() {
+        return serverIdProvider.getServerId();
+    }
+
+    @Override
+    protected String getStreamKey() {
         String serverId = serverIdProvider.getServerId();
-        String streamKey = getStreamKey(serverId);
-
-        // 메시지 가져옴
-        var messages = getMessages(serverId, streamKey);
-
-        // 메시지가 없으면 종료
-        if (messages == null || messages.isEmpty()) {
-            return;
-        }
-
-        // 메시지 처리 및 ACK 표시
-        for (var message : messages) {
-            handleMessage(message);
-            redisTemplate.opsForStream().acknowledge(streamKey, GROUP_NAME, message.getId());
-        }
+        return QUEUE_STREAM_PREFIX + ":server_id:" + serverId;
     }
 
     /**
-     * 메시지 조회
+     * 메시지 처리 (클라이언트에게 메시지 전송)
      */
-    @SuppressWarnings("unchecked")
-    private List<MapRecord<String, Object, Object>> getMessages(String serverId, String streamKey) {
-        try {
-            // Stream에서 Consumer Group이 처리할 메시지 가져옴
-            return redisTemplate.opsForStream()
-                    .read(Consumer.from(GROUP_NAME, serverId),
-                            StreamReadOptions.empty().count(READ_COUNT),
-                            StreamOffset.create(streamKey, ReadOffset.lastConsumed()));
-        } catch (Exception e) {
-            log.warn("Failed to read messages from Redis stream: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * 메시지 처리
-     */
-    private void handleMessage(MapRecord<String, Object, Object> message) throws IOException {
+    @Override
+    protected void handleMessage(MapRecord<String, Object, Object> message) throws IOException {
         var values = message.getValue();
 
         String type = values.get("type").toString();
@@ -93,26 +73,8 @@ public class QueueStreamConsumer {
                 String estimatedTime = values.get("estimated_time").toString();
                 sseHandler.sendMessage(type, connectionId, WaitingState.of(position, totalCount, estimatedTime));
             }
+            default -> log.warn("Unknown message type: {}", type);
         }
-    }
-
-    /**
-     * Consumer Group 생성
-     */
-    @PostConstruct
-    public void initConsumerGroup() {
-        String serverId = serverIdProvider.getServerId();
-        String streamKey = getStreamKey(serverId);
-
-        try {
-            redisTemplate.opsForStream().createGroup(streamKey, GROUP_NAME);
-        } catch (Exception e) {
-            log.warn("Failed to create consumer group: ", e);
-        }
-    }
-
-    private static String getStreamKey(String serverId) {
-        return "queue_stream:serverId:" + serverId;
     }
 }
 

@@ -1,6 +1,7 @@
 package com.pickgo.domain.queue.service;
 
 import static com.pickgo.domain.queue.scheduler.QueueProcessorScheduler.*;
+import static com.pickgo.domain.queue.stream.QueueStreamConsumer.*;
 import static com.pickgo.global.response.RsCode.*;
 
 import java.util.HashMap;
@@ -14,9 +15,9 @@ import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.repository.QueueRepository;
-import com.pickgo.domain.queue.stream.QueueStreamPublisher;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.infra.server.ServerRegistry;
+import com.pickgo.global.infra.stream.redis.RedisStreamPublisher;
 import com.pickgo.global.init.ServerIdProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class QueueService {
 
     private final ServerRegistry serverRegistry;
     private final QueueRepository queueRepository;
-    private final QueueStreamPublisher queueStreamPublisher;
+    private final RedisStreamPublisher redisStreamPublisher;
     private final ServerIdProvider serverIdProvider;
     private final TokenService tokenService;
 
@@ -59,7 +60,7 @@ public class QueueService {
      * 대기열 상태 publish
      */
     public void publishWaitingState(Long performanceSessionId, String connectionId, WaitingState waitingState) {
-        queueStreamPublisher.publish(performanceSessionId, connectionId,
+        redisStreamPublisher.publish(getStreamKey(connectionId),
                 genStreamData(performanceSessionId, connectionId, waitingState));
     }
 
@@ -67,7 +68,7 @@ public class QueueService {
      * 입장 메시지 publish
      */
     public void publishEntryPermission(Long performanceSessionId, UUID userId, String connectionId) {
-        queueStreamPublisher.publish(performanceSessionId, connectionId,
+        redisStreamPublisher.publish(getStreamKey(connectionId),
                 genStreamData(performanceSessionId, userId, connectionId));
     }
 
@@ -187,5 +188,13 @@ public class QueueService {
                 .serverId(serverIdProvider.getServerId())
                 .connectionId(connectionId)
                 .build();
+    }
+
+    /**
+     * 대기열 Stream 키
+     */
+    public String getStreamKey(String connectionId) {
+        String serverId = serverRegistry.getServerId(connectionId);
+        return QUEUE_STREAM_PREFIX + ":server_id:" + serverId;
     }
 }

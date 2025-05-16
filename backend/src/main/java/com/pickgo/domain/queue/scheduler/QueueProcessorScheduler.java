@@ -1,5 +1,6 @@
 package com.pickgo.domain.queue.scheduler;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.service.QueueService;
-import com.pickgo.global.sse.SseHandler;
+import com.pickgo.global.infra.sse.SseHandler;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class QueueProcessorScheduler {
      */
     public synchronized void startScheduler() {
         stopScheduler(); // 기존 스케줄러 제거
-        scheduledTask = taskScheduler.scheduleAtFixedRate(this::process, intervalMillis);
+        scheduledTask = taskScheduler.scheduleAtFixedRate(this::process, Duration.ofMillis(intervalMillis));
     }
 
     /**
@@ -65,8 +66,8 @@ public class QueueProcessorScheduler {
      * 스케줄러 주기 및 입장 수 동적 변경 (기존 스케줄러 갱신)
      */
     public synchronized void updateScheduler(long newIntervalMillis, int newEntryCount) {
-        this.intervalMillis = newIntervalMillis;
-        this.entryCount = newEntryCount;
+        intervalMillis = newIntervalMillis;
+        entryCount = newEntryCount;
         startScheduler();
     }
 
