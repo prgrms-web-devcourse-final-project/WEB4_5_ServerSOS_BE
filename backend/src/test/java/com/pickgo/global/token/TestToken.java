@@ -15,4 +15,7 @@ public class TestToken {
 
 	@Value("${custom.jwt.expired_token}")
 	public String expiredToken;
+
+	@Value("${custom.jwt.test_entry_token}")
+	public String entryToken;
 }

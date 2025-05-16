@@ -115,7 +115,7 @@ public class JwtProvider {
     /**
      * 토큰으로부터 Claims(토큰 내용) 획득
      **/
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser() // claim 조회
             .verifyWith(getSecretKey()) // secret_key를 사용해서 토큰 복호화
             .build()

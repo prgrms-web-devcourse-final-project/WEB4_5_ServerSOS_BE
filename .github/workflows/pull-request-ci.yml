@@ -64,6 +64,7 @@ jobs:
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
           USER_TOKEN: ${{ secrets.USER_TOKEN }}
           EXPIRED_TOKEN: ${{ secrets.EXPIRED_TOKEN }}
+          ENTRY_TOKEN: ${{ secrets.ENTRY_TOKEN }}
           KOPIS_APIKEY: ${{ secrets.KOPIS_APIKEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
