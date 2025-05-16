@@ -2,6 +2,7 @@ package com.pickgo.global.exception;
 
 import static com.pickgo.global.response.RsCode.*;
 
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -67,6 +68,16 @@ public class GlobalExceptionHandler {
         );
         logWarn(exception);
         return RsData.from(UNAUTHENTICATED);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public RsData<?> handleMissingServletRequestParameterException(HttpRequestMethodNotSupportedException exception) {
+        logWriter.writeExceptionLog(
+                exception,
+                ActionType.EXCEPTION
+        );
+        logWarn(exception);
+        return RsData.from(BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
