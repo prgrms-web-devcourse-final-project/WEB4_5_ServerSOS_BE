@@ -51,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || request.getRequestURI().startsWith("/admin/monitoring")
                 || request.getRequestURI().equals("/favicon.ico")
                 || request.getRequestURI().startsWith("/admin/monitoring/health")
+                || request.getRequestURI().startsWith("/actuator")
         ) {
             filterChain.doFilter(request, response);
             return;
