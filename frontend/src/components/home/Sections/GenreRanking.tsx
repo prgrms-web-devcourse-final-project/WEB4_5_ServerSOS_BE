@@ -49,7 +49,7 @@ export default function GenreRanking() {
                 <img
                   src={item.poster || "/placeholder.svg"}
                   alt={item.title}
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
                 />
               </div>
               <div className="p-4">

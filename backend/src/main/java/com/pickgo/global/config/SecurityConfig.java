@@ -46,6 +46,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/monitoring/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // 권한 검증
                         .anyRequest().permitAll()) // 그 외는 jwt 필터로 인증 검증
                 .sessionManagement(configurer ->

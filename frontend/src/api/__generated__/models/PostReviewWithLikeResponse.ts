@@ -16,59 +16,65 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface PostReviewSimpleResponse
+ * @interface PostReviewWithLikeResponse
  */
-export interface PostReviewSimpleResponse {
+export interface PostReviewWithLikeResponse {
     /**
      * 
      * @type {number}
-     * @memberof PostReviewSimpleResponse
+     * @memberof PostReviewWithLikeResponse
      */
     reviewId?: number;
     /**
      * 
      * @type {string}
-     * @memberof PostReviewSimpleResponse
+     * @memberof PostReviewWithLikeResponse
      */
     userId?: string;
     /**
      * 
      * @type {string}
-     * @memberof PostReviewSimpleResponse
+     * @memberof PostReviewWithLikeResponse
      */
     profile?: string;
     /**
      * 
      * @type {string}
-     * @memberof PostReviewSimpleResponse
+     * @memberof PostReviewWithLikeResponse
      */
     nickname?: string;
     /**
      * 
      * @type {string}
-     * @memberof PostReviewSimpleResponse
+     * @memberof PostReviewWithLikeResponse
      */
     content?: string;
     /**
      * 
      * @type {number}
-     * @memberof PostReviewSimpleResponse
+     * @memberof PostReviewWithLikeResponse
      */
     likeCount?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PostReviewWithLikeResponse
+     */
+    likedByCurrentUser?: boolean;
 }
 
 /**
- * Check if a given object implements the PostReviewSimpleResponse interface.
+ * Check if a given object implements the PostReviewWithLikeResponse interface.
  */
-export function instanceOfPostReviewSimpleResponse(value: object): value is PostReviewSimpleResponse {
+export function instanceOfPostReviewWithLikeResponse(value: object): value is PostReviewWithLikeResponse {
     return true;
 }
 
-export function PostReviewSimpleResponseFromJSON(json: any): PostReviewSimpleResponse {
-    return PostReviewSimpleResponseFromJSONTyped(json, false);
+export function PostReviewWithLikeResponseFromJSON(json: any): PostReviewWithLikeResponse {
+    return PostReviewWithLikeResponseFromJSONTyped(json, false);
 }
 
-export function PostReviewSimpleResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): PostReviewSimpleResponse {
+export function PostReviewWithLikeResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): PostReviewWithLikeResponse {
     if (json == null) {
         return json;
     }
@@ -80,14 +86,15 @@ export function PostReviewSimpleResponseFromJSONTyped(json: any, ignoreDiscrimin
         'nickname': json['nickname'] == null ? undefined : json['nickname'],
         'content': json['content'] == null ? undefined : json['content'],
         'likeCount': json['likeCount'] == null ? undefined : json['likeCount'],
+        'likedByCurrentUser': json['likedByCurrentUser'] == null ? undefined : json['likedByCurrentUser'],
     };
 }
 
-export function PostReviewSimpleResponseToJSON(json: any): PostReviewSimpleResponse {
-    return PostReviewSimpleResponseToJSONTyped(json, false);
+export function PostReviewWithLikeResponseToJSON(json: any): PostReviewWithLikeResponse {
+    return PostReviewWithLikeResponseToJSONTyped(json, false);
 }
 
-export function PostReviewSimpleResponseToJSONTyped(value?: PostReviewSimpleResponse | null, ignoreDiscriminator: boolean = false): any {
+export function PostReviewWithLikeResponseToJSONTyped(value?: PostReviewWithLikeResponse | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -100,6 +107,7 @@ export function PostReviewSimpleResponseToJSONTyped(value?: PostReviewSimpleResp
         'nickname': value['nickname'],
         'content': value['content'],
         'likeCount': value['likeCount'],
+        'likedByCurrentUser': value['likedByCurrentUser'],
     };
 }
 

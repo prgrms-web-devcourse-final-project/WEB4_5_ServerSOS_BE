@@ -80,11 +80,10 @@ export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
             >
               <div className="relative h-[380px]">
-                <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
                 <img
                   src={show.poster || "/placeholder.svg"}
                   alt={show.title}
-                  className="object-cover z-10"
+                  className="object-cover z-10 w-full h-full"
                 />
               </div>
               <div className="p-4">
@@ -102,7 +101,7 @@ export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
       )}
 
       {/* 페이지네이션 */}
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center my-10">
         <nav className="flex items-center space-x-2">
           <button
             onClick={() => handlePageChange(currentPage - 1)}

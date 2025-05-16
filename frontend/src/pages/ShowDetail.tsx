@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,10 +11,7 @@ import { getDurationStr } from "@/lib/date"
 
 export function ShowDetail() {
   const { id } = useParams()
-
-  if (!id) {
-    return <div>ID가 없습니다.</div>
-  }
+  const navigate = useNavigate()
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const { post: showData, isLoading, error } = usePostDetail({ id: Number(id) })
@@ -25,6 +22,29 @@ export function ShowDetail() {
     setSelectedDate(date)
   }
 
+  const handleReservationClick = () => {
+    if (!showData?.id) {
+      return
+    }
+
+    // 날짜 유효성 검사
+    const startDateStr = showData.performance?.startDate
+    const endDateStr = showData.performance?.endDate
+    if (!selectedDate || !startDateStr || !endDateStr) {
+      alert("날짜 정보가 올바르지 않습니다.")
+      return
+    }
+    const startDate = new Date(startDateStr)
+    const endDate = new Date(endDateStr)
+    // 선택된 날짜가 공연 기간 내에 있는지 확인
+    if (selectedDate < startDate || selectedDate > endDate) {
+      alert("선택한 날짜가 공연 기간 내에 있지 않습니다.")
+      return
+    }
+
+    navigate(`/show/${showData.id}/reservation`)
+  }
+
   // 디버깅용 - 선택된 날짜 변경 감지
   useEffect(() => {
     console.log(
@@ -32,6 +52,10 @@ export function ShowDetail() {
       selectedDate ? selectedDate.toDateString() : "없음",
     )
   }, [selectedDate])
+
+  if (!id) {
+    return <div>ID가 없습니다.</div>
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -58,7 +82,7 @@ export function ShowDetail() {
               <img
                 src={showData.performance?.poster || "/placeholder.svg"}
                 alt={showData.title}
-                className="object-cover"
+                className="object-cover h-full"
               />
             </div>
           </div>
@@ -137,12 +161,12 @@ export function ShowDetail() {
                 />
                 <div className="mt-6">
                   {selectedDate ? (
-                    <Link
-                      to={`/show/${showData.id}/reservation`}
-                      className="w-full inline-flex justify-center items-center h-11 px-8 py-2 rounded-md text-sm font-medium transition-colors bg-slate-900 text-slate-50 hover:bg-slate-900/90"
+                    <button
+                      className="w-full inline-flex justify-center items-center h-11 px-8 py-2 rounded-md text-sm font-medium transition-colors bg-slate-900 text-slate-50 hover:bg-slate-900/90 cursor-pointer"
+                      onClick={handleReservationClick}
                     >
                       예매하기
-                    </Link>
+                    </button>
                   ) : (
                     <button
                       disabled

@@ -1,5 +1,6 @@
 package com.pickgo.domain.member.admin.dto;
 
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.entity.Post;
 import lombok.*;
 

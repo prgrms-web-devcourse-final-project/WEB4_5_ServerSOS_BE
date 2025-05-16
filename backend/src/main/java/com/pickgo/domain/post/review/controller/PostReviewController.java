@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts/{id}/reviews")
 @RequiredArgsConstructor
-@Tag(name = "리뷰 API", description = "리뷰 관련 API 엔드포인트")
+@Tag(name = "Review API", description = "리뷰 관련 API 엔드포인트")
 public class PostReviewController {
 
     private final PostReviewService postReviewService;
