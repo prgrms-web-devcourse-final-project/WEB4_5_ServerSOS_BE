@@ -22,7 +22,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class TokenService {
 
@@ -37,6 +36,7 @@ public class TokenService {
     @Value("${custom.http.secure}")
     private boolean secure;
 
+    @Transactional(readOnly = true)
     public TokenDetailResponse createAccessToken(String refreshToken) {
         if (!jwtProvider.isValidToken(refreshToken)) {
             throw new BusinessException(UNAUTHENTICATED);
@@ -64,9 +64,9 @@ public class TokenService {
                 genAuthTokenClaims(member));
     }
 
-    public String genEntryToken(Member member) {
-        return jwtProvider.generateToken(member.getId().toString(), Duration.ofMinutes(entryTokenExpirationMinutes),
-                genAuthTokenClaims(member));
+    public String genEntryToken(Long performanceSessionId, UUID userId) {
+        return jwtProvider.generateToken(userId.toString(), Duration.ofMinutes(entryTokenExpirationMinutes),
+                genEntryTokenClaims(performanceSessionId, userId));
     }
 
     private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
@@ -91,6 +91,13 @@ public class TokenService {
             .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
+    }
+
+    private static Map<String, Object> genEntryTokenClaims(Long performanceSessionId, UUID userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("performance_session_id", performanceSessionId);
+        claims.put("user_id", userId);
+        return claims;
     }
 
     private static Map<String, Object> genAuthTokenClaims(Member member) {

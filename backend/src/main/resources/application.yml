@@ -41,10 +41,11 @@ custom:
     refresh_token:
       expiration_minutes: ${JWT_REFRESH_TOKEN_EXPIRATION_MINUTES:86400}
     entry_token:
-      expiration_minutes: ${JWT_ENTRY_TOKEN_EXPIRATION_MINUTES:1}
+      expiration_minutes: ${JWT_ENTRY_TOKEN_EXPIRATION_MINUTES:10}
     admin_token: ${ADMIN_TOKEN}
     user_token: ${USER_TOKEN}
     expired_token: ${EXPIRED_TOKEN}
+    test_entry_token: ${ENTRY_TOKEN}}
 
   http:
     secure: ${HTTP_SECURE:false}
