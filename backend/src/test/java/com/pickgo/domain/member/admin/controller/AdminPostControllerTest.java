@@ -1,15 +1,17 @@
 package com.pickgo.domain.member.admin.controller;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pickgo.domain.log.repository.MemberHistoryRepository;
+import com.pickgo.domain.member.admin.service.AdminPostService;
+import com.pickgo.domain.performance.area.area.entity.AreaGrade;
+import com.pickgo.domain.performance.area.area.entity.AreaName;
+import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
+import com.pickgo.domain.performance.performance.entity.*;
+import com.pickgo.domain.performance.venue.entity.Venue;
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
+import com.pickgo.domain.post.post.entity.Post;
+import com.pickgo.global.logging.service.HistorySaveService;
+import com.pickgo.global.response.RsCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +25,18 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pickgo.domain.member.admin.dto.PostDetailResponse;
-import com.pickgo.domain.member.admin.service.AdminPostService;
-import com.pickgo.domain.performance.area.area.entity.AreaGrade;
-import com.pickgo.domain.performance.area.area.entity.AreaName;
-import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
-import com.pickgo.domain.log.repository.MemberHistoryRepository;
-import com.pickgo.domain.performance.performance.entity.Performance;
-import com.pickgo.domain.performance.performance.entity.PerformanceIntro;
-import com.pickgo.domain.performance.performance.entity.PerformanceSession;
-import com.pickgo.domain.performance.performance.entity.PerformanceState;
-import com.pickgo.domain.performance.performance.entity.PerformanceType;
-import com.pickgo.domain.post.post.entity.Post;
-import com.pickgo.domain.performance.venue.entity.Venue;
-import com.pickgo.global.logging.service.HistorySaveService;
-import com.pickgo.global.response.RsCode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -160,17 +158,17 @@ class AdminPostControllerTest {
         PostDetailResponse response = PostDetailResponse.from(post);
 
         // then
-        assertThat(response.getId()).isEqualTo(10L);
-        assertThat(response.getTitle()).isEqualTo("예매 안내");
-        assertThat(response.getPerformance().getName()).isEqualTo("뮤지컬 헤드윅");
-        assertThat(response.getPerformance().getState()).isEqualTo("SCHEDULED");
-        assertThat(response.getPerformance().getType()).isEqualTo("MUSICAL");
-        assertThat(response.getPerformance().getRuntime()).isEqualTo("150");
-        assertThat(response.getPerformance().getMinAge()).isEqualTo("12");
-        assertThat(response.getPerformance().getVenue().name()).isEqualTo("서울 공연장");
-        assertThat(response.getPerformance().getIntroImages()).hasSize(2);
-        assertThat(response.getPerformance().getAreas()).hasSize(1);
-        assertThat(response.getPerformance().getSessions()).hasSize(1);
+        assertThat(response.id()).isEqualTo(10L);
+        assertThat(response.title()).isEqualTo("예매 안내");
+        assertThat(response.performance().name()).isEqualTo("뮤지컬 헤드윅");
+        assertThat(response.performance().state()).isEqualTo("공연예정");
+        assertThat(response.performance().type()).isEqualTo("뮤지컬");
+        assertThat(response.performance().runtime()).isEqualTo("150");
+        assertThat(response.performance().minAge()).isEqualTo("12");
+        assertThat(response.performance().venue().name()).isEqualTo("서울 공연장");
+        assertThat(response.performance().images()).hasSize(2);
+        assertThat(response.performance().areas()).hasSize(1);
+        assertThat(response.performance().sessions()).hasSize(1);
     }
 
 
