@@ -67,3 +67,8 @@ custom:
 kopis:
   apikey: ${KOPIS_APIKEY}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [health, info, prometheus]
