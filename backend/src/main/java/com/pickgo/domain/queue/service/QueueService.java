@@ -1,0 +1,173 @@
+package com.pickgo.domain.queue.service;
+
+import static com.pickgo.domain.queue.scheduler.QueueProcessorScheduler.*;
+import static com.pickgo.global.response.RsCode.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.domain.queue.repository.QueueRepository;
+import com.pickgo.domain.queue.stream.QueueStreamPublisher;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.init.ServerIdProvider;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class QueueService {
+
+    private final QueueRepository queueRepository;
+    private final QueueStreamPublisher queueStreamPublisher;
+    private final ServerIdProvider serverIdProvider;
+    private final TokenService tokenService;
+
+    /**
+     * 대기열 입장
+     */
+    public void enterWaitingLine(Long performanceSessionId, String connectionId) {
+        // 대기열 상태 조회
+        int position = queueRepository.add(performanceSessionId, connectionId, serverIdProvider.getServerId());
+        int totalCount = queueRepository.getSize(performanceSessionId);
+        double tps = getTps();
+
+        // 대기열 상태 publish
+        WaitingState waitingState = WaitingState.of(position, totalCount, tps);
+        publishWaitingState(performanceSessionId, connectionId, waitingState);
+    }
+
+    /**
+     * 입장큐 입장
+     */
+    public void enterEntryLine(Long performanceSessionId, UUID userId, String connectionId) {
+        publishEntryPermission(performanceSessionId, userId, connectionId);
+    }
+
+    /**
+     * 대기열 상태 publish
+     */
+    public void publishWaitingState(Long performanceSessionId, String connectionId, WaitingState waitingState) {
+        queueStreamPublisher.publish(performanceSessionId, connectionId,
+                genStreamData(performanceSessionId, connectionId, waitingState));
+    }
+
+    /**
+     * 입장 메시지 publish
+     */
+    public void publishEntryPermission(Long performanceSessionId, UUID userId, String connectionId) {
+        queueStreamPublisher.publish(performanceSessionId, connectionId,
+                genStreamData(performanceSessionId, userId, connectionId));
+    }
+
+    /**
+     * 대기열 비어있는지 여부
+     */
+    public boolean isEmpty(Long performanceSessionId) {
+        return queueRepository.isEmpty(performanceSessionId);
+    }
+
+    /**
+     * 대기열에서 count만큼 앞에서 꺼냄
+     */
+    public List<String> pollTopCount(Long performanceSessionId, int count) {
+        return queueRepository.pollTopCount(performanceSessionId, count);
+    }
+
+    /**
+     * 특정 커넥션을 대기열에서 제거
+     */
+    public void remove(Long performanceSessionId, String connectionId) {
+        queueRepository.remove(performanceSessionId, connectionId);
+    }
+
+    /**
+     * 대기 번호 조회
+     */
+    public int getPosition(Long performanceSessionId, String connectionId) {
+        return queueRepository.getPosition(performanceSessionId, connectionId);
+    }
+
+    /**
+     * 대기열 입장한 전체 인원 수
+     */
+    public int getSize(Long performanceSessionId) {
+        return queueRepository.getSize(performanceSessionId);
+    }
+
+    /**
+     * 대기열이 활성화된 모든 공연 세션 아이디 조회
+     */
+    public List<Long> getAllPerformanceSessionIds() {
+        return queueRepository.getAllKeys().stream()
+                .map(this::extractedPerformanceSessionId)
+                .toList();
+    }
+
+    /**
+     * 특정 대기열 전체 조회
+     */
+    public List<String> getLine(Long performanceSessionId) {
+        return queueRepository.getLine(performanceSessionId);
+    }
+
+    /**
+     * 모든 대기열 초기화
+     */
+    public void clearAll() {
+        queueRepository.clearAll();
+    }
+
+    /**
+     * 특정 커넥션이 대기열에 존재하는지 확인
+     */
+    public boolean isIn(Long performanceSessionId, String connectionId) {
+        return queueRepository.isIn(performanceSessionId, connectionId);
+    }
+
+    /**
+     * key에서 performance session id 추출
+     */
+    private Long extractedPerformanceSessionId(String key) {
+        final String marker = "performance_session_id:";
+        int index = key.indexOf(marker);
+        if (index == -1) {
+            throw new BusinessException(INTERNAL_SERVER);
+        }
+        return Long.valueOf(key.substring(index + marker.length()));
+    }
+
+    /**
+     * Stream에 publish할 data 생성 (대기열 상태)
+     */
+    private static Map<String, String> genStreamData(Long performanceSessionId, String connectionId, WaitingState waitingState) {
+        Map<String, String> data = new HashMap<>();
+        data.put("type", "wait");
+        data.put("performance_session_id", performanceSessionId.toString());
+        data.put("connection_id", connectionId);
+        data.put("position", String.valueOf(waitingState.position()));
+        data.put("total_count", String.valueOf(waitingState.totalCount()));
+        data.put("estimated_time", String.valueOf(waitingState.estimatedTime()));
+        return data;
+    }
+
+    /**
+     * Stream에 publish할 data 생성 (입장 메시지)
+     */
+    private Map<String, String> genStreamData(Long performanceSessionId, UUID userId, String connectionId) {
+        String entryToken = tokenService.genEntryToken(performanceSessionId, userId);
+
+        Map<String, String> data = new HashMap<>();
+        data.put("type", "ready");
+        data.put("performance_session_id", performanceSessionId.toString());
+        data.put("user_id", userId.toString());
+        data.put("connection_id", connectionId);
+        data.put("entry_token", entryToken);
+        return data;
+    }
+}
