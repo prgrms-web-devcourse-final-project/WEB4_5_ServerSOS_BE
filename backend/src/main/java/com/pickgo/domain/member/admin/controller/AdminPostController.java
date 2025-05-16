@@ -1,10 +1,10 @@
 package com.pickgo.domain.member.admin.controller;
 
-import com.pickgo.domain.member.admin.dto.PostUpdateResponse;
-import com.pickgo.domain.member.admin.dto.PostSimpleResponse;
 import com.pickgo.domain.member.admin.dto.PostUpdateRequest;
+import com.pickgo.domain.member.admin.dto.PostUpdateResponse;
 import com.pickgo.domain.member.admin.service.AdminPostService;
-import com.pickgo.domain.member.admin.dto.PostDetailResponse;
+import com.pickgo.domain.post.post.dto.PostDetailResponse;
+import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.response.RsCode;
