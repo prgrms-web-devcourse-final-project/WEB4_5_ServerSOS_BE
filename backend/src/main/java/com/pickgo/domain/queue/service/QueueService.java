@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.repository.QueueRepository;
 import com.pickgo.domain.queue.stream.QueueStreamPublisher;
@@ -169,5 +170,17 @@ public class QueueService {
         data.put("connection_id", connectionId);
         data.put("entry_token", entryToken);
         return data;
+    }
+
+    /**
+     * 대기열 세션 정보 생성
+     */
+    public QueueSession genQueueSession(Long performanceSessionId, UUID userId, String connectionId) {
+        return QueueSession.builder()
+                .performanceSessionId(performanceSessionId)
+                .userId(userId)
+                .serverId(serverIdProvider.getServerId())
+                .connectionId(connectionId)
+                .build();
     }
 }
