@@ -17,7 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.repository.redis.RedisQueueRepository;
-import com.pickgo.domain.queue.stream.QueueStreamPublisher;
+import com.pickgo.global.infra.server.ServerRegistry;
+import com.pickgo.global.infra.stream.redis.RedisStreamPublisher;
 import com.pickgo.global.init.ServerIdProvider;
 
 @DataRedisTest
@@ -31,18 +32,23 @@ class QueueServiceTest {
     private TokenService tokenService;
 
     @MockitoBean
-    private QueueStreamPublisher queueStreamPublisher;
+    private RedisStreamPublisher redisStreamPublisher;
 
     @MockitoBean
     private ServerIdProvider serverIdProvider;
 
+    @MockitoBean
+    private ServerRegistry serverRegistry;
+
     private final Long performanceSessionId = 1L;
     private final String connectionId = "conn-1";
     private final String serverId = "server-1";
+    private final String streamKey = "queue_stream:server_id:" + serverId;
 
     @BeforeEach
     void setUp() {
         when(serverIdProvider.getServerId()).thenReturn(serverId);
+        when(serverRegistry.getServerId(connectionId)).thenReturn(serverId);
     }
 
     @AfterEach
@@ -57,7 +63,7 @@ class QueueServiceTest {
         List<String> line = queueService.getLine(performanceSessionId);
         assertThat(line).contains(connectionId);
 
-        verify(queueStreamPublisher).publish(eq(performanceSessionId), eq(connectionId), any(Map.class));
+        verify(redisStreamPublisher).publish(eq(streamKey), any(Map.class));
     }
 
     @Test
@@ -126,6 +132,6 @@ class QueueServiceTest {
 
         queueService.publishWaitingState(performanceSessionId, connectionId, state);
 
-        verify(queueStreamPublisher).publish(eq(performanceSessionId), eq(connectionId), any(Map.class));
+        verify(redisStreamPublisher).publish(eq(streamKey), any(Map.class));
     }
 }

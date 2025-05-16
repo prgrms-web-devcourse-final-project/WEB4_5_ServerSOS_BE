@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.service.QueueService;
-import com.pickgo.global.sse.SseHandler;
+import com.pickgo.global.infra.sse.SseHandler;
 
 @ExtendWith(MockitoExtension.class)
 class QueueProcessorSchedulerTest {

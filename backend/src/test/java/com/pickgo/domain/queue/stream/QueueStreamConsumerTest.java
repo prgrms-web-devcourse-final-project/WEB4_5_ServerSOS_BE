@@ -17,8 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.pickgo.domain.queue.dto.EntryPermission;
 import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.global.infra.sse.SseHandler;
 import com.pickgo.global.init.ServerIdProvider;
-import com.pickgo.global.sse.SseHandler;
 
 @DataRedisTest
 @Import({QueueStreamConsumer.class})
@@ -38,7 +38,7 @@ class QueueStreamConsumerTest {
 
     private final String serverId = "server-1";
     private final String connectionId = "conn-1";
-    private final String streamKey = "queue_stream:serverId:" + serverId;
+    private final String streamKey = "queue_stream:server_id:" + serverId;
     private final String entryToken = "entryToken";
 
     @BeforeEach
