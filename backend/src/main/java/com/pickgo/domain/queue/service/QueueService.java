@@ -16,6 +16,7 @@ import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.repository.QueueRepository;
 import com.pickgo.domain.queue.stream.QueueStreamPublisher;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.infra.server.ServerRegistry;
 import com.pickgo.global.init.ServerIdProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QueueService {
 
+    private final ServerRegistry serverRegistry;
     private final QueueRepository queueRepository;
     private final QueueStreamPublisher queueStreamPublisher;
     private final ServerIdProvider serverIdProvider;
@@ -33,10 +35,13 @@ public class QueueService {
      * 대기열 입장
      */
     public void enterWaitingLine(Long performanceSessionId, String connectionId) {
-        // 대기열 상태 조회
+        // 대기열 추가 및 상태 조회
         int position = queueRepository.add(performanceSessionId, connectionId, serverIdProvider.getServerId());
         int totalCount = queueRepository.getSize(performanceSessionId);
         double tps = getTps();
+
+        // 연결된 서버 저장
+        serverRegistry.save(connectionId, serverIdProvider.getServerId());
 
         // 대기열 상태 publish
         WaitingState waitingState = WaitingState.of(position, totalCount, tps);

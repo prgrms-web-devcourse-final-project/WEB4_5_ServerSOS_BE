@@ -25,6 +25,4 @@ public interface QueueRepository {
     void clearAll();
 
     boolean isIn(Long performanceSessionId, String connectionId);
-
-    String getServerId(Long performanceSessionId, String connectionId);
 }

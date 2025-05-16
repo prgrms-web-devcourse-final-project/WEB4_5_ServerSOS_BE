@@ -3,7 +3,7 @@ package com.pickgo.domain.queue.repository.redis;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,12 +21,10 @@ import lombok.RequiredArgsConstructor;
 public class RedisQueueRepository implements QueueRepository {
 
     private static final String WAITING_LINE_PREFIX = "waiting_line"; // 대기열
-    private static final String SERVER_PREFIX = "connection_server"; // 커넥션 서버 (스트리밍 서버)
-
     private final StringRedisTemplate redisTemplate;
 
     /**
-     * 대기열에 커넥션을 추가하고, 연결된 서버 정보도 저장
+     * 대기열에 커넥션을 추가
      */
     @Override
     public int add(Long performanceSessionId, String connectionId, String serverId) {
@@ -36,16 +34,12 @@ public class RedisQueueRepository implements QueueRepository {
         String waitingKey = getWaitingKey(performanceSessionId);
         redisTemplate.opsForZSet().add(waitingKey, connectionId, score);
 
-        // 연결된 서버 정보 저장
-        String serverKey = getServerKey(performanceSessionId, connectionId);
-        redisTemplate.opsForValue().set(serverKey, serverId);
-
         // 추가된 커넥션의 대기열 순번 반환
         return getPosition(performanceSessionId, connectionId);
     }
 
     /**
-     * 특정 커넥션의 대기열 순번 조회 (1부터 시작)
+     * 특정 커넥션의 대기열 순번 조회 (1부터 시작, 없으면 -1)
      */
     @Override
     public int getPosition(Long performanceSessionId, String connectionId) {
@@ -76,17 +70,13 @@ public class RedisQueueRepository implements QueueRepository {
     }
 
     /**
-     * 대기열 및 서버 연결 정보에서 특정 커넥션 제거
+     * 대기열에서 특정 커넥션 제거
      */
     @Override
     public void remove(Long performanceSessionId, String connectionId) {
         // 대기열에서 해당 커넥션 제거
         String waitingKey = getWaitingKey(performanceSessionId);
         redisTemplate.opsForZSet().remove(waitingKey, connectionId);
-
-        // 연결된 서버 정보 제거
-        String serverKey = getServerKey(performanceSessionId, connectionId);
-        redisTemplate.delete(serverKey);
     }
 
     /**
@@ -122,7 +112,7 @@ public class RedisQueueRepository implements QueueRepository {
     }
 
     /**
-     * 특정 대기열의 전체 커넥션 목록 조회
+     * 특정 대기열 전체 조회
      */
     @Override
     public List<String> getLine(Long performanceSessionId) {
@@ -134,21 +124,11 @@ public class RedisQueueRepository implements QueueRepository {
     }
 
     /**
-     * 대기열 및 연결 서버 정보 모두 제거
+     * 대기열 모두 제거
      */
     @Override
     public void clearAll() {
-        // 대기열 제거
-        Set<String> queueKeys = redisTemplate.keys(WAITING_LINE_PREFIX + ":*");
-        if (queueKeys != null && !queueKeys.isEmpty()) {
-            redisTemplate.delete(queueKeys);
-        }
-
-        // 연결 서버 정보 제거
-        Set<String> serverKeys = redisTemplate.keys(SERVER_PREFIX + ":*");
-        if (serverKeys != null && !serverKeys.isEmpty()) {
-            redisTemplate.delete(serverKeys);
-        }
+        redisTemplate.delete(Objects.requireNonNull(redisTemplate.keys(WAITING_LINE_PREFIX + ":*")));
     }
 
     /**
@@ -159,28 +139,6 @@ public class RedisQueueRepository implements QueueRepository {
         String waitingKey = getWaitingKey(performanceSessionId);
         Double score = redisTemplate.opsForZSet().score(waitingKey, connectionId);
         return score != null;
-    }
-
-    /**
-     * 특정 커넥션과 연결된 서버 ID 조회
-     */
-    @Override
-    public String getServerId(Long performanceSessionId, String connectionId) {
-        String serverKey = getServerKey(performanceSessionId, connectionId);
-        String serverId = redisTemplate.opsForValue().get(serverKey);
-        if (serverId == null) {
-            throw new NoSuchElementException("No connected server found for connection: " + connectionId);
-        }
-        return serverId;
-    }
-
-    /**
-     * 서버 연결 정보 키 반환
-     */
-    private static String getServerKey(Long performanceSessionId, String connectionId) {
-        return SERVER_PREFIX
-                + ":performance_session_id:" + performanceSessionId
-                + ":connection_id:" + connectionId;
     }
 
     /**
