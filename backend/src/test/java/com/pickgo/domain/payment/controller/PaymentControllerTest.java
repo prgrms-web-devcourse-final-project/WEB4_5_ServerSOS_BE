@@ -46,12 +46,11 @@ import com.pickgo.domain.performance.performance.entity.PerformanceState;
 import com.pickgo.domain.performance.performance.entity.PerformanceType;
 import com.pickgo.domain.performance.performance.repository.PerformanceRepository;
 import com.pickgo.domain.performance.performance.repository.PerformanceSessionRepository;
-import com.pickgo.domain.queue.service.EntryService;
+import com.pickgo.domain.performance.venue.entity.Venue;
+import com.pickgo.domain.performance.venue.repository.VenueRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
-import com.pickgo.domain.performance.venue.entity.Venue;
-import com.pickgo.domain.performance.venue.repository.VenueRepository;
 import com.pickgo.global.logging.service.HistorySaveService;
 
 @SpringBootTest
@@ -102,9 +101,6 @@ public class PaymentControllerTest {
     private String userToken;
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
-    EntryService entryService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -174,7 +170,6 @@ public class PaymentControllerTest {
         reservationRepository.deleteAll();
         memberRepository.deleteAll();
         venueRepository.deleteAll();
-        entryService.clear();
     }
 
     @Test
@@ -198,7 +193,6 @@ public class PaymentControllerTest {
 
         mockMvc.perform(post("/api/payments")
                         .header("Authorization", "Bearer " + userToken)
-                .header("EntryAuth", "Bearer " + userToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())

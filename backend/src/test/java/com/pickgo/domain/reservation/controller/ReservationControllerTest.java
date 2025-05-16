@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,14 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
 import com.pickgo.domain.log.entity.ReservationHistory;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.log.repository.ReservationHistoryRepository;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
+import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
 import com.pickgo.domain.performance.performance.entity.PerformanceSession;
-import com.pickgo.domain.queue.service.EntryService;
 import com.pickgo.domain.reservation.dto.request.ReservationCreateRequest;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.init.TestDataInit;
@@ -61,9 +59,6 @@ class ReservationControllerTest {
     @Autowired
     private ReservationHistoryRepository reservationHistoryRepository;
 
-    @Autowired
-    EntryService entryService;
-
     private Member member;
     private PerformanceSession session;
     private PerformanceArea area;
@@ -81,11 +76,6 @@ class ReservationControllerTest {
         reservationHistoryRepository.deleteAll();
     }
 
-    @AfterEach
-    void tearDown() {
-        entryService.clear();
-    }
-
     @Test
     @DisplayName("예약 성공 - 유저")
     void reserve_success() throws Exception {
@@ -101,7 +91,7 @@ class ReservationControllerTest {
         mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
-                        .header("EntryAuth", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.entryToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
@@ -144,7 +134,7 @@ class ReservationControllerTest {
         mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
-                        .header("EntryAuth", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.entryToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
@@ -164,7 +154,7 @@ class ReservationControllerTest {
         mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
-                        .header("EntryAuth", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.entryToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
@@ -185,7 +175,7 @@ class ReservationControllerTest {
         String reservationId = mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
-                        .header("EntryAuth", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.entryToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -234,7 +224,7 @@ class ReservationControllerTest {
         String responseBody = mvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + token.userToken)
-                        .header("EntryAuth", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.entryToken)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -264,7 +254,7 @@ class ReservationControllerTest {
 
         mvc.perform(post("/api/reservations")
                         .header("Authorization", "Bearer " + token.userToken)
-                        .header("EntryAuth", "Bearer " + token.userToken)
+                        .header("EntryAuth", "Bearer " + token.entryToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
