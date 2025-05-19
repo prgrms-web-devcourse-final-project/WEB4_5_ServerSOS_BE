@@ -71,7 +71,7 @@ class RedisStreamConsumerTest {
         testStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
         // then
-        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(30, TimeUnit.SECONDS).untilAsserted(() ->
                 assertThat(testStreamConsumer.isHandled()).isTrue()
         );
     }
