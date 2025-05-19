@@ -1,13 +1,16 @@
 package com.pickgo.domain.queue.stream;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
 
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import com.pickgo.domain.queue.dto.EntryPermission;
 import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.global.config.thread.ExecutorConfig;
 import com.pickgo.global.infra.sse.SseHandler;
 import com.pickgo.global.infra.stream.redis.RedisStreamConsumer;
 import com.pickgo.global.init.ServerIdProvider;
@@ -25,14 +28,18 @@ public class QueueStreamConsumer extends RedisStreamConsumer {
     public static final String QUEUE_STREAM_PREFIX = "queue_stream"; // 대기열 Stream
     private final ServerIdProvider serverIdProvider;
     private final SseHandler sseHandler;
+    private final ExecutorConfig executorConfig;
 
     public QueueStreamConsumer(StringRedisTemplate redisTemplate,
             ServerIdProvider serverIdProvider,
-            SseHandler sseHandler
+            SseHandler sseHandler,
+            ExecutorConfig executorConfig,
+            Environment environment
     ) {
-        super(redisTemplate);
+        super(redisTemplate, environment);
         this.serverIdProvider = serverIdProvider;
         this.sseHandler = sseHandler;
+        this.executorConfig = executorConfig;
     }
 
     @Override
@@ -49,6 +56,11 @@ public class QueueStreamConsumer extends RedisStreamConsumer {
     protected String getStreamKey() {
         String serverId = serverIdProvider.getServerId();
         return QUEUE_STREAM_PREFIX + ":server_id:" + serverId;
+    }
+
+    @Override
+    protected Executor getExecutor() {
+        return executorConfig.threadPoolTaskExecutor();
     }
 
     /**
