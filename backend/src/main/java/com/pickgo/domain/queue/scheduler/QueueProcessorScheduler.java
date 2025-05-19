@@ -10,11 +10,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.service.QueueService;
 import com.pickgo.global.config.thread.ExecutorConfig;
-import com.pickgo.global.infra.sse.SseHandler;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,6 @@ public class QueueProcessorScheduler {
     private static long intervalMillis = 1000; // 주기(ms)
     private static int entryCount = 10; // 주기마다 입장할 인원 수
     private final QueueService queueService;
-    private final SseHandler sseHandler;
     private ScheduledFuture<?> scheduledTask;
     private final TaskScheduler taskScheduler;
     private final ExecutorConfig executorConfig;
@@ -107,13 +104,8 @@ public class QueueProcessorScheduler {
      * 개별 사용자 입장 처리
      */
     private void processEntry(Long performanceSessionId, String connectionId) {
-        // 사용자 세션 조회
-        QueueSession session = sseHandler.getSession(connectionId, QueueSession.class);
-        if (session == null)
-            return;
-
         // 입장 처리
-        queueService.enterEntryLine(performanceSessionId, session.getUserId(), session.getConnectionId());
+        queueService.enterEntryLine(performanceSessionId, connectionId);
     }
 
     /**

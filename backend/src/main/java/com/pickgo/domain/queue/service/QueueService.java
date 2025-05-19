@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.repository.QueueRepository;
@@ -30,7 +29,6 @@ public class QueueService {
     private final QueueRepository queueRepository;
     private final RedisStreamPublisher redisStreamPublisher;
     private final ServerIdProvider serverIdProvider;
-    private final TokenService tokenService;
 
     /**
      * 대기열 입장
@@ -52,8 +50,8 @@ public class QueueService {
     /**
      * 입장큐 입장
      */
-    public void enterEntryLine(Long performanceSessionId, UUID userId, String connectionId) {
-        publishEntryPermission(performanceSessionId, userId, connectionId);
+    public void enterEntryLine(Long performanceSessionId, String connectionId) {
+        publishEntryPermission(performanceSessionId, connectionId);
     }
 
     /**
@@ -67,9 +65,9 @@ public class QueueService {
     /**
      * 입장 메시지 publish
      */
-    public void publishEntryPermission(Long performanceSessionId, UUID userId, String connectionId) {
+    public void publishEntryPermission(Long performanceSessionId, String connectionId) {
         redisStreamPublisher.publish(getStreamKey(connectionId),
-                genStreamData(performanceSessionId, userId, connectionId));
+                genStreamData(performanceSessionId, connectionId));
     }
 
     /**
@@ -166,15 +164,11 @@ public class QueueService {
     /**
      * Stream에 publish할 data 생성 (입장 메시지)
      */
-    private Map<String, String> genStreamData(Long performanceSessionId, UUID userId, String connectionId) {
-        String entryToken = tokenService.genEntryToken(performanceSessionId, userId);
-
+    private Map<String, String> genStreamData(Long performanceSessionId, String connectionId) {
         Map<String, String> data = new HashMap<>();
         data.put("type", "ready");
         data.put("performance_session_id", performanceSessionId.toString());
-        data.put("user_id", userId.toString());
         data.put("connection_id", connectionId);
-        data.put("entry_token", entryToken);
         return data;
     }
 

@@ -8,7 +8,9 @@ import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.queue.dto.EntryPermission;
+import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.global.config.thread.ExecutorConfig;
 import com.pickgo.global.infra.sse.SseHandler;
@@ -29,17 +31,20 @@ public class QueueStreamConsumer extends RedisStreamConsumer {
     private final ServerIdProvider serverIdProvider;
     private final SseHandler sseHandler;
     private final ExecutorConfig executorConfig;
+    private final TokenService tokenService;
 
     public QueueStreamConsumer(StringRedisTemplate redisTemplate,
             ServerIdProvider serverIdProvider,
             SseHandler sseHandler,
             ExecutorConfig executorConfig,
-            Environment environment
+            Environment environment,
+            TokenService tokenService
     ) {
         super(redisTemplate, environment);
         this.serverIdProvider = serverIdProvider;
         this.sseHandler = sseHandler;
         this.executorConfig = executorConfig;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -75,7 +80,11 @@ public class QueueStreamConsumer extends RedisStreamConsumer {
 
         switch (type) {
             case "ready" -> { // 대기 완료, 입장 준비됨
-                String entryToken = values.get("entry_token").toString();
+                // 입장 토큰 발행
+                QueueSession session = sseHandler.getSession(connectionId, QueueSession.class);
+                String entryToken = tokenService.genEntryToken(session.getPerformanceSessionId(), session.getUserId());
+
+                // 메시지 전송, SSE 연결 해제
                 sseHandler.sendMessage(type, connectionId, EntryPermission.of(entryToken));
                 sseHandler.complete(connectionId);
             }
