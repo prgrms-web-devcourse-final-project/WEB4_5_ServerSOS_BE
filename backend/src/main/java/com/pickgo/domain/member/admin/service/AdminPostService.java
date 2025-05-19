@@ -39,9 +39,7 @@ public class AdminPostService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "post", key = "#id"),
-            @CacheEvict(cacheNames = "posts", allEntries = true),
-            @CacheEvict(cacheNames = "popularPosts", allEntries = true),
-            @CacheEvict(cacheNames = "openingSoonPosts", allEntries = true)
+            @CacheEvict(cacheNames = {"posts", "popularPosts", "openingSoonPosts"}, allEntries = true)
     })
     public Post updatePost(Long id, PostUpdateRequest request) {
         Post post = adminPostRepository.findById(id)
@@ -76,9 +74,7 @@ public class AdminPostService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "post", key = "#id"),
-            @CacheEvict(cacheNames = "posts", allEntries = true),
-            @CacheEvict(cacheNames = "popularPosts", allEntries = true),
-            @CacheEvict(cacheNames = "openingSoonPosts", allEntries = true)
+            @CacheEvict(cacheNames = {"posts", "popularPosts", "openingSoonPosts"}, allEntries = true)
     })
     public void deletePost(Long id) {
         Post post = adminPostRepository.findById(id)
