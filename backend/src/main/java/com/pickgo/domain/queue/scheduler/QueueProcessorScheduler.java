@@ -1,18 +1,19 @@
 package com.pickgo.domain.queue.scheduler;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.domain.queue.service.QueueService;
+import com.pickgo.global.config.thread.ExecutorConfig;
 import com.pickgo.global.infra.sse.SseHandler;
 
 import jakarta.annotation.PostConstruct;
@@ -26,22 +27,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QueueProcessorScheduler {
 
+    private static long intervalMillis = 1000; // 주기(ms)
+    private static int entryCount = 10; // 주기마다 입장할 인원 수
     private final QueueService queueService;
     private final SseHandler sseHandler;
-    private final TaskScheduler taskScheduler;
-
-    private final Map<Long, Object> locks = new ConcurrentHashMap<>();
     private ScheduledFuture<?> scheduledTask;
-
-    private static long intervalMillis = 500; // 주기(ms)
-    private static int entryCount = 1; // 주기마다 입장할 인원 수
-
+    private final TaskScheduler taskScheduler;
+    private final ExecutorConfig executorConfig;
+    private final Environment environment;
 
     /**
      * 애플리케이션 시작 시 스케줄러 자동 시작
      */
     @PostConstruct
     public void init() {
+        if (Arrays.asList(environment.getActiveProfiles()).contains("test")) {
+            return; // test 프로필이면 scheduler 실행 안 함
+        }
+
         startScheduler();
     }
 
@@ -87,21 +90,14 @@ public class QueueProcessorScheduler {
      * 하나의 대기열에 대한 입장 처리와 상태 브로드캐스트
      */
     private void processQueue(Long performanceSessionId) {
-        List<String> connectionIds;
-
-        // performanceSessionId 단위로 락을 관리
-        synchronized (locks.computeIfAbsent(performanceSessionId, id -> new Object())) {
-            // 입장 대상 인원 조회 및 대기열에서 제거
-            connectionIds = queueService.pollTopCount(performanceSessionId, entryCount);
-        }
+        // 입장할 인원 수만큼 대기열에서 제거
+        List<String> connectionIds = queueService.pollTopCount(performanceSessionId, entryCount);
 
         // 각 인원을 비동기로 입장 처리
-        List<CompletableFuture<Void>> futures = connectionIds.stream()
-                .map(connectionId -> CompletableFuture.runAsync(() -> processEntry(performanceSessionId, connectionId)))
-                .toList();
-
-        // 모든 입장 처리가 끝날 때까지 대기
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        connectionIds.forEach(connectionId ->
+                CompletableFuture.runAsync(() -> processEntry(performanceSessionId, connectionId),
+                        executorConfig.threadPoolTaskExecutor())
+        );
 
         // 대기열 상태 브로드캐스트
         waitingStateBroadCast(performanceSessionId);
@@ -133,16 +129,16 @@ public class QueueProcessorScheduler {
             int position = queueService.getPosition(performanceSessionId, connectionId);
             int totalCount = queueService.getSize(performanceSessionId);
 
-            // TPS 기준 ETA 계산
-            WaitingState waitingState = WaitingState.of(position, totalCount, getTps());
+            // 대기열 상태 발행
+            WaitingState waitingState = WaitingState.of(position, totalCount, getRps());
             queueService.publishWaitingState(performanceSessionId, connectionId, waitingState);
-        }));
+        }, executorConfig.threadPoolTaskExecutor()));
     }
 
     /**
-     * 현재 TPS(초당 처리 인원) 계산
+     * 현재 RPS(초당 입장 처리 인원) 계산
      */
-    public static double getTps() {
+    public static double getRps() {
         return entryCount / ((double)intervalMillis / 1000);
     }
 }
