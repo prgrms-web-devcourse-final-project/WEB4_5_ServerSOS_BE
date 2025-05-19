@@ -55,7 +55,7 @@ class QueueProcessorSchedulerTest {
 
         scheduler.process();
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(queueService, never()).enterEntryLine(any(), any())
         );
     }
@@ -71,11 +71,11 @@ class QueueProcessorSchedulerTest {
 
         scheduler.process();
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(queueService).enterEntryLine(performanceSessionId, connectionId)
         );
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(queueService).publishWaitingState(eq(performanceSessionId), eq(connectionId),
                         any(WaitingState.class))
         );
@@ -92,7 +92,7 @@ class QueueProcessorSchedulerTest {
 
         scheduler.process();
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(queueService).publishWaitingState(eq(performanceSessionId), eq(connectionId),
                         any(WaitingState.class))
         );

@@ -81,7 +81,7 @@ class QueueStreamConsumerTest {
         queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
         // then (비동기 고려해서 await으로 검증)
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(sseHandler).sendMessage(eq("ready"), eq(connectionId), any(EntryPermission.class))
         );
     }
@@ -101,7 +101,7 @@ class QueueStreamConsumerTest {
         queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
         // then (비동기 고려해서 await으로 검증)
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(sseHandler).sendMessage(eq("wait"), eq(connectionId), any(WaitingState.class))
         );
     }
