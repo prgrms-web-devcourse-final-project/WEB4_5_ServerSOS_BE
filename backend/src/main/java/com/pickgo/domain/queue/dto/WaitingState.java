@@ -5,9 +5,9 @@ public record WaitingState(
         int totalCount, // 총 대기인원
         String estimatedTime // 예상 대기시간
 ) {
-    public static WaitingState of(int position, int totalCount, double tps) {
-        // tps 기준으로 예상 대기시간(초) 계산
-        int remainingSeconds = (int)Math.ceil(position / tps); // 최소 1초 이상
+    public static WaitingState of(int position, int totalCount, double rps) {
+        // rps 기준으로 예상 대기시간(초) 계산
+        int remainingSeconds = (int)Math.ceil(position / rps); // 최소 1초 이상
 
         int hours = remainingSeconds / 3600;
         int minutes = (remainingSeconds % 3600) / 60;
@@ -17,10 +17,12 @@ public record WaitingState(
         if (hours > 0) {
             estimatedTimeBuilder.append(hours).append("시간 ");
         }
-        if (minutes > 0 || hours > 0) {
+        if (minutes > 0) {
             estimatedTimeBuilder.append(minutes).append("분 ");
         }
-        estimatedTimeBuilder.append(seconds).append("초");
+        if (seconds > 0) {
+            estimatedTimeBuilder.append(seconds).append("초");
+        }
 
         String estimatedTime = estimatedTimeBuilder.toString().trim();
 

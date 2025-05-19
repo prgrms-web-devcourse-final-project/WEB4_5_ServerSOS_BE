@@ -128,7 +128,10 @@ public class RedisQueueRepository implements QueueRepository {
      */
     @Override
     public void clearAll() {
-        redisTemplate.delete(Objects.requireNonNull(redisTemplate.keys(WAITING_LINE_PREFIX + ":*")));
+        Set<String> keys = redisTemplate.keys(WAITING_LINE_PREFIX + ":*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
     }
 
     /**

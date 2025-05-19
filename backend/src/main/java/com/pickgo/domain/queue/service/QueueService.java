@@ -39,13 +39,13 @@ public class QueueService {
         // 대기열 추가 및 상태 조회
         int position = queueRepository.add(performanceSessionId, connectionId, serverIdProvider.getServerId());
         int totalCount = queueRepository.getSize(performanceSessionId);
-        double tps = getTps();
+        double rps = getRps();
 
         // 연결된 서버 저장
         serverRegistry.save(connectionId, serverIdProvider.getServerId());
 
         // 대기열 상태 publish
-        WaitingState waitingState = WaitingState.of(position, totalCount, tps);
+        WaitingState waitingState = WaitingState.of(position, totalCount, rps);
         publishWaitingState(performanceSessionId, connectionId, waitingState);
     }
 
