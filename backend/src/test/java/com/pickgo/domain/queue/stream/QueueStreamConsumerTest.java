@@ -17,7 +17,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.queue.dto.EntryPermission;
+import com.pickgo.domain.queue.dto.QueueSession;
 import com.pickgo.domain.queue.dto.WaitingState;
 import com.pickgo.global.config.thread.ExecutorConfig;
 import com.pickgo.global.infra.sse.SseHandler;
@@ -32,6 +34,9 @@ class QueueStreamConsumerTest {
 
     @MockitoBean
     private SseHandler sseHandler;
+
+    @MockitoBean
+    private TokenService tokenService;
 
     @Autowired
     private QueueStreamConsumer queueStreamConsumer;
@@ -67,6 +72,10 @@ class QueueStreamConsumerTest {
                 "connection_id", connectionId,
                 "entry_token", entryToken
         ));
+        QueueSession session = QueueSession.builder().connectionId(connectionId).build();
+
+        when(tokenService.genEntryToken(anyLong(), any())).thenReturn(entryToken);
+        when(sseHandler.getSession(connectionId, QueueSession.class)).thenReturn(session);
 
         // when
         queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
