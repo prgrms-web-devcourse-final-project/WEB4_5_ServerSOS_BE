@@ -63,8 +63,7 @@ public class RedisConfig {
 
         // 단건 조회(post) 전용 설정 (복잡한 구조)
         Jackson2JsonRedisSerializer<PostDetailResponse> postSerializer =
-                new Jackson2JsonRedisSerializer<>(PostDetailResponse.class);
-        postSerializer.setObjectMapper(objectMapper);
+                new Jackson2JsonRedisSerializer<>(objectMapper, PostDetailResponse.class);
 
         RedisCacheConfiguration postConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
