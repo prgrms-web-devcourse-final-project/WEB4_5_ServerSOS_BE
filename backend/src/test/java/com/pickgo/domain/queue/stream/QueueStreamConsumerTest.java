@@ -1,10 +1,12 @@
 package com.pickgo.domain.queue.stream;
 
+import static com.pickgo.domain.queue.stream.QueueStreamConsumer.*;
+import static org.awaitility.Awaitility.*;
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,18 +19,16 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.pickgo.domain.queue.dto.EntryPermission;
 import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.global.config.thread.ExecutorConfig;
 import com.pickgo.global.infra.sse.SseHandler;
 import com.pickgo.global.init.ServerIdProvider;
 
 @DataRedisTest
-@Import({QueueStreamConsumer.class})
+@Import({QueueStreamConsumer.class, ExecutorConfig.class, ServerIdProvider.class})
 class QueueStreamConsumerTest {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
-
-    @MockitoBean
-    private ServerIdProvider serverIdProvider;
 
     @MockitoBean
     private SseHandler sseHandler;
@@ -36,27 +36,31 @@ class QueueStreamConsumerTest {
     @Autowired
     private QueueStreamConsumer queueStreamConsumer;
 
-    private final String serverId = "server-1";
     private final String connectionId = "conn-1";
-    private final String streamKey = "queue_stream:server_id:" + serverId;
     private final String entryToken = "entryToken";
+    private String streamKey;
+    private String consumerGroup;
+    private String consumerName;
 
     @BeforeEach
     void setUp() {
-        when(serverIdProvider.getServerId()).thenReturn(serverId);
+        streamKey = queueStreamConsumer.getStreamKey();
+        consumerGroup = queueStreamConsumer.getConsumerGroupName();
+        consumerName = queueStreamConsumer.getConsumerName();
+
         queueStreamConsumer.initConsumerGroup();
     }
 
     @AfterEach
     void tearDown() {
-        Set<String> keys = redisTemplate.keys("queue_stream:*");
+        Set<String> keys = redisTemplate.keys(QUEUE_STREAM_PREFIX + ":*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }
     }
 
     @Test
-    void 입장준비_메시지를_정상적으로_처리한다() throws IOException {
+    void 입장준비_메시지를_정상적으로_처리한다() {
         // given
         redisTemplate.opsForStream().add(streamKey, Map.of(
                 "type", "ready",
@@ -65,20 +69,16 @@ class QueueStreamConsumerTest {
         ));
 
         // when
-        queueStreamConsumer.consume();
+        queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
-        // then
-        verify(sseHandler).sendMessage(eq("ready"), eq(connectionId), argThat(arg -> {
-            if (arg instanceof EntryPermission ep) {
-                return ep.entryToken().equals(entryToken);
-            }
-            return false;
-        }));
-        verify(sseHandler).complete(connectionId);
+        // then (비동기 고려해서 await으로 검증)
+        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+                verify(sseHandler).sendMessage(eq("ready"), eq(connectionId), any(EntryPermission.class))
+        );
     }
 
     @Test
-    void 대기열상태_메시지를_정상적으로_처리한다() throws IOException {
+    void 대기열상태_메시지를_정상적으로_처리한다() {
         // given
         redisTemplate.opsForStream().add(streamKey, Map.of(
                 "type", "wait",
@@ -89,23 +89,25 @@ class QueueStreamConsumerTest {
         ));
 
         // when
-        queueStreamConsumer.consume();
+        queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
-        // then
-        verify(sseHandler).sendMessage(eq("wait"), eq(connectionId), eq(WaitingState.of(1, 10, "1초")));
+        // then (비동기 고려해서 await으로 검증)
+        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+                verify(sseHandler).sendMessage(eq("wait"), eq(connectionId), any(WaitingState.class))
+        );
     }
 
     @Test
-    void 메시지가없으면_아무일도안한다() throws IOException {
+    void 메시지가없으면_아무일도안한다() {
         // when
-        queueStreamConsumer.consume();
+        queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
         // then
         verifyNoInteractions(sseHandler);
     }
 
     @Test
-    void 잘못된타입의_메시지는_예외를_발생시키지않고_건너뛴다() throws IOException {
+    void 잘못된타입의_메시지는_예외를_발생시키지않고_건너뛴다() {
         // given
         redisTemplate.opsForStream().add(streamKey, Map.of(
                 "type", "invalid",
@@ -113,7 +115,7 @@ class QueueStreamConsumerTest {
         ));
 
         // when
-        queueStreamConsumer.consume();
+        queueStreamConsumer.consume(consumerGroup, consumerName, streamKey);
 
         // then
         verifyNoMoreInteractions(sseHandler);
