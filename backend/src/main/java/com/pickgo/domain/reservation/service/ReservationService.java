@@ -21,6 +21,8 @@ import com.pickgo.domain.reservation.dto.response.ReservationSimpleResponse;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
@@ -53,6 +55,7 @@ public class ReservationService {
     private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
     private final LogWriter logWriter;
+    private final LogContextUtil logContextUtil;
     private final PerformanceAreaRepository areaRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -135,7 +138,8 @@ public class ReservationService {
                 applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat));
             });
 
-            logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CREATED);
+            LogContext logContext = logContextUtil.extract();
+            logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CREATED, logContext);
 
             return ReservationSimpleResponse.from(reservation);
         } catch (DataIntegrityViolationException e) {
@@ -194,7 +198,8 @@ public class ReservationService {
         reservationRepository.delete(reservation);
 
         // 4. 로깅
-        logWriter.writeReservationLog(reservation, ActionType.RESERVATION_DELETED);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeReservationLog(reservation, ActionType.RESERVATION_DELETED, logContext);
     }
 
     /***
@@ -229,6 +234,7 @@ public class ReservationService {
         reservation.getReservedSeats().clear();
 
         // 5. 로깅
-        logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CANCELED);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeReservationLog(reservation, ActionType.RESERVATION_CANCELED, logContext);
     }
 }
