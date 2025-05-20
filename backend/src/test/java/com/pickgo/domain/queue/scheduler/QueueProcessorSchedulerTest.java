@@ -49,6 +49,7 @@ class QueueProcessorSchedulerTest {
 
     @Test
     void pollTopCount_결과없으면_enterEntryLine_호출안함() {
+        when(executorConfig.threadPoolTaskExecutor()).thenReturn(executor);
         when(queueService.getAllPerformanceSessionIds()).thenReturn(List.of(performanceSessionId));
         when(queueService.pollTopCount(eq(performanceSessionId), anyInt())).thenReturn(List.of());
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of());

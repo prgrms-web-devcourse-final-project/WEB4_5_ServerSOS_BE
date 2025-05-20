@@ -79,8 +79,14 @@ public class QueueProcessorScheduler {
         // 전체 대기열 목록 조회
         List<Long> performanceSessionIds = queueService.getAllPerformanceSessionIds();
 
+        if (performanceSessionIds == null || performanceSessionIds.isEmpty()) {
+            return;
+        }
+
         // 각 대기열을 병렬로 처리
-        performanceSessionIds.parallelStream().forEach(this::processQueue);
+        performanceSessionIds.forEach(performanceSessionId ->
+                CompletableFuture.runAsync(() -> processQueue(performanceSessionId),
+                        executorConfig.threadPoolTaskExecutor()));
     }
 
     /**
