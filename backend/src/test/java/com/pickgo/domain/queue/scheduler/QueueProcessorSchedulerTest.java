@@ -82,7 +82,7 @@ class QueueProcessorSchedulerTest {
     }
 
     @Test
-    void waitingStateBroadCast_정상호출된다() {
+    void publishWaitingState_정상호출된다() {
         when(executorConfig.threadPoolTaskExecutor()).thenReturn(executor);
         when(queueService.getAllPerformanceSessionIds()).thenReturn(List.of(performanceSessionId));
         when(queueService.pollTopCount(eq(performanceSessionId), anyInt())).thenReturn(List.of(connectionId));

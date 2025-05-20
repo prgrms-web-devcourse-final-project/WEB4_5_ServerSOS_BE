@@ -18,7 +18,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 대기열 입장 처리 및 상태 브로드캐스트 스케줄러 (동적 스케줄러 기반)
+ * 대기열 입장 처리 및 상태 publish 스케줄러 (동적 스케줄러 기반)
  * TaskScheduler 사용하여 런타임 중 주기 및 입장 수 변경 가능
  */
 @Component
@@ -72,7 +72,7 @@ public class QueueProcessorScheduler {
     }
 
     /**
-     * 입장 처리 및 대기열 상태 브로드캐스트
+     * 입장 처리 및 대기열 상태 publish
      * 전체 대기열을 병렬로 처리
      */
     public void process() {
@@ -84,7 +84,7 @@ public class QueueProcessorScheduler {
     }
 
     /**
-     * 하나의 대기열에 대한 입장 처리와 상태 브로드캐스트
+     * 하나의 대기열에 대한 입장 처리와 상태 publish
      */
     private void processQueue(Long performanceSessionId) {
         // 입장할 인원 수만큼 대기열에서 제거
@@ -96,8 +96,8 @@ public class QueueProcessorScheduler {
                         executorConfig.threadPoolTaskExecutor())
         );
 
-        // 대기열 상태 브로드캐스트
-        waitingStateBroadCast(performanceSessionId);
+        // 대기열 상태 publish
+        publishWaitingState(performanceSessionId);
     }
 
     /**
@@ -109,13 +109,13 @@ public class QueueProcessorScheduler {
     }
 
     /**
-     * 대기열 상태 브로드캐스트
+     * 대기열 상태 publish
      */
-    private void waitingStateBroadCast(Long performanceSessionId) {
+    private void publishWaitingState(Long performanceSessionId) {
         // 대기열에 남아있는 전체 사용자 조회
         List<String> connectionIds = queueService.getLine(performanceSessionId);
 
-        // 대기열 상태 브로드캐스트를 비동기로 수행
+        // 대기열 상태 publish를 비동기로 수행
         connectionIds.forEach(connectionId -> CompletableFuture.runAsync(() -> {
             // 대기열 상태 조회
             int position = queueService.getPosition(performanceSessionId, connectionId);
