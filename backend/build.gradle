@@ -40,6 +40,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'software.amazon.awssdk:s3:2.31.32'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     // Jwt
     implementation 'io.jsonwebtoken:jjwt:0.12.6'
