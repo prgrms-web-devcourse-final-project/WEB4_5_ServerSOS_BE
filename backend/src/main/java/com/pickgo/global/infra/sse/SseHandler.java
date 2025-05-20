@@ -34,7 +34,7 @@ public class SseHandler {
         emitter.onCompletion(cleanup);
         emitter.onTimeout(cleanup);
         emitter.onError(e -> {
-            log.warn("[SSE] 연결 끊김 또는 예외 - connectionId: {}", connection.getConnectionId(), e);
+            log.warn("[SSE] 연결 끊김 또는 예외 (connectionId: {}): {}", connection.getConnectionId(), e.getMessage());
             cleanup.run();
         });
 

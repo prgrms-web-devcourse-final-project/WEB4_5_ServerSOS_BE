@@ -1,7 +1,7 @@
 package com.pickgo.global.infra.server.redis;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -45,6 +45,9 @@ public class RedisServerRegistry implements ServerRegistry {
 
     @Override
     public void clearAll() {
-        redisTemplate.delete(Objects.requireNonNull(redisTemplate.keys(SERVER_PREFIX + ":*")));
+        Set<String> keys = redisTemplate.keys(SERVER_PREFIX + ":*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
     }
 }

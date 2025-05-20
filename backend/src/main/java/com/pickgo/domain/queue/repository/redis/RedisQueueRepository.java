@@ -1,12 +1,11 @@
 package com.pickgo.domain.queue.repository.redis;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Repository;
 
 import com.pickgo.domain.queue.repository.QueueRepository;
@@ -58,15 +57,15 @@ public class RedisQueueRepository implements QueueRepository {
         }
 
         String waitingKey = getWaitingKey(performanceSessionId);
-        Set<String> set = redisTemplate.opsForZSet().range(waitingKey, 0, count - 1);
+        Set<TypedTuple<String>> popped = redisTemplate.opsForZSet().popMin(waitingKey, count);
 
-        if (set == null || set.isEmpty())
+        if (popped == null || popped.isEmpty()) {
             return Collections.emptyList();
+        }
 
-        // 꺼낸 커넥션들을 대기열에서 제거
-        redisTemplate.opsForZSet().remove(waitingKey, set.toArray());
-
-        return new ArrayList<>(set);
+        return popped.stream()
+                .map(TypedTuple::getValue)
+                .toList();
     }
 
     /**
@@ -128,7 +127,10 @@ public class RedisQueueRepository implements QueueRepository {
      */
     @Override
     public void clearAll() {
-        redisTemplate.delete(Objects.requireNonNull(redisTemplate.keys(WAITING_LINE_PREFIX + ":*")));
+        Set<String> keys = redisTemplate.keys(WAITING_LINE_PREFIX + ":*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
     }
 
     /**

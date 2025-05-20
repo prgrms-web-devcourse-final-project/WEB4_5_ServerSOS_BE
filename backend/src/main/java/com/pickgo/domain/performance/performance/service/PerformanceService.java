@@ -64,6 +64,9 @@ public class PerformanceService {
         // 1. 공연 상세 조회
         KopisPerformanceDetailResponse performanceDetailResponse = kopisService.fetchPerformanceDetail(performanceId);
 
+        if (performanceRepository == null)
+            return;
+
         // 2. 공연 중복 체크
         if (performanceRepository.existsByNameAndPoster(performanceDetailResponse.getName(), performanceDetailResponse.getPoster())) {
             return;
