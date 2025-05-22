@@ -130,7 +130,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   ingress {
@@ -309,7 +309,7 @@ resource "aws_instance" "ec2" {
   # 루트 볼륨 설정
   root_block_device {
     volume_type = "gp3"
-    volume_size = 24
+    volume_size = 40
   }
 
   user_data = <<-EOF
