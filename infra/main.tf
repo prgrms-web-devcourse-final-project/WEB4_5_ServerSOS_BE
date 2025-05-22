@@ -138,7 +138,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # 또는 제한된 IP 대역
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Prometheus
