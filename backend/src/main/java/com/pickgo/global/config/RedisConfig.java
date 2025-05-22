@@ -36,8 +36,11 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
-    @Value("${spring.data.redis.password}")
+    @Value("${spring.data.redis.password:}")
     private String password;
+
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
 
     @Bean
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
@@ -47,9 +50,13 @@ public class RedisConfig {
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
-        config.useSingleServer()
-                .setAddress("redis://" + host + ":" + port)
-                .setPassword(password);
+        var serverConfig = config.useSingleServer()
+                .setAddress("redis://" + host + ":" + port);
+
+        // prod에서만 비번 적용
+        if (!"test".equals(activeProfile) && password != null && !password.isBlank()) {
+            serverConfig.setPassword(password);
+        }
         return Redisson.create(config);
     }
 
