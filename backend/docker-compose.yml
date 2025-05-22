@@ -30,6 +30,7 @@ services:
     image: redis:7
     container_name: redis
     restart: always
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
@@ -51,6 +52,11 @@ services:
     image: ghcr.io/prgrms-web-devcourse-final-project/pick-go-app:latest
     container_name: pick-go-app
     restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     env_file:
       - .env
     ports:
