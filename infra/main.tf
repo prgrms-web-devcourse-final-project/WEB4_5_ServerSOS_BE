@@ -114,7 +114,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   ingress {
@@ -122,7 +122,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"] # VPC 내부에서만
   }
 
   ingress {
@@ -130,7 +130,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"] # VPC 내부에서만
   }
 
   ingress {
@@ -147,7 +147,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 9090
     to_port     = 9090
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   # Node Exporter (Prometheus가 수집 가능하게)
@@ -156,7 +156,7 @@ resource "aws_security_group" "sg_1" {
     from_port   = 9100
     to_port     = 9100
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # 또는 prom 컨테이너가 접근 가능한 CIDR
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   # Influx DB
@@ -309,7 +309,7 @@ resource "aws_instance" "ec2" {
   # 루트 볼륨 설정
   root_block_device {
     volume_type = "gp3"
-    volume_size = 24
+    volume_size = 40
   }
 
   user_data = <<-EOF
