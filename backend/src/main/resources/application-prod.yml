@@ -8,6 +8,10 @@ spring:
         highlight_sql: false
         use_sql_comments: false
 
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
+
 logging:
   level:
     com.example: INFO
