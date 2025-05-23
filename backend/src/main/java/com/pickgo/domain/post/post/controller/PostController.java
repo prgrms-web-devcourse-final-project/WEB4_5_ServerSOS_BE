@@ -6,12 +6,13 @@ import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
 import com.pickgo.domain.post.post.entity.PostSortType;
 import com.pickgo.domain.post.post.service.PostService;
+import com.pickgo.domain.post.post.util.IdentifierResolver;
 import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.response.RsData;
-import com.pickgo.domain.post.post.util.IdentifierResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

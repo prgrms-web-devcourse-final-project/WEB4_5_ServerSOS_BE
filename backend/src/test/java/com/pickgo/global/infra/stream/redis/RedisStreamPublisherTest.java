@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
@@ -29,14 +28,9 @@ class RedisStreamPublisherTest {
 
     private final String streamKey = "test-stream";
 
-    @BeforeEach
-    void setUp() {
-        // 필요한 경우 초기화
-    }
-
     @AfterEach
     void tearDown() {
-        Set<String> keys = redisTemplate.keys("test-stream*");
+        Set<String> keys = redisTemplate.keys("test-stream:*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }

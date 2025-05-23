@@ -5,6 +5,8 @@ import com.pickgo.domain.member.admin.repository.AdminPostRepository;
 import com.pickgo.domain.post.post.entity.Post;
 import com.pickgo.global.response.RsCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,10 @@ public class AdminPostService {
 
     /*게시글 수정*/
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "post", key = "#id"),
+            @CacheEvict(cacheNames = {"posts", "popularPosts", "openingSoonPosts"}, allEntries = true)
+    })
     public Post updatePost(Long id, PostUpdateRequest request) {
         Post post = adminPostRepository.findById(id)
                 .orElseThrow(RsCode.POST_NOT_FOUND::toException);
@@ -66,6 +72,10 @@ public class AdminPostService {
 
     /*게시글 삭제*/
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "post", key = "#id"),
+            @CacheEvict(cacheNames = {"posts", "popularPosts", "openingSoonPosts"}, allEntries = true)
+    })
     public void deletePost(Long id) {
         Post post = adminPostRepository.findById(id)
                 .orElseThrow(RsCode.POST_NOT_FOUND::toException);
