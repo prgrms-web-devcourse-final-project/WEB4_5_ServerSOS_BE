@@ -8,12 +8,21 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 public class LogContextUtil {
     public LogContext extract() {
+
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+
+        if (!(attributes instanceof ServletRequestAttributes servletRequestAttributes)) {
+            // 웹 요청이 아닌 경우: applicationRunner, 비동기 쓰레드, 테스트 환경
+            return new LogContext("system", "system", "system",ActorType.SYSTEM);
+        }
+
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
                 .currentRequestAttributes()).getRequest();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

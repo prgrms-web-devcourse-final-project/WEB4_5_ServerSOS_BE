@@ -1,11 +1,15 @@
 package com.pickgo.domain.member.member.service;
 
 import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.log.enums.ActionType;
+import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.member.member.dto.*;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.entity.enums.SocialProvider;
 import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.s3.S3Uploader;
@@ -58,6 +62,9 @@ class MemberServiceTest {
 	@Mock
 	private LogWriter logWriter;
 
+	@Mock
+	private LogContextUtil logContextUtil;
+
 	private final String email = "test@example.com";
 	private final String password = "test_password";
 	private final String encodedPassword = "encoded_password";
@@ -90,15 +97,18 @@ class MemberServiceTest {
 	void login_success() {
 		LoginRequest request = new LoginRequest(email, password);
 		Member member = getMockMember();
+		LogContext mockLogContext = new LogContext("testUrl", "testAction", "testId", ActorType.SYSTEM); // 가짜 로그 컨텍스트 객체
 
 		when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
 		when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
 		when(tokenService.genAccessToken(member)).thenReturn(accessToken);
+		when(logContextUtil.extract()).thenReturn(mockLogContext);
 
 		LoginResponse result = memberService.login(request, response);
 
 		assertThat(result.accessToken()).isEqualTo(accessToken);
 		verify(tokenService).createRefreshToken(member, response);
+		verify(logWriter).writeMemberLog(member, ActionType.MEMBER_LOGIN, mockLogContext);
 	}
 
 	@Test
@@ -130,12 +140,16 @@ class MemberServiceTest {
 	@DisplayName("회원탈퇴 성공")
 	void delete_success() {
 		Member member = getMockMember();
+		LogContext mockLogContext = new LogContext("testUrl", "testAction", "testId", ActorType.SYSTEM); // 가짜 로그 컨텍스트 객체
+
 		when(memberRepository.findById(userId)).thenReturn(Optional.of(member));
+		when(logContextUtil.extract()).thenReturn(mockLogContext);
 
 		memberService.delete(userId, response);
 
 		verify(memberRepository).delete(member);
 		verify(tokenService).removeRefreshTokenCookie(response);
+		verify(logWriter).writeMemberLog(member, ActionType.MEMBER_DELETED, mockLogContext);
 	}
 
 	@Test

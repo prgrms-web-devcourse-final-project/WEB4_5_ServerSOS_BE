@@ -4,6 +4,8 @@ import static com.pickgo.global.response.RsCode.*;
 
 import java.util.UUID;
 
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +44,7 @@ public class MemberService {
     private final TokenService tokenService;
     private final S3Uploader s3Uploader;
     private final LogWriter logWriter;
+    private final LogContextUtil logContextUtil;
     @Value("${custom.member.profile}")
     private String profile;
 
@@ -55,7 +58,8 @@ public class MemberService {
         Member member = request.toEntity(passwordEncoder, profile);
         saveEntity(member);
 
-        logWriter.writeMemberLog(member, ActionType.MEMBER_SIGNUP);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeMemberLog(member, ActionType.MEMBER_SIGNUP, logContext);
 
         return MemberDetailResponse.from(member);
     }
@@ -76,7 +80,8 @@ public class MemberService {
         tokenService.createRefreshToken(member, response);
         String newAccessToken = tokenService.genAccessToken(member);
 
-        logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN, logContext);
 
         return LoginResponse.of(newAccessToken);
     }
@@ -84,7 +89,8 @@ public class MemberService {
     public void logout(HttpServletResponse response) {
         tokenService.removeRefreshTokenCookie(response);
 
-        logWriter.writeMemberLog(getCurrentMember(), ActionType.MEMBER_LOGOUT);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeMemberLog(getCurrentMember(), ActionType.MEMBER_LOGOUT, logContext);
     }
 
     @Transactional
@@ -93,7 +99,8 @@ public class MemberService {
         tokenService.removeRefreshTokenCookie(response);
         memberRepository.delete(member);
 
-        logWriter.writeMemberLog(member, ActionType.MEMBER_DELETED);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeMemberLog(member, ActionType.MEMBER_DELETED, logContext);
     }
 
     @Transactional(readOnly = true)

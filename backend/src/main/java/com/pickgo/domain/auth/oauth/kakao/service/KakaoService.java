@@ -5,6 +5,8 @@ import static com.pickgo.global.response.RsCode.*;
 
 import java.net.URI;
 
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +41,8 @@ public class KakaoService {
     private final TokenService tokenService;
     private final MemberService memberService;
     private final LogWriter logWriter;
+    private final LogContextUtil logContextUtil;
+    
     @Value("${custom.oauth.kakao.redirect-uri}")
     private String redirectUri;
     @Value("${custom.oauth.kakao.api-key}")
@@ -76,7 +80,8 @@ public class KakaoService {
             .build()
             .toString();
 
-        logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN_KAKAO);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN_KAKAO, logContext);
 
         return new RedirectView(homeUrl);
     }
