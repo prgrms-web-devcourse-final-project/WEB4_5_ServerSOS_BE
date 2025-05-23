@@ -1,23 +1,21 @@
 package com.pickgo.global.jwt;
 
-import static com.pickgo.global.response.RsCode.*;
-
-import java.io.IOException;
-
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.exception.jwt.JwtAuthenticationEntryPoint;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.pickgo.global.exception.BusinessException;
-import com.pickgo.global.exception.jwt.JwtAuthenticationEntryPoint;
+import java.io.IOException;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import static com.pickgo.global.response.RsCode.UNAUTHENTICATED;
 
 /**
  * 토큰 검증 및 사용자 인증 정보를 저장하는 필터
@@ -44,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (request.getRequestURI().equals("/api/tokens")
                 || request.getRequestURI().equals("/api/members")
                 || request.getRequestURI().equals("/api/members/login")
-                || request.getRequestURI().startsWith("/api/examples")
+                || request.getRequestURI().startsWith("/api/members/email")
                 || request.getRequestURI().startsWith("/api/oauth")
                 || request.getRequestURI().startsWith("/swagger-ui")
                 || request.getRequestURI().startsWith("/v3/api-docs")

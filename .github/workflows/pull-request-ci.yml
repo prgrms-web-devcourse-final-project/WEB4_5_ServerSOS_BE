@@ -72,6 +72,8 @@ jobs:
           KAKAO_API_KEY: ${{ secrets.KAKAO_API_KEY }}
           TOSS_PAYMENT_CLIENT_KEY: ${{ secrets.TOSS_PAYMENT_CLIENT_KEY }}
           TOSS_PAYMENT_SECRET_KEY: ${{ secrets.TOSS_PAYMENT_SECRET_KEY }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
 
       - name: Publish Unit Test Results
