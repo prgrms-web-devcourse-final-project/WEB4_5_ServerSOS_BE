@@ -45,7 +45,7 @@ custom:
     admin_token: ${ADMIN_TOKEN}
     user_token: ${USER_TOKEN}
     expired_token: ${EXPIRED_TOKEN}
-    test_entry_token: ${ENTRY_TOKEN}}
+    test_entry_token: ${ENTRY_TOKEN}
 
   http:
     secure: ${HTTP_SECURE:false}
