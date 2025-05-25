@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { PageLayout } from "../layout/PageLayout"
 import SeatMap from "@/components/reservation/SeatMap"
 import { useUser } from "@/hooks/useUser"
@@ -7,7 +7,7 @@ import { useSubscriptionEnterQueue } from "@/hooks/useSubscriptionEnterQueue"
 import type { PerformanceSessionResponse } from "@/api/__generated__"
 
 export const ShowReservation = () => {
-  const { isLogin } = useUser()
+  const { checkLogin } = useUser()
   const navigate = useNavigate()
   const location = useLocation()
   const { id } = useParams()
@@ -23,36 +23,64 @@ export const ShowReservation = () => {
     estimatedTime: "",
   })
 
-  const { selectedSession, selectedDate } = location.state as {
-    selectedSession: PerformanceSessionResponse
-    selectedDate: Date
-  }
+  const entryTokenRef = useRef<string | null>(null)
+
+  const state = location.state as
+    | {
+        selectedSession: PerformanceSessionResponse
+        selectedDate: Date
+      }
+    | undefined
 
   useEffect(() => {
-    if (!isLogin) {
+    if (!checkLogin()) {
       navigate(`/login?redirect=/show/${id}/reservation`)
       return
     }
-  }, [isLogin, navigate, id])
+  }, [checkLogin, navigate, id])
+
+  useEffect(() => {
+    console.log("selectedSession", state?.selectedSession)
+
+    if (!state?.selectedSession?.id) {
+      navigate(`/show/${id}`)
+    }
+  }, [state, navigate, id])
 
   useSubscriptionEnterQueue({
-    sessionId: selectedSession?.id,
-    disabled: !isLogin || waitInQueue.status === "success",
+    sessionId: state?.selectedSession?.id,
+    disabled: !checkLogin() || waitInQueue.status === "success",
     onMessage: (
-      data: { position: number; totalCount: number; estimatedTime: string },
+      data: {
+        position: number
+        totalCount: number
+        estimatedTime: string
+        entryToken: string
+      },
       cleanup,
     ) => {
-      if (!data.position || data.position === 0) {
-        console.log("cleanup")
-        cleanup()
+      if (!data.entryToken) {
+        setWaitInQueue({
+          status: data.position > 0 ? "waiting" : "success",
+          position: data.position,
+          totalCount: data.totalCount,
+          estimatedTime: data.estimatedTime,
+        })
+
+        return
       }
 
+      entryTokenRef.current = data.entryToken
+      console.log("entryToken", data.entryToken)
+
       setWaitInQueue({
-        status: data.position > 0 ? "waiting" : "success",
+        status: "success",
         position: data.position,
         totalCount: data.totalCount,
         estimatedTime: data.estimatedTime,
       })
+
+      cleanup()
     },
     onError: (err) => {
       console.error("SSE 에러:", err)
@@ -64,6 +92,10 @@ export const ShowReservation = () => {
       })
     },
   })
+
+  if (!state?.selectedSession?.id) {
+    return <div>Loading...</div>
+  }
 
   return (
     <PageLayout>
@@ -80,23 +112,25 @@ export const ShowReservation = () => {
                 대기열에 입장 중입니다...
               </div>
               {waitInQueue.position > 0 && (
-                <div className="text-lg text-gray-500">
-                  현재 대기 순서:{" "}
-                  <span className="font-bold text-blue-600">
-                    {waitInQueue.position}
-                  </span>{" "}
-                  번
-                </div>
+                <>
+                  <div className="text-lg text-gray-500">
+                    현재 대기 순서:{" "}
+                    <span className="font-bold text-blue-600">
+                      {waitInQueue.position}
+                    </span>{" "}
+                    번
+                  </div>
+                  <div className="text-lg text-gray-500">
+                    총 대기 인원:{" "}
+                    <span className="font-bold text-blue-600">
+                      {waitInQueue.totalCount}
+                    </span>
+                  </div>
+                </>
               )}
-              <div className="text-lg text-gray-500">
-                총 대기 인원:{" "}
-                <span className="font-bold text-blue-600">
-                  {waitInQueue.totalCount}
-                </span>
-              </div>
             </div>
           ) : (
-            <SeatMap />
+            <SeatMap sessionId={state?.selectedSession?.id} />
           )}
         </div>
       </div>

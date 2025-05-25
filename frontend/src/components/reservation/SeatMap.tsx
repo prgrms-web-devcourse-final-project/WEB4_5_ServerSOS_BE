@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 import { Minus, Plus, ZoomIn, Ticket } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
+import { useAreas } from "@/hooks/useAreas"
 
 // 좌석 영역 정의
 const SECTIONS = {
@@ -44,7 +45,11 @@ const initializeSeats = (rows: number, cols: number) => {
     )
 }
 
-export default function SeatMap() {
+export default function SeatMap({ sessionId }: { sessionId: number }) {
+  const { areas } = useAreas({ sessionId })
+
+  console.log(areas)
+
   const [selectedSection, setSelectedSection] = useState<
     keyof typeof SECTIONS | null
   >(null)
@@ -75,12 +80,7 @@ export default function SeatMap() {
       initializeSeats(SECTIONS[section].rows, SECTIONS[section].cols),
     )
 
-    // A석 선택 시 자동으로 줌 레벨을 조정
-    if (section === "A") {
-      setZoomLevel(0.6) // A석에 맞는 줌 레벨 설정
-    } else {
-      setZoomLevel(1) // 다른 석은 기본 줌 레벨
-    }
+    setZoomLevel(1) // 다른 석은 기본 줌 레벨
 
     setSelectedSeats([])
     setDetailOpen(true)
