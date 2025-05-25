@@ -6,6 +6,7 @@ import {
 } from "../lib/storage/loginStorage"
 import { apiClient } from "@/api/apiClient"
 import type { LoginRequest } from "@/api/__generated__"
+import { getCookie } from "@/lib/cookie"
 
 async function login(loginRequest: LoginRequest) {
   const response = await apiClient.member.login({ loginRequest })
@@ -40,6 +41,24 @@ export function useUser() {
       })
 
       if (response.code !== 200) {
+        const refreshToken = getCookie("refreshToken")
+
+        if (!refreshToken) {
+          throw new Error("No refresh token")
+        }
+
+        const tokenResponse = await apiClient.token.renewToken({
+          refreshToken,
+        })
+
+        if (tokenResponse.code !== 200 || !tokenResponse.data?.accessToken) {
+          throw new Error("Failed to renew token")
+        }
+
+        setLoginInfo({
+          token: tokenResponse.data.accessToken,
+        })
+
         throw new Error("Failed to fetch user info")
       }
 

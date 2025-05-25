@@ -24,13 +24,13 @@ export interface TaglibDescriptor {
      * @type {string}
      * @memberof TaglibDescriptor
      */
-    taglibURI?: string;
+    taglibLocation?: string;
     /**
      * 
      * @type {string}
      * @memberof TaglibDescriptor
      */
-    taglibLocation?: string;
+    taglibURI?: string;
 }
 
 /**
@@ -50,8 +50,8 @@ export function TaglibDescriptorFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'taglibURI': json['taglibURI'] == null ? undefined : json['taglibURI'],
         'taglibLocation': json['taglibLocation'] == null ? undefined : json['taglibLocation'],
+        'taglibURI': json['taglibURI'] == null ? undefined : json['taglibURI'],
     };
 }
 
@@ -66,8 +66,8 @@ export function TaglibDescriptorToJSONTyped(value?: TaglibDescriptor | null, ign
 
     return {
         
-        'taglibURI': value['taglibURI'],
         'taglibLocation': value['taglibLocation'],
+        'taglibURI': value['taglibURI'],
     };
 }
 

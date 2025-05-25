@@ -8,41 +8,70 @@ import ReviewSection from "@/components/review/ReviewSection"
 import { PageLayout } from "@/layout/PageLayout"
 import { usePostDetail } from "@/hooks/usePostDetail"
 import { getDurationStr } from "@/lib/date"
+import type { PerformanceSessionResponse } from "@/api/__generated__"
 
 export function ShowDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [filteredSessions, setFilteredSessions] = useState<
+    PerformanceSessionResponse[]
+  >([])
+  const [selectedSession, setSelectedSession] = useState<
+    PerformanceSessionResponse | undefined
+  >(undefined)
   const { post: showData, isLoading, error } = usePostDetail({ id: Number(id) })
 
   // 날짜 선택 핸들러
-  const handleDateSelect = (date: Date) => {
-    console.log("선택된 날짜:", date.toDateString())
-    setSelectedDate(date)
+  const handleDateSelect = (selectedDate: Date) => {
+    if (!showData?.performance?.sessions) {
+      return
+    }
+
+    const sessions = showData.performance.sessions
+
+    console.log("선택된 날짜:", selectedDate.toDateString())
+    setSelectedDate(selectedDate)
+    setSelectedSession(undefined)
+
+    // 선택된 날짜와 같은 날짜의 세션들 필터링
+    const filteredSessions = sessions.filter((session) => {
+      if (!session.time) return false
+
+      const sessionDate = new Date(session.time)
+
+      // 년월일만 비교 (시간 제거)
+      const selectedDateOnly = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+      )
+      const sessionDateOnly = new Date(
+        sessionDate.getFullYear(),
+        sessionDate.getMonth(),
+        sessionDate.getDate(),
+      )
+
+      return selectedDateOnly.getTime() === sessionDateOnly.getTime()
+    })
+
+    console.log("필터링된 세션들:", filteredSessions)
+    setFilteredSessions(filteredSessions)
   }
 
   const handleReservationClick = () => {
-    if (!showData?.id) {
+    if (!showData?.id || !selectedSession) {
       return
     }
 
-    // 날짜 유효성 검사
-    const startDateStr = showData.performance?.startDate
-    const endDateStr = showData.performance?.endDate
-    if (!selectedDate || !startDateStr || !endDateStr) {
-      alert("날짜 정보가 올바르지 않습니다.")
-      return
-    }
-    const startDate = new Date(startDateStr)
-    const endDate = new Date(endDateStr)
-    // 선택된 날짜가 공연 기간 내에 있는지 확인
-    if (selectedDate < startDate || selectedDate > endDate) {
-      alert("선택한 날짜가 공연 기간 내에 있지 않습니다.")
-      return
-    }
-
-    navigate(`/show/${showData.id}/reservation`)
+    // 선택된 세션 정보와 함께 예매 페이지로 이동
+    navigate(`/show/${showData.id}/reservation`, {
+      state: {
+        selectedSession,
+        selectedDate,
+      },
+    })
   }
 
   // 디버깅용 - 선택된 날짜 변경 감지
@@ -159,8 +188,45 @@ export function ShowDetail() {
                   onSelectDate={handleDateSelect}
                   selectedDate={selectedDate}
                 />
+                {/* 필터링된 세션들을 시간 선택으로 표시 */}
+                {selectedDate && filteredSessions.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium mb-2 text-center">
+                      공연 시간 선택
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {filteredSessions.map((session) => (
+                        <button
+                          key={session.id}
+                          onClick={() => setSelectedSession(session)}
+                          className={`px-3 py-2 text-xs rounded border transition-colors ${
+                            selectedSession?.id === session.id
+                              ? "bg-slate-900 text-white border-slate-900"
+                              : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
+                          }`}
+                        >
+                          {session.time
+                            ? new Date(session.time).toLocaleTimeString(
+                                "ko-KR",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                },
+                              )
+                            : "시간 미정"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selectedDate && filteredSessions.length === 0 && (
+                  <div className="mt-4 text-center text-sm text-slate-500">
+                    선택한 날짜에 공연이 없습니다.
+                  </div>
+                )}
                 <div className="mt-6">
-                  {selectedDate ? (
+                  {selectedDate && selectedSession ? (
                     <button
                       className="w-full inline-flex justify-center items-center h-11 px-8 py-2 rounded-md text-sm font-medium transition-colors bg-slate-900 text-slate-50 hover:bg-slate-900/90 cursor-pointer"
                       onClick={handleReservationClick}
@@ -172,7 +238,9 @@ export function ShowDetail() {
                       disabled
                       className="w-full inline-flex justify-center items-center h-11 px-8 py-2 rounded-md text-sm font-medium bg-slate-300 text-slate-500 cursor-not-allowed"
                     >
-                      예매하기
+                      {selectedDate
+                        ? "시간을 선택해주세요"
+                        : "날짜를 선택해주세요"}
                     </button>
                   )}
                 </div>
@@ -191,7 +259,7 @@ export function ShowDetail() {
             <TabsContent value="info">
               <ShowInfo
                 description={showData.content ?? ""}
-                detailImages={showData.performance?.introImages ?? []}
+                detailImages={showData.performance?.images ?? []}
               />
             </TabsContent>
             <TabsContent value="reviews">

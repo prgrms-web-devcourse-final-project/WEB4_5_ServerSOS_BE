@@ -37,7 +37,7 @@ export * from './PaymentDetailResponse';
 export * from './PaymentLogResponse';
 export * from './PaymentSimpleResponse';
 export * from './PerformanceAreaDetailResponse';
-export * from './PerformanceAreaResponse';
+export * from './PerformanceAreaSimpleResponse';
 export * from './PerformanceDetailResponse';
 export * from './PerformanceInfo';
 export * from './PerformanceSessionInfo';

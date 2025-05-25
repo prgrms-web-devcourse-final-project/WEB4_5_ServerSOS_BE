@@ -21,6 +21,7 @@
     "@radix-ui/react-toast": "^1.2.11",
     "@tailwindcss/vite": "^4.1.5",
     "@tanstack/react-query": "^5.74.11",
+    "@tosspayments/tosspayments-sdk": "^2.3.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
