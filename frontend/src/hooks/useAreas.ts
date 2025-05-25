@@ -4,14 +4,21 @@ import { apiClient } from "@/api/apiClient"
 export const useAreas = ({
   sessionId,
 }: {
-  sessionId: number
+  sessionId?: number
 }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["areas"],
-    queryFn: () =>
-      apiClient.area.getAreas({
+    queryFn: () => {
+      if (!sessionId) {
+        return {
+          data: [],
+        }
+      }
+
+      return apiClient.area.getAreas({
         sessionId,
-      }),
+      })
+    },
   })
 
   return {

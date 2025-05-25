@@ -4,6 +4,7 @@ import SeatMap from "@/components/reservation/SeatMap"
 import { useUser } from "@/hooks/useUser"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { useSubscriptionEnterQueue } from "@/hooks/useSubscriptionEnterQueue"
+import { usePostDetail } from "@/hooks/usePostDetail"
 import type { PerformanceSessionResponse } from "@/api/__generated__"
 
 export const ShowReservation = () => {
@@ -11,6 +12,7 @@ export const ShowReservation = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { id } = useParams()
+  const { post: showData } = usePostDetail({ id: Number(id) })
   const [waitInQueue, setWaitInQueue] = useState<{
     status: "waiting" | "success" | "error"
     position: number
@@ -130,7 +132,10 @@ export const ShowReservation = () => {
               )}
             </div>
           ) : (
-            <SeatMap sessionId={state?.selectedSession?.id} />
+            <SeatMap
+              session={state?.selectedSession}
+              performance={showData?.performance}
+            />
           )}
         </div>
       </div>

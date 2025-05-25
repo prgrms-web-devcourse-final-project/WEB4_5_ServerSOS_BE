@@ -10,6 +10,7 @@ import { Footer } from "./layout/Footer"
 import Category from "./pages/Category"
 import { Join } from "./pages/Join"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import PaymentPage from "./pages/PaymentPage"
 
 const queryClient = new QueryClient()
 
@@ -31,6 +32,7 @@ function App() {
                 path="/show/:id/reservation"
                 element={<ShowReservation />}
               />
+              <Route path="/show/payment" element={<PaymentPage />} />
             </Routes>
           </div>
           <Footer />

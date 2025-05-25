@@ -1,5 +1,6 @@
 import type React from "react"
 import { useState, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,6 +13,11 @@ import { cn } from "@/lib/utils"
 import { Minus, Plus, ZoomIn, Ticket } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { useAreas } from "@/hooks/useAreas"
+import { useCreateReservation } from "@/hooks/useReservation"
+import type {
+  PerformanceSessionResponse,
+  PerformanceDetailResponse,
+} from "@/api/__generated__"
 
 // 좌석 영역 정의
 const SECTIONS = {
@@ -45,10 +51,16 @@ const initializeSeats = (rows: number, cols: number) => {
     )
 }
 
-export default function SeatMap({ sessionId }: { sessionId: number }) {
-  const { areas } = useAreas({ sessionId })
-
-  console.log(areas)
+export default function SeatMap({
+  session,
+  performance,
+}: {
+  session: PerformanceSessionResponse
+  performance?: PerformanceDetailResponse
+}) {
+  const { areas } = useAreas({ sessionId: session.id })
+  const { reserveSeats } = useCreateReservation()
+  const navigate = useNavigate()
 
   const [selectedSection, setSelectedSection] = useState<
     keyof typeof SECTIONS | null
@@ -116,7 +128,12 @@ export default function SeatMap({ sessionId }: { sessionId: number }) {
   }
 
   // 예약 처리
-  const handleReservation = () => {
+  const handleReservation = async () => {
+    if (!session.id) {
+      alert("공연 세션 id가 없습니다")
+      return
+    }
+
     if (selectedSeats.length === 0) {
       toast({
         title: "좌석을 선택해주세요",
@@ -125,9 +142,13 @@ export default function SeatMap({ sessionId }: { sessionId: number }) {
       return
     }
 
-    toast({
-      title: "예약이 완료되었습니다",
-      description: `${selectedSeats.length}석이 예약되었습니다.`,
+    // 결제 페이지로 이동하면서 선택된 좌석과 세션 정보 전달
+    navigate("/show/payment", {
+      state: {
+        selectedSeats,
+        session,
+        performance,
+      },
     })
 
     setDetailOpen(false)
