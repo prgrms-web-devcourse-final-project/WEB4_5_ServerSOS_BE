@@ -2,20 +2,31 @@ import { useEffect, useState } from "react"
 import { PageLayout } from "../layout/PageLayout"
 import SeatMap from "@/components/reservation/SeatMap"
 import { useUser } from "@/hooks/useUser"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { useSubscriptionEnterQueue } from "@/hooks/useSubscriptionEnterQueue"
+import type { PerformanceSessionResponse } from "@/api/__generated__"
 
 export const ShowReservation = () => {
   const { isLogin } = useUser()
   const navigate = useNavigate()
+  const location = useLocation()
   const { id } = useParams()
   const [waitInQueue, setWaitInQueue] = useState<{
     status: "waiting" | "success" | "error"
     position: number
+    totalCount: number
+    estimatedTime: string
   }>({
     status: "waiting",
     position: 0,
+    totalCount: 0,
+    estimatedTime: "",
   })
+
+  const { selectedSession, selectedDate } = location.state as {
+    selectedSession: PerformanceSessionResponse
+    selectedDate: Date
+  }
 
   useEffect(() => {
     if (!isLogin) {
@@ -25,15 +36,22 @@ export const ShowReservation = () => {
   }, [isLogin, navigate, id])
 
   useSubscriptionEnterQueue({
-    disabled: !isLogin,
-    onMessage: (data: { position: number }, cleanup) => {
-      if (data.position === 0) {
+    sessionId: selectedSession?.id,
+    disabled: !isLogin || waitInQueue.status === "success",
+    onMessage: (
+      data: { position: number; totalCount: number; estimatedTime: string },
+      cleanup,
+    ) => {
+      if (!data.position || data.position === 0) {
+        console.log("cleanup")
         cleanup()
       }
 
       setWaitInQueue({
         status: data.position > 0 ? "waiting" : "success",
         position: data.position,
+        totalCount: data.totalCount,
+        estimatedTime: data.estimatedTime,
       })
     },
     onError: (err) => {
@@ -41,6 +59,8 @@ export const ShowReservation = () => {
       setWaitInQueue({
         status: "error",
         position: 0,
+        totalCount: 0,
+        estimatedTime: "",
       })
     },
   })
@@ -68,6 +88,12 @@ export const ShowReservation = () => {
                   번
                 </div>
               )}
+              <div className="text-lg text-gray-500">
+                총 대기 인원:{" "}
+                <span className="font-bold text-blue-600">
+                  {waitInQueue.totalCount}
+                </span>
+              </div>
             </div>
           ) : (
             <SeatMap />

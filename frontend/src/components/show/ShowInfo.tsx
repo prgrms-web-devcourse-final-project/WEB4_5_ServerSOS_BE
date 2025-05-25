@@ -19,7 +19,7 @@ export default function ShowInfo({ description, detailImages }: ShowInfoProps) {
           {detailImages.map((image, index) => (
             <div
               key={index}
-              className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-md"
+              className="relative w-full aspect-[4/3] rounded-lg shadow-md"
             >
               <img
                 src={image || "/placeholder.svg"}
