@@ -36,6 +36,12 @@ export function ShowDetail() {
     }
     const startDate = new Date(startDateStr)
     const endDate = new Date(endDateStr)
+
+    console.log(startDate, endDate)
+    console.log(selectedDate)
+    console.log(selectedDate < startDate)
+    console.log(selectedDate > endDate)
+
     // 선택된 날짜가 공연 기간 내에 있는지 확인
     if (selectedDate < startDate || selectedDate > endDate) {
       alert("선택한 날짜가 공연 기간 내에 있지 않습니다.")

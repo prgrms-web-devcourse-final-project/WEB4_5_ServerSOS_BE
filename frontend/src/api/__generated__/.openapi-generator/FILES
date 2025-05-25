@@ -1,5 +1,5 @@
-apis/APIApi.ts
 apis/AdminAPIApi.ts
+apis/AdminMonitoringControllerApi.ts
 apis/AdminPostAPIApi.ts
 apis/AreaAPIApi.ts
 apis/KakaoAPIApi.ts
@@ -8,6 +8,7 @@ apis/PaymentAPIApi.ts
 apis/PostControllerApi.ts
 apis/QueueAPIApi.ts
 apis/ReservationApi.ts
+apis/ReviewAPIApi.ts
 apis/SeatControllerApi.ts
 apis/TokenAPIApi.ts
 apis/index.ts
@@ -49,7 +50,7 @@ models/PaymentDetailResponse.ts
 models/PaymentLogResponse.ts
 models/PaymentSimpleResponse.ts
 models/PerformanceAreaDetailResponse.ts
-models/PerformanceAreaResponse.ts
+models/PerformanceAreaSimpleResponse.ts
 models/PerformanceDetailResponse.ts
 models/PerformanceInfo.ts
 models/PerformanceSessionInfo.ts

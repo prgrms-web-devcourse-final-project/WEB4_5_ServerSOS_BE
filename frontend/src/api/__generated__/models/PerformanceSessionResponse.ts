@@ -24,13 +24,19 @@ export interface PerformanceSessionResponse {
      * @type {number}
      * @memberof PerformanceSessionResponse
      */
-    performanceSessionId?: number;
+    id?: number;
     /**
      * 
      * @type {Date}
      * @memberof PerformanceSessionResponse
      */
-    performanceTime?: Date;
+    time?: Date;
+    /**
+     * 
+     * @type {Date}
+     * @memberof PerformanceSessionResponse
+     */
+    reserveOpenAt?: Date;
 }
 
 /**
@@ -50,8 +56,9 @@ export function PerformanceSessionResponseFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'performanceSessionId': json['performance_session_id'] == null ? undefined : json['performance_session_id'],
-        'performanceTime': json['performance_time'] == null ? undefined : (new Date(json['performance_time'])),
+        'id': json['id'] == null ? undefined : json['id'],
+        'time': json['time'] == null ? undefined : (new Date(json['time'])),
+        'reserveOpenAt': json['reserveOpenAt'] == null ? undefined : (new Date(json['reserveOpenAt'])),
     };
 }
 
@@ -66,8 +73,9 @@ export function PerformanceSessionResponseToJSONTyped(value?: PerformanceSession
 
     return {
         
-        'performance_session_id': value['performanceSessionId'],
-        'performance_time': value['performanceTime'] == null ? undefined : ((value['performanceTime']).toISOString()),
+        'id': value['id'],
+        'time': value['time'] == null ? undefined : ((value['time']).toISOString()),
+        'reserveOpenAt': value['reserveOpenAt'] == null ? undefined : ((value['reserveOpenAt']).toISOString()),
     };
 }
 

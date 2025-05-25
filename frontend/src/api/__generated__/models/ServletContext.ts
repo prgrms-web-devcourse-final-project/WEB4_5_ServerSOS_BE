@@ -123,16 +123,34 @@ export interface ServletContext {
     servletRegistrations?: { [key: string]: ServletRegistration; };
     /**
      * 
+     * @type {number}
+     * @memberof ServletContext
+     */
+    effectiveMajorVersion?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ServletContext
+     */
+    effectiveMinorVersion?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServletContext
+     */
+    serverInfo?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServletContext
+     */
+    servletContextName?: string;
+    /**
+     * 
      * @type {{ [key: string]: FilterRegistration; }}
      * @memberof ServletContext
      */
     filterRegistrations?: { [key: string]: FilterRegistration; };
-    /**
-     * 
-     * @type {Set<string>}
-     * @memberof ServletContext
-     */
-    defaultSessionTrackingModes?: Set<ServletContextDefaultSessionTrackingModesEnum>;
     /**
      * 
      * @type {Set<string>}
@@ -159,28 +177,10 @@ export interface ServletContext {
     responseCharacterEncoding?: string;
     /**
      * 
-     * @type {number}
+     * @type {Set<string>}
      * @memberof ServletContext
      */
-    effectiveMajorVersion?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ServletContext
-     */
-    effectiveMinorVersion?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServletContext
-     */
-    serverInfo?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServletContext
-     */
-    servletContextName?: string;
+    defaultSessionTrackingModes?: Set<ServletContextDefaultSessionTrackingModesEnum>;
 }
 
 
@@ -197,22 +197,22 @@ export type ServletContextSessionTrackingModesEnum = typeof ServletContextSessio
 /**
  * @export
  */
-export const ServletContextDefaultSessionTrackingModesEnum = {
-    Cookie: 'COOKIE',
-    Url: 'URL',
-    Ssl: 'SSL'
-} as const;
-export type ServletContextDefaultSessionTrackingModesEnum = typeof ServletContextDefaultSessionTrackingModesEnum[keyof typeof ServletContextDefaultSessionTrackingModesEnum];
-
-/**
- * @export
- */
 export const ServletContextEffectiveSessionTrackingModesEnum = {
     Cookie: 'COOKIE',
     Url: 'URL',
     Ssl: 'SSL'
 } as const;
 export type ServletContextEffectiveSessionTrackingModesEnum = typeof ServletContextEffectiveSessionTrackingModesEnum[keyof typeof ServletContextEffectiveSessionTrackingModesEnum];
+
+/**
+ * @export
+ */
+export const ServletContextDefaultSessionTrackingModesEnum = {
+    Cookie: 'COOKIE',
+    Url: 'URL',
+    Ssl: 'SSL'
+} as const;
+export type ServletContextDefaultSessionTrackingModesEnum = typeof ServletContextDefaultSessionTrackingModesEnum[keyof typeof ServletContextDefaultSessionTrackingModesEnum];
 
 
 /**
@@ -243,16 +243,16 @@ export function ServletContextFromJSONTyped(json: any, ignoreDiscriminator: bool
         'sessionTrackingModes': json['sessionTrackingModes'] == null ? undefined : new Set(json['sessionTrackingModes']),
         'sessionTimeout': json['sessionTimeout'] == null ? undefined : json['sessionTimeout'],
         'servletRegistrations': json['servletRegistrations'] == null ? undefined : (mapValues(json['servletRegistrations'], ServletRegistrationFromJSON)),
-        'filterRegistrations': json['filterRegistrations'] == null ? undefined : (mapValues(json['filterRegistrations'], FilterRegistrationFromJSON)),
-        'defaultSessionTrackingModes': json['defaultSessionTrackingModes'] == null ? undefined : new Set(json['defaultSessionTrackingModes']),
-        'effectiveSessionTrackingModes': json['effectiveSessionTrackingModes'] == null ? undefined : new Set(json['effectiveSessionTrackingModes']),
-        'jspConfigDescriptor': json['jspConfigDescriptor'] == null ? undefined : JspConfigDescriptorFromJSON(json['jspConfigDescriptor']),
-        'requestCharacterEncoding': json['requestCharacterEncoding'] == null ? undefined : json['requestCharacterEncoding'],
-        'responseCharacterEncoding': json['responseCharacterEncoding'] == null ? undefined : json['responseCharacterEncoding'],
         'effectiveMajorVersion': json['effectiveMajorVersion'] == null ? undefined : json['effectiveMajorVersion'],
         'effectiveMinorVersion': json['effectiveMinorVersion'] == null ? undefined : json['effectiveMinorVersion'],
         'serverInfo': json['serverInfo'] == null ? undefined : json['serverInfo'],
         'servletContextName': json['servletContextName'] == null ? undefined : json['servletContextName'],
+        'filterRegistrations': json['filterRegistrations'] == null ? undefined : (mapValues(json['filterRegistrations'], FilterRegistrationFromJSON)),
+        'effectiveSessionTrackingModes': json['effectiveSessionTrackingModes'] == null ? undefined : new Set(json['effectiveSessionTrackingModes']),
+        'jspConfigDescriptor': json['jspConfigDescriptor'] == null ? undefined : JspConfigDescriptorFromJSON(json['jspConfigDescriptor']),
+        'requestCharacterEncoding': json['requestCharacterEncoding'] == null ? undefined : json['requestCharacterEncoding'],
+        'responseCharacterEncoding': json['responseCharacterEncoding'] == null ? undefined : json['responseCharacterEncoding'],
+        'defaultSessionTrackingModes': json['defaultSessionTrackingModes'] == null ? undefined : new Set(json['defaultSessionTrackingModes']),
     };
 }
 
@@ -278,16 +278,16 @@ export function ServletContextToJSONTyped(value?: ServletContext | null, ignoreD
         'sessionTrackingModes': value['sessionTrackingModes'] == null ? undefined : Array.from(value['sessionTrackingModes'] as Set<any>),
         'sessionTimeout': value['sessionTimeout'],
         'servletRegistrations': value['servletRegistrations'] == null ? undefined : (mapValues(value['servletRegistrations'], ServletRegistrationToJSON)),
-        'filterRegistrations': value['filterRegistrations'] == null ? undefined : (mapValues(value['filterRegistrations'], FilterRegistrationToJSON)),
-        'defaultSessionTrackingModes': value['defaultSessionTrackingModes'] == null ? undefined : Array.from(value['defaultSessionTrackingModes'] as Set<any>),
-        'effectiveSessionTrackingModes': value['effectiveSessionTrackingModes'] == null ? undefined : Array.from(value['effectiveSessionTrackingModes'] as Set<any>),
-        'jspConfigDescriptor': JspConfigDescriptorToJSON(value['jspConfigDescriptor']),
-        'requestCharacterEncoding': value['requestCharacterEncoding'],
-        'responseCharacterEncoding': value['responseCharacterEncoding'],
         'effectiveMajorVersion': value['effectiveMajorVersion'],
         'effectiveMinorVersion': value['effectiveMinorVersion'],
         'serverInfo': value['serverInfo'],
         'servletContextName': value['servletContextName'],
+        'filterRegistrations': value['filterRegistrations'] == null ? undefined : (mapValues(value['filterRegistrations'], FilterRegistrationToJSON)),
+        'effectiveSessionTrackingModes': value['effectiveSessionTrackingModes'] == null ? undefined : Array.from(value['effectiveSessionTrackingModes'] as Set<any>),
+        'jspConfigDescriptor': JspConfigDescriptorToJSON(value['jspConfigDescriptor']),
+        'requestCharacterEncoding': value['requestCharacterEncoding'],
+        'responseCharacterEncoding': value['responseCharacterEncoding'],
+        'defaultSessionTrackingModes': value['defaultSessionTrackingModes'] == null ? undefined : Array.from(value['defaultSessionTrackingModes'] as Set<any>),
     };
 }
 
