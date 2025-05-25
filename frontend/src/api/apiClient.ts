@@ -6,6 +6,7 @@ import {
   TokenAPIApi,
   AreaAPIApi,
   ReservationApi,
+  PaymentAPIApi,
 } from "./__generated__"
 
 export const BACKEND_API = "https://api.team2.pick-go.shop"
@@ -47,4 +48,5 @@ export const apiClient = {
   token: new TokenAPIApi(config),
   area: new AreaAPIApi(config),
   reservation: new ReservationApi(config),
+  payment: new PaymentAPIApi(config),
 }

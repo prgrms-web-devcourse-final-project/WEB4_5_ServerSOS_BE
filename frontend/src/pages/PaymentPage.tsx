@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,45 +17,110 @@ import type {
   PerformanceSessionResponse,
   PerformanceDetailResponse,
 } from "@/api/__generated__"
+import { apiClient } from "@/api/apiClient"
+import {
+  loadTossPayments,
+  type TossPaymentsWidgets,
+} from "@tosspayments/tosspayments-sdk"
+
+const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm"
+const customerKey = "1tptdcvwS0D4f1pgucMt4"
 
 export default function PaymentPage() {
   const location = useLocation()
-  const { selectedSeats, session, performance } = location.state as {
-    selectedSeats: {
-      row: number
-      col: number
-      section: string
-      sectionName: string
-      rowLabel: string
-      price: number
-    }[]
-    session: PerformanceSessionResponse
-    performance?: PerformanceDetailResponse
-  }
-
-  const [isTermsAgreed, setIsTermsAgreed] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
+  const { selectedSeats, session, performance, reservationId } =
+    location.state as {
+      selectedSeats: {
+        row: number
+        col: number
+        section: string
+        sectionName: string
+        rowLabel: string
+        price: number
+      }[]
+      session: PerformanceSessionResponse
+      performance?: PerformanceDetailResponse
+      reservationId: number
+    }
 
   // 총 금액 계산
-  const totalAmount = selectedSeats.reduce((sum, seat) => sum + seat.price, 0)
+  const totalAmount = useMemo(
+    () => selectedSeats.reduce((sum, seat) => sum + seat.price, 0),
+    [selectedSeats],
+  )
+  const amount = useMemo(
+    () => ({
+      currency: "KRW",
+      value: totalAmount,
+    }),
+    [totalAmount],
+  )
 
-  // 결제 처리 함수 (구현은 나중에)
-  const handlePayment = async () => {
-    if (!isTermsAgreed) {
-      toast({
-        title: "약관 동의가 필요합니다",
-        description: "결제 서비스 이용 약관에 동의해주세요.",
-        variant: "destructive",
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null)
+
+  useEffect(() => {
+    async function fetchPaymentWidgets() {
+      // ------  결제위젯 초기화 ------
+      const tossPayments = await loadTossPayments(clientKey)
+      // 회원 결제
+      const widgets = tossPayments.widgets({
+        customerKey,
       })
+      // 비회원 결제
+      // const widgets = tossPayments.widgets({ customerKey: ANONYMOUS });
+
+      setWidgets(widgets)
+    }
+
+    fetchPaymentWidgets()
+  }, [])
+
+  useEffect(() => {
+    async function renderPaymentWidgets() {
+      if (widgets == null) {
+        return
+      }
+      // ------ 주문의 결제 금액 설정 ------
+      await widgets.setAmount(amount)
+
+      await Promise.all([
+        // ------  결제 UI 렌더링 ------
+        widgets.renderPaymentMethods({
+          selector: "#payment-method",
+          variantKey: "DEFAULT",
+        }),
+        // ------  이용약관 UI 렌더링 ------
+        widgets.renderAgreement({
+          selector: "#agreement",
+          variantKey: "AGREEMENT",
+        }),
+      ])
+    }
+
+    renderPaymentWidgets()
+  }, [widgets, amount])
+
+  useEffect(() => {
+    if (widgets == null) {
       return
     }
 
+    widgets.setAmount(amount)
+  }, [widgets, amount])
+
+  // 결제 처리 함수 (구현은 나중에)
+  const handlePayment = async () => {
     if (selectedSeats.length === 0) {
       toast({
         title: "선택된 좌석이 없습니다",
         description: "좌석을 선택한 후 결제를 진행해주세요.",
         variant: "destructive",
       })
+      return
+    }
+
+    if (widgets == null) {
       return
     }
 
@@ -69,13 +134,36 @@ export default function PaymentPage() {
         totalAmount,
       })
 
-      // 임시 성공 처리
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      try {
+        const response = await apiClient.payment.createPayment({
+          paymentCreateRequest: {
+            amount: totalAmount,
+            reservationId,
+          },
+        })
 
-      toast({
-        title: "결제가 완료되었습니다",
-        description: `${selectedSeats.length}석 예약이 완료되었습니다.`,
-      })
+        const orderId = response.data?.id
+
+        if (response.code !== 200 || !orderId) {
+          throw new Error("결제 생성 실패")
+        }
+
+        // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
+        // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+        // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+        await widgets.requestPayment({
+          orderId: orderId.toString(),
+          orderName: `${performance?.name} 예매`,
+          successUrl: `${window.location.origin}/payment/success`,
+          failUrl: `${window.location.origin}/payment/fail`,
+          customerEmail: "customer123@gmail.com",
+          customerName: "김토스",
+          customerMobilePhone: "01012341234",
+        })
+      } catch (error) {
+        // 에러 처리하기
+        console.error(error)
+      }
     } catch (error) {
       toast({
         title: "결제 처리 중 오류가 발생했습니다",
@@ -225,91 +313,34 @@ export default function PaymentPage() {
             </CardContent>
           </Card>
 
-          {/* 결제 방법 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>결제 방법</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-3 p-4 border rounded-lg bg-blue-50 border-blue-200">
-                <CreditCard className="w-6 h-6 text-blue-600" />
-                <div className="flex-1">
-                  <div className="font-medium text-blue-900">Toss Payments</div>
-                  <div className="text-sm text-blue-700">
-                    간편하고 안전한 결제
-                  </div>
-                </div>
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                  <Check className="w-4 h-4 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 약관 동의 */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsTermsAgreed(!isTermsAgreed)}
-                    className={cn(
-                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
-                      isTermsAgreed
-                        ? "bg-primary border-primary"
-                        : "border-gray-300 hover:border-gray-400",
-                    )}
-                  >
-                    {isTermsAgreed && <Check className="w-3 h-3 text-white" />}
-                  </button>
-                  <div className="flex-1">
-                    <label
-                      htmlFor="terms"
-                      className="text-sm font-medium cursor-pointer"
-                    >
-                      [필수] 결제 서비스 이용 약관, 개인정보 처리 동의
-                    </label>
-                    <p className="text-xs text-gray-500 mt-1">
-                      결제 진행을 위해 약관에 동의해주세요.
-                    </p>
-                  </div>
-                </div>
-
-                {!isTermsAgreed && (
-                  <div className="flex items-center gap-2 text-amber-600 text-sm">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>약관 동의가 필요합니다</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 결제 버튼 */}
-          <Button
-            onClick={handlePayment}
-            disabled={
-              !isTermsAgreed || isProcessing || selectedSeats.length === 0
-            }
-            className="w-full h-12 text-lg font-semibold"
-            size="lg"
-          >
-            {isProcessing ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                결제 처리 중...
-              </div>
-            ) : (
-              `${totalAmount.toLocaleString()}원 결제하기`
-            )}
-          </Button>
-
           <p className="text-xs text-gray-500 text-center">
             결제 완료 후 예매 내역은 마이페이지에서 확인하실 수 있습니다.
           </p>
         </div>
       </div>
+
+      {/* 결제 방법 */}
+      {/* 결제 UI */}
+      <div id="payment-method" />
+      {/* 이용약관 UI */}
+      <div id="agreement" />
+
+      {/* 결제 버튼 */}
+      <Button
+        onClick={handlePayment}
+        disabled={isProcessing || selectedSeats.length === 0}
+        className="w-full h-12 text-lg font-semibold"
+        size="lg"
+      >
+        {isProcessing ? (
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            결제 처리 중...
+          </div>
+        ) : (
+          `${totalAmount.toLocaleString()}원 결제하기`
+        )}
+      </Button>
     </div>
   )
 }

@@ -142,12 +142,23 @@ export default function SeatMap({
       return
     }
 
+    const reservation = await reserveSeats({
+      seats: [], //TODO: 좌석 선택 시 좌석 정보 전달,
+      sessionId: session.id,
+    })
+
+    if (!reservation || !reservation.id) {
+      alert("예약 실패")
+      return
+    }
+
     // 결제 페이지로 이동하면서 선택된 좌석과 세션 정보 전달
     navigate("/show/payment", {
       state: {
         selectedSeats,
         session,
         performance,
+        reservationId: reservation.id,
       },
     })
 
