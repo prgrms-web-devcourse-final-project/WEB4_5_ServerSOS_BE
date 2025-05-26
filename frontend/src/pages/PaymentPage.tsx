@@ -3,16 +3,7 @@ import { useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "@/components/ui/use-toast"
-import { cn } from "@/lib/utils"
-import {
-  CreditCard,
-  Calendar,
-  MapPin,
-  Clock,
-  Ticket,
-  Check,
-  AlertCircle,
-} from "lucide-react"
+import { Calendar, MapPin, Clock, Ticket } from "lucide-react"
 import type {
   PerformanceSessionResponse,
   PerformanceDetailResponse,
