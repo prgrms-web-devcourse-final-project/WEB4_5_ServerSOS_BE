@@ -7,13 +7,21 @@ export const useCreateReservation = () => {
     mutationFn: async ({
       sessionId,
       seats,
-    }: { sessionId: number; seats: SeatRequest[] }) => {
-      const response = await apiClient.reservation.createReservation({
-        reservationCreateRequest: {
-          performanceSessionId: sessionId,
-          seats,
+      entryToken,
+    }: { sessionId: number; seats: SeatRequest[]; entryToken: string }) => {
+      const response = await apiClient.reservation.createReservation(
+        {
+          reservationCreateRequest: {
+            performanceSessionId: sessionId,
+            seats,
+          },
         },
-      })
+        {
+          headers: {
+            EntryAuth: `Bearer ${entryToken}`,
+          },
+        },
+      )
 
       return response.data
     },
