@@ -28,7 +28,7 @@ const customerKey = "1tptdcvwS0D4f1pgucMt4"
 
 export default function PaymentPage() {
   const location = useLocation()
-  const { selectedSeats, session, performance, reservationId } =
+  const { selectedSeats, session, performance, reservationId, entryToken } =
     location.state as {
       selectedSeats: {
         row: number
@@ -41,6 +41,7 @@ export default function PaymentPage() {
       session: PerformanceSessionResponse
       performance?: PerformanceDetailResponse
       reservationId: number
+      entryToken: string
     }
 
   // 총 금액 계산
@@ -135,12 +136,19 @@ export default function PaymentPage() {
       })
 
       try {
-        const response = await apiClient.payment.createPayment({
-          paymentCreateRequest: {
-            amount: totalAmount,
-            reservationId,
+        const response = await apiClient.payment.createPayment(
+          {
+            paymentCreateRequest: {
+              amount: totalAmount,
+              reservationId,
+            },
           },
-        })
+          {
+            headers: {
+              EntryAuth: `Bearer ${entryToken}`,
+            },
+          },
+        )
 
         const orderId = response.data?.id
 
@@ -156,9 +164,6 @@ export default function PaymentPage() {
           orderName: `${performance?.name} 예매`,
           successUrl: `${window.location.origin}/payment/success`,
           failUrl: `${window.location.origin}/payment/fail`,
-          customerEmail: "customer123@gmail.com",
-          customerName: "김토스",
-          customerMobilePhone: "01012341234",
         })
       } catch (error) {
         // 에러 처리하기

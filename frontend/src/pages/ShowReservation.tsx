@@ -13,19 +13,23 @@ export const ShowReservation = () => {
   const location = useLocation()
   const { id } = useParams()
   const { post: showData } = usePostDetail({ id: Number(id) })
-  const [waitInQueue, setWaitInQueue] = useState<{
-    status: "waiting" | "success" | "error"
-    position: number
-    totalCount: number
-    estimatedTime: string
-  }>({
+  const [waitInQueue, setWaitInQueue] = useState<
+    | {
+        status: "waiting" | "error"
+        position: number
+        totalCount: number
+        estimatedTime: string
+      }
+    | {
+        status: "success"
+        entryToken: string
+      }
+  >({
     status: "waiting",
     position: 0,
     totalCount: 0,
     estimatedTime: "",
   })
-
-  const entryTokenRef = useRef<string | null>(null)
 
   const state = location.state as
     | {
@@ -63,7 +67,7 @@ export const ShowReservation = () => {
     ) => {
       if (!data.entryToken) {
         setWaitInQueue({
-          status: data.position > 0 ? "waiting" : "success",
+          status: "waiting",
           position: data.position,
           totalCount: data.totalCount,
           estimatedTime: data.estimatedTime,
@@ -72,14 +76,9 @@ export const ShowReservation = () => {
         return
       }
 
-      entryTokenRef.current = data.entryToken
-      console.log("entryToken", data.entryToken)
-
       setWaitInQueue({
         status: "success",
-        position: data.position,
-        totalCount: data.totalCount,
-        estimatedTime: data.estimatedTime,
+        entryToken: data.entryToken,
       })
 
       cleanup()
@@ -105,7 +104,7 @@ export const ShowReservation = () => {
         <h1 className="text-3xl font-bold text-center mb-8">좌석 예매</h1>
 
         <div className="max-w-7xl mx-auto">
-          {waitInQueue.status === "waiting" ? (
+          {waitInQueue.status === "waiting" && (
             <div className="flex flex-col items-center justify-center py-20">
               <div className="mb-6">
                 <span className="inline-block w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></span>
@@ -131,10 +130,12 @@ export const ShowReservation = () => {
                 </>
               )}
             </div>
-          ) : (
+          )}
+          {waitInQueue.status === "success" && (
             <SeatMap
               session={state?.selectedSession}
               performance={showData?.performance}
+              entryToken={waitInQueue.entryToken}
             />
           )}
         </div>

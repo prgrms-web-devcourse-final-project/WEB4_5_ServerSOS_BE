@@ -3,8 +3,10 @@ import { apiClient } from "@/api/apiClient"
 
 export const useAreas = ({
   sessionId,
+  entryToken,
 }: {
   sessionId?: number
+  entryToken?: string
 }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["areas"],
@@ -15,9 +17,16 @@ export const useAreas = ({
         }
       }
 
-      return apiClient.area.getAreas({
-        sessionId,
-      })
+      return apiClient.area.getAreas(
+        {
+          sessionId,
+        },
+        {
+          headers: {
+            EntryAuth: `Bearer ${entryToken}`,
+          },
+        },
+      )
     },
   })
 

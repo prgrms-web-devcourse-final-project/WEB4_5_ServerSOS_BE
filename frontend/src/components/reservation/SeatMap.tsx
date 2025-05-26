@@ -54,11 +54,13 @@ const initializeSeats = (rows: number, cols: number) => {
 export default function SeatMap({
   session,
   performance,
+  entryToken,
 }: {
   session: PerformanceSessionResponse
   performance?: PerformanceDetailResponse
+  entryToken: string
 }) {
-  const { areas } = useAreas({ sessionId: session.id })
+  const { areas } = useAreas({ sessionId: session.id, entryToken })
   const { reserveSeats } = useCreateReservation()
   const navigate = useNavigate()
 
@@ -142,14 +144,22 @@ export default function SeatMap({
       return
     }
 
-    const reservation = await reserveSeats({
-      seats: [], //TODO: 좌석 선택 시 좌석 정보 전달,
-      sessionId: session.id,
-    })
+    let reservationId = 0
 
-    if (!reservation || !reservation.id) {
-      alert("예약 실패")
-      return
+    try {
+      const reservation = await reserveSeats({
+        seats: [], //TODO: 좌석 선택 시 좌석 정보 전달,
+        sessionId: session.id,
+        entryToken,
+      })
+
+      reservationId = reservation?.id ?? 0
+    } catch (error) {
+      console.error(error)
+      toast({
+        title: "예약 생성 실패",
+        variant: "destructive",
+      })
     }
 
     // 결제 페이지로 이동하면서 선택된 좌석과 세션 정보 전달
@@ -158,7 +168,8 @@ export default function SeatMap({
         selectedSeats,
         session,
         performance,
-        reservationId: reservation.id,
+        reservationId,
+        entryToken,
       },
     })
 
