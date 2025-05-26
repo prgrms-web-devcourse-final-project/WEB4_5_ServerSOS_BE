@@ -14,15 +14,14 @@ export default function PaymentSuccess() {
   const paymentKey = searchParams.get("paymentKey")
   const orderId = searchParams.get("orderId")
   const amount = searchParams.get("amount")
-  const paymentType = searchParams.get("paymentType")
 
   useEffect(() => {
     // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
     // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
 
-    console.log(paymentKey, orderId, amount, paymentType)
+    console.log(paymentKey, orderId, amount)
     async function confirm() {
-      if (!paymentKey || !orderId || !amount || !paymentType) {
+      if (!paymentKey || !orderId) {
         return
       }
 
@@ -42,7 +41,7 @@ export default function PaymentSuccess() {
     }
 
     confirm()
-  }, [paymentKey, orderId, amount, paymentType])
+  }, [paymentKey, orderId, amount])
 
   const handleGoHome = () => {
     navigate("/")
