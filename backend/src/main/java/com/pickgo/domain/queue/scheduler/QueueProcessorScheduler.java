@@ -1,21 +1,19 @@
 package com.pickgo.domain.queue.scheduler;
 
+import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.domain.queue.service.QueueService;
+import com.pickgo.global.config.thread.ExecutorConfig;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
-
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
-import com.pickgo.domain.queue.dto.WaitingState;
-import com.pickgo.domain.queue.service.QueueService;
-import com.pickgo.global.config.thread.ExecutorConfig;
-
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 대기열 입장 처리 및 상태 publish 스케줄러 (동적 스케줄러 기반)
@@ -86,7 +84,7 @@ public class QueueProcessorScheduler {
         // 각 대기열을 병렬로 처리
         performanceSessionIds.forEach(performanceSessionId ->
                 CompletableFuture.runAsync(() -> processQueue(performanceSessionId),
-                        executorConfig.threadPoolTaskExecutor()));
+                        executorConfig.queueThreadPoolTaskExecutor()));
     }
 
     /**
@@ -99,7 +97,7 @@ public class QueueProcessorScheduler {
         // 각 인원을 비동기로 입장 처리
         connectionIds.forEach(connectionId ->
                 CompletableFuture.runAsync(() -> processEntry(performanceSessionId, connectionId),
-                        executorConfig.threadPoolTaskExecutor())
+                        executorConfig.queueThreadPoolTaskExecutor())
         );
 
         // 대기열 상태 publish
@@ -130,13 +128,13 @@ public class QueueProcessorScheduler {
             // 대기열 상태 발행
             WaitingState waitingState = WaitingState.of(position, totalCount, getRps());
             queueService.publishWaitingState(performanceSessionId, connectionId, waitingState);
-        }, executorConfig.threadPoolTaskExecutor()));
+        }, executorConfig.queueThreadPoolTaskExecutor()));
     }
 
     /**
      * 현재 RPS(초당 입장 처리 인원) 계산
      */
     public static double getRps() {
-        return entryCount / ((double)intervalMillis / 1000);
+        return entryCount / ((double) intervalMillis / 1000);
     }
 }
