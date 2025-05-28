@@ -176,7 +176,8 @@ public class ReviewLikeConcurrencyTest {
 
         // 4. 검증
         int expectedLikeCount = expectedLikes.get();
-        int likeCount = postReviewRepository.findById(reviewId).get().getLikeCount();
+//        int likeCount = postReviewRepository.findById(reviewId).get().getLikeCount();
+        int likeCount = reviewLikeRepository.countReviewLikeByReview_Id(reviewId);
 
         System.out.println("💬 DB에 저장된 ReviewLike 수: " + likeCount);
         System.out.println("💬 테스트 Review.likeCount 값: " + expectedLikeCount);
