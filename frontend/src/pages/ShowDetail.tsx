@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SimpleCalendar from "@/components/ui/simple-calendar"
 import ShowInfo from "@/components/show/ShowInfo"
@@ -9,6 +9,7 @@ import { PageLayout } from "@/layout/PageLayout"
 import { usePostDetail } from "@/hooks/usePostDetail"
 import { getDurationStr } from "@/lib/date"
 import type { PerformanceSessionResponse } from "@/api/__generated__"
+import CategoryNavigation from "@/components/category/CategoryNavigation"
 
 export function ShowDetail() {
   const { id } = useParams()
@@ -23,6 +24,18 @@ export function ShowDetail() {
   >(undefined)
   const { post: showData, isLoading, error } = usePostDetail({ id: Number(id) })
 
+  const isThirtyDaysBeforeStart = useMemo(() => {
+    if (!showData?.performance?.startDate) {
+      return false
+    }
+
+    const today = new Date()
+    const thirtyDaysBeforeStart = new Date(showData.performance.startDate)
+    thirtyDaysBeforeStart.setDate(showData.performance.startDate.getDate() - 30)
+
+    return today < thirtyDaysBeforeStart
+  }, [showData])
+
   // 날짜 선택 핸들러
   const handleDateSelect = (selectedDate: Date) => {
     if (!showData?.performance?.sessions) {
@@ -30,6 +43,13 @@ export function ShowDetail() {
     }
 
     const sessions = showData.performance.sessions
+
+    // 공연 시작일보다 30일 이전 날짜 선택 시 alert
+
+    if (isThirtyDaysBeforeStart) {
+      alert("공연 시작일보다 30일 이전 날짜는 선택할 수 없습니다.")
+      return
+    }
 
     console.log("선택된 날짜:", selectedDate.toDateString())
     setSelectedDate(selectedDate)
@@ -100,6 +120,7 @@ export function ShowDetail() {
 
   return (
     <PageLayout>
+      <CategoryNavigation />
       {/* 공연 상세 정보 */}
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">{showData.title}</h1>
@@ -151,20 +172,44 @@ export function ShowDetail() {
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">관람 연령</div>
                   <div className="col-span-2">
-                    최소 {showData.performance?.minAge}세
+                    {showData.performance?.minAge}
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">가격</div>
                   <div className="col-span-2">
                     {showData.performance?.areas?.length &&
-                    showData.performance?.areas?.length > 0
-                      ? `${Math.min(
-                          ...showData.performance.areas.map(
-                            (area) => area.price ?? Number.POSITIVE_INFINITY,
-                          ),
-                        ).toLocaleString()}원`
-                      : "정보 없음"}
+                    showData.performance?.areas?.length > 0 ? (
+                      <div className="space-y-2">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-1">좌석 구역</th>
+                              <th className="text-right py-1">가격</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {showData.performance.areas.map((area, index) => (
+                              <tr
+                                key={index}
+                                className="border-b border-gray-100"
+                              >
+                                <td className="py-1">
+                                  {area.name || `구역 ${index + 1}`}
+                                </td>
+                                <td className="text-right py-1">
+                                  {area.price
+                                    ? `${area.price.toLocaleString()}원`
+                                    : "가격 미정"}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      "정보 없음"
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
@@ -223,6 +268,11 @@ export function ShowDetail() {
                 {selectedDate && filteredSessions.length === 0 && (
                   <div className="mt-4 text-center text-sm text-slate-500">
                     선택한 날짜에 공연이 없습니다.
+                  </div>
+                )}
+                {isThirtyDaysBeforeStart && (
+                  <div className="mt-4 text-center text-sm text-slate-500">
+                    공연 시작일보다 30일 이전에는 예매가 불가능합니다.
                   </div>
                 )}
                 <div className="mt-6">

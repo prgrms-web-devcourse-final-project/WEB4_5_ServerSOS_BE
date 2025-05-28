@@ -9,7 +9,7 @@ export default function ShowInfo({ description, detailImages }: ShowInfoProps) {
   return (
     <div className="space-y-8">
       {/* 공연 설명 */}
-      <div className="prose max-w-none">{description}</div>
+      <div className="prose max-w-none whitespace-pre-wrap">{description}</div>
 
       {/* 공연 상세 이미지 */}
       <div className="space-y-6 mt-8">
