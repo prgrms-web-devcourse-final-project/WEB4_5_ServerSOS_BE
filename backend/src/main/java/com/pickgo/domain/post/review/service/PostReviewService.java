@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -164,21 +163,19 @@ public class PostReviewService {
                 Review review = getReviewByIdAndValidatePost(reviewId, postId);
                 Member member = getMemberById(memberId);
 
-                if (reviewLikeRepository.existsByMemberAndReview(member, review)) {
+                try {
+                    reviewLikeRepository.save(
+                            ReviewLike.builder().review(review).member(member).build()
+                    );
+                    review.incrementLikeCount();
+                    postReviewRepository.flush();
+                } catch (DataIntegrityViolationException e) {
                     throw new BusinessException(RsCode.REVIEW_ALREADY_LIKED);
                 }
 
-                reviewLikeRepository.save(
-                        ReviewLike.builder().review(review).member(member).build()
-                );
-                review.incrementLikeCount();
-                postReviewRepository.flush(); // 명시적 persist 요청
             } else {
                 throw new BusinessException(RsCode.BAD_REQUEST);
             }
-        } catch (DataIntegrityViolationException e) {
-            // 중복 좋아요 방지
-            throw new BusinessException(RsCode.REVIEW_ALREADY_LIKED);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BusinessException(RsCode.INTERNAL_SERVER);
@@ -205,12 +202,10 @@ public class PostReviewService {
                 reviewLikeRepository.delete(like);
                 review.decrementLikeCount();
                 postReviewRepository.flush();
+
             } else {
                 throw new BusinessException(RsCode.BAD_REQUEST);
             }
-        } catch (EmptyResultDataAccessException | BusinessException e) {
-            // 중복 취소 또는 없는 좋아요
-            throw new BusinessException(RsCode.REVIEW_NOT_LIKED_YET);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BusinessException(RsCode.INTERNAL_SERVER);
