@@ -3,7 +3,7 @@ import { useUser } from "@/hooks/useUser"
 import { Link } from "react-router-dom"
 
 export const Header = () => {
-  const { isLogin } = useUser()
+  const { isLogin, logout } = useUser()
 
   return (
     <header className="border-b">
@@ -14,8 +14,15 @@ export const Header = () => {
         </Link>
         {isLogin ? (
           <div className="flex gap-2">
-            <Button size="sm">
+            <Button variant="outline" size="sm">
               <Link to="/my">마이페이지</Link>
+            </Button>
+            <Button
+              className="cursor-pointer"
+              size="sm"
+              onClick={() => logout()}
+            >
+              로그아웃
             </Button>
           </div>
         ) : (

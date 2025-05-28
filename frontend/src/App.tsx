@@ -21,7 +21,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <div className="flex flex-col min-h-screen">
-          <Header />
           <div className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
@@ -39,7 +38,6 @@ function App() {
               <Route path="/payment/fail" element={<PaymentFail />} />
             </Routes>
           </div>
-          <Footer />
         </div>
       </BrowserRouter>
     </QueryClientProvider>
