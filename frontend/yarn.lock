@@ -1861,6 +1861,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tosspayments/tosspayments-sdk@npm:^2.3.5":
+  version: 2.3.5
+  resolution: "@tosspayments/tosspayments-sdk@npm:2.3.5"
+  checksum: 10c0/38d540cc055a2cc58c261bd871f9bf9c03689f28e6a6bc03a0ce4e049564d0d878a6d3d29f32ce698d45f191eaef711a72e17ca9c056145dd5a419bf0b365831
+  languageName: node
+  linkType: hard
+
 "@tybys/wasm-util@npm:^0.9.0":
   version: 0.9.0
   resolution: "@tybys/wasm-util@npm:0.9.0"
@@ -2714,6 +2721,7 @@ __metadata:
     "@radix-ui/react-toast": "npm:^1.2.11"
     "@tailwindcss/vite": "npm:^4.1.5"
     "@tanstack/react-query": "npm:^5.74.11"
+    "@tosspayments/tosspayments-sdk": "npm:^2.3.5"
     "@types/node": "npm:^22.15.3"
     "@types/react": "npm:^19.0.10"
     "@types/react-dom": "npm:^19.0.4"

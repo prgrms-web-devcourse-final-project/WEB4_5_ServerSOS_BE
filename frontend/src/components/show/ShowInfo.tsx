@@ -4,13 +4,12 @@ interface ShowInfoProps {
 }
 
 export default function ShowInfo({ description, detailImages }: ShowInfoProps) {
+  console.log("#description", description)
+
   return (
     <div className="space-y-8">
       {/* 공연 설명 */}
-      <div
-        className="prose max-w-none"
-        dangerouslySetInnerHTML={{ __html: description }}
-      />
+      <div className="prose max-w-none whitespace-pre-wrap">{description}</div>
 
       {/* 공연 상세 이미지 */}
       <div className="space-y-6 mt-8">
@@ -19,7 +18,7 @@ export default function ShowInfo({ description, detailImages }: ShowInfoProps) {
           {detailImages.map((image, index) => (
             <div
               key={index}
-              className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-md"
+              className="relative w-full aspect-[4/3] rounded-lg shadow-md"
             >
               <img
                 src={image || "/placeholder.svg"}

@@ -12,7 +12,7 @@ export default function UpcomingShows() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
       {openPost.map((show) => (
-        <Link key={show.id} to={`/upcoming/${show.id}`} className="group">
+        <Link key={show.id} to={`/show/${show.id}`} className="group">
           <div className="flex flex-col items-center text-center">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-md group-hover:shadow-lg transition-shadow overflow-hidden">
               <img

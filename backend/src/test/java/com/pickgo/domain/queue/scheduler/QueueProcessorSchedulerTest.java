@@ -1,12 +1,8 @@
 package com.pickgo.domain.queue.scheduler;
 
-import static org.awaitility.Awaitility.*;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
+import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.domain.queue.service.QueueService;
+import com.pickgo.global.config.thread.ExecutorConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,9 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.pickgo.domain.queue.dto.WaitingState;
-import com.pickgo.domain.queue.service.QueueService;
-import com.pickgo.global.config.thread.ExecutorConfig;
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class QueueProcessorSchedulerTest {
@@ -49,7 +48,7 @@ class QueueProcessorSchedulerTest {
 
     @Test
     void pollTopCount_결과없으면_enterEntryLine_호출안함() {
-        when(executorConfig.threadPoolTaskExecutor()).thenReturn(executor);
+        when(executorConfig.queueThreadPoolTaskExecutor()).thenReturn(executor);
         when(queueService.getAllPerformanceSessionIds()).thenReturn(List.of(performanceSessionId));
         when(queueService.pollTopCount(eq(performanceSessionId), anyInt())).thenReturn(List.of());
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of());
@@ -63,7 +62,7 @@ class QueueProcessorSchedulerTest {
 
     @Test
     void 정상입장시_enterEntryLine_호출됨() {
-        when(executorConfig.threadPoolTaskExecutor()).thenReturn(executor);
+        when(executorConfig.queueThreadPoolTaskExecutor()).thenReturn(executor);
         when(queueService.getAllPerformanceSessionIds()).thenReturn(List.of(performanceSessionId));
         when(queueService.pollTopCount(eq(performanceSessionId), anyInt())).thenReturn(List.of(connectionId));
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of(connectionId));
@@ -84,7 +83,7 @@ class QueueProcessorSchedulerTest {
 
     @Test
     void publishWaitingState_정상호출된다() {
-        when(executorConfig.threadPoolTaskExecutor()).thenReturn(executor);
+        when(executorConfig.queueThreadPoolTaskExecutor()).thenReturn(executor);
         when(queueService.getAllPerformanceSessionIds()).thenReturn(List.of(performanceSessionId));
         when(queueService.pollTopCount(eq(performanceSessionId), anyInt())).thenReturn(List.of(connectionId));
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of(connectionId));

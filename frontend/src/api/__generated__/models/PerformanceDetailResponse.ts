@@ -27,13 +27,13 @@ import {
     PerformanceSessionResponseToJSON,
     PerformanceSessionResponseToJSONTyped,
 } from './PerformanceSessionResponse';
-import type { PerformanceAreaResponse } from './PerformanceAreaResponse';
+import type { PerformanceAreaSimpleResponse } from './PerformanceAreaSimpleResponse';
 import {
-    PerformanceAreaResponseFromJSON,
-    PerformanceAreaResponseFromJSONTyped,
-    PerformanceAreaResponseToJSON,
-    PerformanceAreaResponseToJSONTyped,
-} from './PerformanceAreaResponse';
+    PerformanceAreaSimpleResponseFromJSON,
+    PerformanceAreaSimpleResponseFromJSONTyped,
+    PerformanceAreaSimpleResponseToJSON,
+    PerformanceAreaSimpleResponseToJSONTyped,
+} from './PerformanceAreaSimpleResponse';
 
 /**
  * 
@@ -103,18 +103,6 @@ export interface PerformanceDetailResponse {
     endDate?: Date;
     /**
      * 
-     * @type {Date}
-     * @memberof PerformanceDetailResponse
-     */
-    createdAt?: Date;
-    /**
-     * 
-     * @type {Date}
-     * @memberof PerformanceDetailResponse
-     */
-    modifiedAt?: Date;
-    /**
-     * 
      * @type {VenueResponse}
      * @memberof PerformanceDetailResponse
      */
@@ -124,13 +112,13 @@ export interface PerformanceDetailResponse {
      * @type {Array<string>}
      * @memberof PerformanceDetailResponse
      */
-    introImages?: Array<string>;
+    images?: Array<string>;
     /**
      * 
-     * @type {Array<PerformanceAreaResponse>}
+     * @type {Array<PerformanceAreaSimpleResponse>}
      * @memberof PerformanceDetailResponse
      */
-    areas?: Array<PerformanceAreaResponse>;
+    areas?: Array<PerformanceAreaSimpleResponse>;
     /**
      * 
      * @type {Array<PerformanceSessionResponse>}
@@ -166,11 +154,9 @@ export function PerformanceDetailResponseFromJSONTyped(json: any, ignoreDiscrimi
         'minAge': json['minAge'] == null ? undefined : json['minAge'],
         'startDate': json['startDate'] == null ? undefined : (new Date(json['startDate'])),
         'endDate': json['endDate'] == null ? undefined : (new Date(json['endDate'])),
-        'createdAt': json['createdAt'] == null ? undefined : (new Date(json['createdAt'])),
-        'modifiedAt': json['modifiedAt'] == null ? undefined : (new Date(json['modifiedAt'])),
         'venue': json['venue'] == null ? undefined : VenueResponseFromJSON(json['venue']),
-        'introImages': json['introImages'] == null ? undefined : json['introImages'],
-        'areas': json['areas'] == null ? undefined : ((json['areas'] as Array<any>).map(PerformanceAreaResponseFromJSON)),
+        'images': json['images'] == null ? undefined : json['images'],
+        'areas': json['areas'] == null ? undefined : ((json['areas'] as Array<any>).map(PerformanceAreaSimpleResponseFromJSON)),
         'sessions': json['sessions'] == null ? undefined : ((json['sessions'] as Array<any>).map(PerformanceSessionResponseFromJSON)),
     };
 }
@@ -194,13 +180,11 @@ export function PerformanceDetailResponseToJSONTyped(value?: PerformanceDetailRe
         'casts': value['casts'],
         'runtime': value['runtime'],
         'minAge': value['minAge'],
-        'startDate': value['startDate'] == null ? undefined : ((value['startDate']).toISOString()),
-        'endDate': value['endDate'] == null ? undefined : ((value['endDate']).toISOString()),
-        'createdAt': value['createdAt'] == null ? undefined : ((value['createdAt']).toISOString()),
-        'modifiedAt': value['modifiedAt'] == null ? undefined : ((value['modifiedAt']).toISOString()),
+        'startDate': value['startDate'] == null ? undefined : ((value['startDate']).toISOString().substring(0,10)),
+        'endDate': value['endDate'] == null ? undefined : ((value['endDate']).toISOString().substring(0,10)),
         'venue': VenueResponseToJSON(value['venue']),
-        'introImages': value['introImages'],
-        'areas': value['areas'] == null ? undefined : ((value['areas'] as Array<any>).map(PerformanceAreaResponseToJSON)),
+        'images': value['images'],
+        'areas': value['areas'] == null ? undefined : ((value['areas'] as Array<any>).map(PerformanceAreaSimpleResponseToJSON)),
         'sessions': value['sessions'] == null ? undefined : ((value['sessions'] as Array<any>).map(PerformanceSessionResponseToJSON)),
     };
 }

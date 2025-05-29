@@ -54,12 +54,6 @@ export interface ApplicationContext {
     displayName?: string;
     /**
      * 
-     * @type {object}
-     * @memberof ApplicationContext
-     */
-    autowireCapableBeanFactory?: object;
-    /**
-     * 
      * @type {string}
      * @memberof ApplicationContext
      */
@@ -70,6 +64,12 @@ export interface ApplicationContext {
      * @memberof ApplicationContext
      */
     startupDate?: number;
+    /**
+     * 
+     * @type {object}
+     * @memberof ApplicationContext
+     */
+    autowireCapableBeanFactory?: object;
     /**
      * 
      * @type {Environment}
@@ -122,9 +122,9 @@ export function ApplicationContextFromJSONTyped(json: any, ignoreDiscriminator: 
         'parent': json['parent'] == null ? undefined : ApplicationContextFromJSON(json['parent']),
         'id': json['id'] == null ? undefined : json['id'],
         'displayName': json['displayName'] == null ? undefined : json['displayName'],
-        'autowireCapableBeanFactory': json['autowireCapableBeanFactory'] == null ? undefined : json['autowireCapableBeanFactory'],
         'applicationName': json['applicationName'] == null ? undefined : json['applicationName'],
         'startupDate': json['startupDate'] == null ? undefined : json['startupDate'],
+        'autowireCapableBeanFactory': json['autowireCapableBeanFactory'] == null ? undefined : json['autowireCapableBeanFactory'],
         'environment': json['environment'] == null ? undefined : EnvironmentFromJSON(json['environment']),
         'beanDefinitionCount': json['beanDefinitionCount'] == null ? undefined : json['beanDefinitionCount'],
         'beanDefinitionNames': json['beanDefinitionNames'] == null ? undefined : json['beanDefinitionNames'],
@@ -147,9 +147,9 @@ export function ApplicationContextToJSONTyped(value?: ApplicationContext | null,
         'parent': ApplicationContextToJSON(value['parent']),
         'id': value['id'],
         'displayName': value['displayName'],
-        'autowireCapableBeanFactory': value['autowireCapableBeanFactory'],
         'applicationName': value['applicationName'],
         'startupDate': value['startupDate'],
+        'autowireCapableBeanFactory': value['autowireCapableBeanFactory'],
         'environment': EnvironmentToJSON(value['environment']),
         'beanDefinitionCount': value['beanDefinitionCount'],
         'beanDefinitionNames': value['beanDefinitionNames'],

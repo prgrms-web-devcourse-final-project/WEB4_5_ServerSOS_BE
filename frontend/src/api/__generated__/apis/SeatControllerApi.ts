@@ -22,7 +22,7 @@ import {
     SseEmitterToJSON,
 } from '../models/index';
 
-export interface SubscribeRequest {
+export interface Subscribe1Request {
     sessionId: number;
 }
 
@@ -34,11 +34,11 @@ export class SeatControllerApi extends runtime.BaseAPI {
     /**
      * 좌석 상태 실시간 구독
      */
-    async subscribeRaw(requestParameters: SubscribeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SseEmitter>> {
+    async subscribe1Raw(requestParameters: Subscribe1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SseEmitter>> {
         if (requestParameters['sessionId'] == null) {
             throw new runtime.RequiredError(
                 'sessionId',
-                'Required parameter "sessionId" was null or undefined when calling subscribe().'
+                'Required parameter "sessionId" was null or undefined when calling subscribe1().'
             );
         }
 
@@ -71,8 +71,8 @@ export class SeatControllerApi extends runtime.BaseAPI {
     /**
      * 좌석 상태 실시간 구독
      */
-    async subscribe(requestParameters: SubscribeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SseEmitter> {
-        const response = await this.subscribeRaw(requestParameters, initOverrides);
+    async subscribe1(requestParameters: Subscribe1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SseEmitter> {
+        const response = await this.subscribe1Raw(requestParameters, initOverrides);
         return await response.value();
     }
 

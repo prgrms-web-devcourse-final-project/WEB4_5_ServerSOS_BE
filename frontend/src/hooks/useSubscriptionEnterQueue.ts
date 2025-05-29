@@ -4,20 +4,23 @@ import { subscribeSSE } from "@/lib/subscribeSSE"
 import { getLoginInfo } from "@/lib/storage/loginStorage"
 
 type UseSubscriptionEnterQueueProps<T> = {
+  sessionId?: number
   disabled?: boolean
   onMessage: (data: T, cleanup: () => void) => void
   onError?: (error: Event) => void
 }
 
 export function useSubscriptionEnterQueue<T>({
+  sessionId,
   disabled = false,
   onMessage,
   onError,
 }: UseSubscriptionEnterQueueProps<T>) {
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (disabled) return
+    if (disabled || !sessionId) return
 
     const loginInfo = getLoginInfo()
 
@@ -29,7 +32,7 @@ export function useSubscriptionEnterQueue<T>({
     abortControllerRef.current = new AbortController()
 
     subscribeSSE({
-      url: `${BACKEND_API}/api/queue/stream`,
+      url: `${BACKEND_API}/api/queue/stream?sessionId=${sessionId}`,
       onMessage: (data: T) => {
         const cleanup = () => {
           if (abortControllerRef.current) {
@@ -56,5 +59,5 @@ export function useSubscriptionEnterQueue<T>({
         abortControllerRef.current = null
       }
     }
-  }, [disabled, onMessage, onError])
+  }, [])
 }

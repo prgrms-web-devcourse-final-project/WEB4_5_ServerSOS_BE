@@ -1,5 +1,14 @@
 import { getLoginInfo } from "@/lib/storage/loginStorage"
-import { MemberAPIApi, Configuration, PostControllerApi } from "./__generated__"
+import {
+  MemberAPIApi,
+  Configuration,
+  PostControllerApi,
+  TokenAPIApi,
+  AreaAPIApi,
+  ReservationApi,
+  PaymentAPIApi,
+  ReviewAPIApi,
+} from "./__generated__"
 
 export const BACKEND_API = "https://api.team2.pick-go.shop"
 
@@ -37,4 +46,9 @@ const config = new Configuration({
 export const apiClient = {
   member: new MemberAPIApi(config),
   post: new PostControllerApi(config),
+  token: new TokenAPIApi(config),
+  area: new AreaAPIApi(config),
+  reservation: new ReservationApi(config),
+  payment: new PaymentAPIApi(config),
+  review: new ReviewAPIApi(config),
 }

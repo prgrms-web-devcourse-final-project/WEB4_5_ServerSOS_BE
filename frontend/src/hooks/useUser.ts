@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   getLoginInfo,
   setLoginInfo,
@@ -6,6 +6,8 @@ import {
 } from "../lib/storage/loginStorage"
 import { apiClient } from "@/api/apiClient"
 import type { LoginRequest } from "@/api/__generated__"
+import { getCookie } from "@/lib/cookie"
+import { useNavigate } from "react-router-dom"
 
 async function login(loginRequest: LoginRequest) {
   const response = await apiClient.member.login({ loginRequest })
@@ -19,13 +21,18 @@ async function login(loginRequest: LoginRequest) {
   })
 }
 
+const USER_QUERY_KEY = ["user"]
+
 export function useUser() {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const {
     data: user,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_QUERY_KEY,
     queryFn: async () => {
       const loginInfo = getLoginInfo()
 
@@ -40,6 +47,24 @@ export function useUser() {
       })
 
       if (response.code !== 200) {
+        const refreshToken = getCookie("refreshToken")
+
+        if (!refreshToken) {
+          throw new Error("No refresh token")
+        }
+
+        const tokenResponse = await apiClient.token.renewToken({
+          refreshToken,
+        })
+
+        if (tokenResponse.code !== 200 || !tokenResponse.data?.accessToken) {
+          throw new Error("Failed to renew token")
+        }
+
+        setLoginInfo({
+          token: tokenResponse.data.accessToken,
+        })
+
         throw new Error("Failed to fetch user info")
       }
 
@@ -58,11 +83,19 @@ export function useUser() {
   const isLogin = !!user && !error
   const checkLogin = () => !!getLoginInfo()?.token
 
+  const logout = () => {
+    removeLoginInfo()
+    queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY })
+
+    navigate("/")
+  }
+
   return {
     isLogin,
     user,
     checkLogin,
     login,
+    logout,
     isLoading,
   }
 }

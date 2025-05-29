@@ -1,7 +1,6 @@
 package com.pickgo.global.response;
 
 import com.pickgo.global.exception.BusinessException;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -24,11 +23,11 @@ public enum RsCode {
     //Post
     POST_NOT_FOUND(RsConstant.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 
-	  //Review
-	  REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
-	  REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
-	  REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
-	  REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
+    //Review
+    REVIEW_CREATED(RsConstant.CREATED, "리뷰가 등록되었습니다."),
+    REVIEW_DELETED(RsConstant.SUCCESS, "리뷰가 삭제되었습니다."),
+    REVIEW_UPDATED(RsConstant.SUCCESS, "리뷰가 수정되었습니다."),
+    REVIEW_NOT_FOUND(RsConstant.NOT_FOUND, "리뷰를 찾을수 없습니다."),
     REVIEW_ALREADY_LIKED(RsConstant.BAD_REQUEST, "이미 좋아요를 눌렀습니다."),
     REVIEW_NOT_LIKED_YET(RsConstant.NOT_FOUND, "좋아요를 누른 상태가 아닙니다."),
 

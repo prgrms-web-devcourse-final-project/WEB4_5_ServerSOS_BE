@@ -192,23 +192,25 @@ public class PerformanceMapper {
         AreaGrade areaGrade;
         int rowCount;
         int colCount;
+        int price;
 
-        public AreaConfig(AreaName areaName, AreaGrade areaGrade, int rowCount, int colCount) {
+        public AreaConfig(AreaName areaName, AreaGrade areaGrade, int rowCount, int colCount, int price) {
             this.areaName = areaName;
             this.areaGrade = areaGrade;
             this.rowCount = rowCount;
             this.colCount = colCount;
+            this.price = price;
         }
     }
 
     // 구역 생성
     private static List<PerformanceArea> createPerformanceAreas(Performance performance) {
         List<AreaConfig> areaConfigs = List.of(
-                new AreaConfig(AreaName.VIP, AreaGrade.PREMIUM, 5, 20),
-                new AreaConfig(AreaName.A, AreaGrade.SPECIAL, 15, 10),
-                new AreaConfig(AreaName.B, AreaGrade.ROYAL, 15, 10),
-                new AreaConfig(AreaName.C, AreaGrade.SPECIAL, 15, 10),
-                new AreaConfig(AreaName.D, AreaGrade.NORMAL, 15, 30)
+                new AreaConfig(AreaName.VIP, AreaGrade.PREMIUM, 5, 20, 150000),
+                new AreaConfig(AreaName.A, AreaGrade.SPECIAL, 15, 10, 100000),
+                new AreaConfig(AreaName.B, AreaGrade.ROYAL, 15, 10, 120000),
+                new AreaConfig(AreaName.C, AreaGrade.SPECIAL, 15, 10, 100000),
+                new AreaConfig(AreaName.D, AreaGrade.NORMAL, 15, 30, 80000)
         );
 
         List<PerformanceArea> performanceAreas = new ArrayList<>();
@@ -217,7 +219,7 @@ public class PerformanceMapper {
             PerformanceArea area = PerformanceArea.builder()
                     .name(config.areaName)
                     .grade(config.areaGrade)
-                    .price(100000)
+                    .price(config.price)
                     .rowCount(config.rowCount)
                     .colCount(config.colCount)
                     .performance(performance)

@@ -15,15 +15,16 @@
 
 import * as runtime from '../runtime';
 import type {
-  RsDataObject,
   SseEmitter,
 } from '../models/index';
 import {
-    RsDataObjectFromJSON,
-    RsDataObjectToJSON,
     SseEmitterFromJSON,
     SseEmitterToJSON,
 } from '../models/index';
+
+export interface SubscribeRequest {
+    sessionId: number;
+}
 
 /**
  * 
@@ -31,44 +32,21 @@ import {
 export class QueueAPIApi extends runtime.BaseAPI {
 
     /**
-     * 결제 처리 후 퇴장
+     * 공연 예매 대기열 입장 및 구독
      */
-    async exitRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataObject>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Authorization", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
+    async subscribeRaw(requestParameters: SubscribeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SseEmitter>> {
+        if (requestParameters['sessionId'] == null) {
+            throw new runtime.RequiredError(
+                'sessionId',
+                'Required parameter "sessionId" was null or undefined when calling subscribe().'
+            );
         }
-        const response = await this.request({
-            path: `/api/queue/exit`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataObjectFromJSON(jsonValue));
-    }
-
-    /**
-     * 결제 처리 후 퇴장
-     */
-    async exit(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataObject> {
-        const response = await this.exitRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 대기열 입장 및 구독
-     */
-    async subscribeWaitingStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SseEmitter>> {
         const queryParameters: any = {};
+
+        if (requestParameters['sessionId'] != null) {
+            queryParameters['sessionId'] = requestParameters['sessionId'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -91,10 +69,10 @@ export class QueueAPIApi extends runtime.BaseAPI {
     }
 
     /**
-     * 대기열 입장 및 구독
+     * 공연 예매 대기열 입장 및 구독
      */
-    async subscribeWaitingStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SseEmitter> {
-        const response = await this.subscribeWaitingStatusRaw(initOverrides);
+    async subscribe(requestParameters: SubscribeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SseEmitter> {
+        const response = await this.subscribeRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

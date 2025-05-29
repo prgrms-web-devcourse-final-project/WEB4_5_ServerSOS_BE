@@ -1,15 +1,5 @@
 package com.pickgo.domain.post.review.service;
 
-import static com.pickgo.global.response.RsCode.*;
-
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
@@ -24,8 +14,20 @@ import com.pickgo.domain.post.review.repository.ReviewLikeRepository;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.jwt.JwtProvider;
 import com.pickgo.global.response.RsCode;
-
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static com.pickgo.global.response.RsCode.UNAUTHENTICATED;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class PostReviewService {
     private final MemberRepository memberRepository;
     private final ReviewLikeRepository reviewLikeRepository;
     private final JwtProvider jwtProvider;
+    private final RedissonClient redissonClient;
 
     // 게시글에 달린 리뷰 목록 조회
 
@@ -152,30 +155,67 @@ public class PostReviewService {
     }
 
     public void likeReview(Long postId, Long reviewId, UUID memberId) {
-        Review review = getReviewByIdAndValidatePost(reviewId, postId);
-        Member member = getMemberById(memberId);
+        String lockKey = "review-like:" + reviewId;
+        RLock lock = redissonClient.getLock(lockKey);
 
-        if (reviewLikeRepository.existsByMemberAndReview(member, review)) {
-            throw new BusinessException(RsCode.REVIEW_ALREADY_LIKED);
+        try {
+            if (lock.tryLock(3, 1, TimeUnit.SECONDS)) {
+                Review review = getReviewByIdAndValidatePost(reviewId, postId);
+                Member member = getMemberById(memberId);
+
+                try {
+                    reviewLikeRepository.save(
+                            ReviewLike.builder().review(review).member(member).build()
+                    );
+                    review.incrementLikeCount();
+                    postReviewRepository.flush();
+                } catch (DataIntegrityViolationException e) {
+                    throw new BusinessException(RsCode.REVIEW_ALREADY_LIKED);
+                }
+
+            } else {
+                throw new BusinessException(RsCode.BAD_REQUEST);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BusinessException(RsCode.INTERNAL_SERVER);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
-
-        review.incrementLikeCount();
-        reviewLikeRepository.save(ReviewLike.builder()
-                .review(review)
-                .member(member)
-                .build());
     }
+
 
     public void cancelLikeReview(Long postId, Long reviewId, UUID memberId) {
-        Review review = getReviewByIdAndValidatePost(reviewId, postId);
-        Member member = getMemberById(memberId);
+        String lockKey = "review-like:" + reviewId;
+        RLock lock = redissonClient.getLock(lockKey);
 
-        ReviewLike like = reviewLikeRepository.findByMemberAndReview(member, review)
-                .orElseThrow(() -> new BusinessException(RsCode.REVIEW_NOT_LIKED_YET));
+        try {
+            if (lock.tryLock(3, 1, TimeUnit.SECONDS)) {
+                Review review = getReviewByIdAndValidatePost(reviewId, postId);
+                Member member = getMemberById(memberId);
 
-        review.decrementLikeCount();
-        reviewLikeRepository.delete(like);
+                ReviewLike like = reviewLikeRepository.findByMemberAndReview(member, review)
+                        .orElseThrow(() -> new BusinessException(RsCode.REVIEW_NOT_LIKED_YET));
+
+                reviewLikeRepository.delete(like);
+                review.decrementLikeCount();
+                postReviewRepository.flush();
+
+            } else {
+                throw new BusinessException(RsCode.BAD_REQUEST);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BusinessException(RsCode.INTERNAL_SERVER);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
     }
+
 
     /*
      예외처리 메서드

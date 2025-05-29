@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.member.member.entity.enums.SocialProvider;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,6 +75,9 @@ class PaymentServiceTest {
 
     @Mock
     private LogWriter logWriter;
+
+    @Mock
+    private LogContextUtil logContextUtil;
 
     @Mock
     private VenueRepository venueRepository;
@@ -175,11 +181,13 @@ class PaymentServiceTest {
         Member member = getMockMember();
         Reservation reservation = getMockReservation(member);
         Payment payment = getMockPayment(reservation, PaymentStatus.PENDING);
+        LogContext mockLogContext = new LogContext("testUrl", "testAction", "testId", ActorType.SYSTEM); // 가짜 로그 컨텍스트 객체
 
         PaymentCreateRequest request = new PaymentCreateRequest(20000, reservationId);
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
         when(paymentRepository.save(any())).thenReturn(payment);
+        when(logContextUtil.extract()).thenReturn(mockLogContext);
 
         PaymentDetailResponse result = paymentService.createPayment(request);
 
