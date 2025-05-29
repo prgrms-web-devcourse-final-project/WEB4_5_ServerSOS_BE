@@ -1,11 +1,14 @@
 package com.pickgo.domain.auth.oauth.kakao.service;
 
 import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.log.enums.ActorType;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.service.MemberService;
 import com.pickgo.domain.auth.oauth.kakao.dto.KakaoToken;
 import com.pickgo.domain.auth.oauth.kakao.dto.KakaoUserInfo;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.logging.util.LogWriter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +46,8 @@ class KakaoServiceTest {
 	private HttpServletResponse response;
 	@Mock
 	private LogWriter logWriter;
+	@Mock
+	private LogContextUtil logContextUtil;
 
 	@InjectMocks
 	private KakaoService kakaoService;
@@ -85,6 +90,7 @@ class KakaoServiceTest {
 		String accessToken = "access-token";
 		Member member = getMockMember();
 		KakaoToken kakaoToken = new KakaoToken(accessToken, "bearer", "refresh", 3600L, null, 86400L);
+		LogContext mockLogContext = new LogContext("testUrl", "testAction", "testId", ActorType.SYSTEM); // 가짜 로그 컨텍스트 객체
 
 		when(restTemplate.postForEntity(anyString(), any(), eq(KakaoToken.class)))
 			.thenReturn(ResponseEntity.ok(kakaoToken)); // kakao token 요청 응답
@@ -96,6 +102,8 @@ class KakaoServiceTest {
 		when(memberService.saveEntity(any(Member.class))).thenReturn(member); // 기존 회원 없음 → 신규 저장
 
 		when(request.getHeader("Origin")).thenReturn(frontendUrl); // 요청 헤더에 origin 정보 존재
+
+		when(logContextUtil.extract()).thenReturn(mockLogContext);
 
 		// when
 		RedirectView redirectView = kakaoService.login(code, request, response);

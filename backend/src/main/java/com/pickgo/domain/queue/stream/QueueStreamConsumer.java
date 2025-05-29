@@ -1,13 +1,5 @@
 package com.pickgo.domain.queue.stream;
 
-import java.io.IOException;
-import java.util.concurrent.Executor;
-
-import org.springframework.core.env.Environment;
-import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
-
 import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.queue.dto.EntryPermission;
 import com.pickgo.domain.queue.dto.QueueSession;
@@ -16,8 +8,14 @@ import com.pickgo.global.config.thread.ExecutorConfig;
 import com.pickgo.global.infra.sse.SseHandler;
 import com.pickgo.global.infra.stream.redis.RedisStreamConsumer;
 import com.pickgo.global.init.ServerIdProvider;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.stream.MapRecord;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.concurrent.Executor;
 
 /**
  * 대기열 Stream Consumer
@@ -34,11 +32,11 @@ public class QueueStreamConsumer extends RedisStreamConsumer {
     private final TokenService tokenService;
 
     public QueueStreamConsumer(StringRedisTemplate redisTemplate,
-            ServerIdProvider serverIdProvider,
-            SseHandler sseHandler,
-            ExecutorConfig executorConfig,
-            Environment environment,
-            TokenService tokenService
+                               ServerIdProvider serverIdProvider,
+                               SseHandler sseHandler,
+                               ExecutorConfig executorConfig,
+                               Environment environment,
+                               TokenService tokenService
     ) {
         super(redisTemplate, environment);
         this.serverIdProvider = serverIdProvider;
@@ -65,7 +63,7 @@ public class QueueStreamConsumer extends RedisStreamConsumer {
 
     @Override
     protected Executor getExecutor() {
-        return executorConfig.threadPoolTaskExecutor();
+        return executorConfig.queueThreadPoolTaskExecutor();
     }
 
     /**

@@ -19,6 +19,8 @@ import com.pickgo.domain.payment.repository.PaymentRepository;
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.domain.reservation.enums.ReservationStatus;
 import com.pickgo.domain.reservation.repository.ReservationRepository;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.logging.util.LogWriter;
@@ -44,6 +46,7 @@ public class PaymentService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ReservedSeatRepository reservedSeatRepository;
     private final LogWriter logWriter;
+    private final LogContextUtil logContextUtil;
 
 
     @Transactional
@@ -61,7 +64,8 @@ public class PaymentService {
         Payment payment = request.toEntity(reservation, orderId);
         paymentRepository.save(payment);
 
-        logWriter.writePaymentLog(payment, ActionType.PAYMENT_CREATED);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writePaymentLog(payment, ActionType.PAYMENT_CREATED, logContext);
 
         return PaymentDetailResponse.from(payment);
     }
@@ -109,7 +113,8 @@ public class PaymentService {
         // 상태 변경
         payment.cancel();
 
-        logWriter.writePaymentLog(payment,ActionType.PAYMENT_CANCELED);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writePaymentLog(payment,ActionType.PAYMENT_CANCELED, logContext);
     }
 
     // BusinessException이 발생하면 트랜잭션이 롤백되므로 noRollbackFor 설정. FAILED 상태 저장용
@@ -162,7 +167,8 @@ public class PaymentService {
             applicationEventPublisher.publishEvent(new SeatStatusChangedEvent(seat)); // 좌석 상태 변경 이벤트를 spring에 발행, 구독하고 있는 SSE리스너가 변경 감지 -> 알림 발송
         });
 
-        logWriter.writePaymentLog(payment,ActionType.PAYMENT_COMPLETED);
+        LogContext logContext = logContextUtil.extract();
+        logWriter.writePaymentLog(payment,ActionType.PAYMENT_COMPLETED, logContext);
 
         return PaymentDetailResponse.from(payment);
     }

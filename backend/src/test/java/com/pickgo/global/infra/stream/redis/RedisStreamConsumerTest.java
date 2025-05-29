@@ -1,14 +1,6 @@
 package com.pickgo.global.infra.stream.redis;
 
-import static com.pickgo.global.infra.stream.redis.RedisStreamConsumerTest.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.awaitility.Awaitility.*;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.pickgo.global.config.thread.ExecutorConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +14,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import com.pickgo.global.config.thread.ExecutorConfig;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.pickgo.global.infra.stream.redis.RedisStreamConsumerTest.TestStreamConsumer;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 /**
  * RedisStreamConsumer 동작 검증
@@ -98,7 +97,7 @@ class RedisStreamConsumerTest {
         private final AtomicBoolean handled = new AtomicBoolean(false);
 
         protected TestStreamConsumer(StringRedisTemplate redisTemplate, ExecutorConfig executorConfig,
-                Environment environment) {
+                                     Environment environment) {
             super(redisTemplate, environment);
             this.executorConfig = executorConfig;
         }
@@ -120,7 +119,7 @@ class RedisStreamConsumerTest {
 
         @Override
         protected ThreadPoolTaskExecutor getExecutor() {
-            return executorConfig.threadPoolTaskExecutor();
+            return executorConfig.queueThreadPoolTaskExecutor();
         }
 
         @Override
