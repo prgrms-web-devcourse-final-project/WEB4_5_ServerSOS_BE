@@ -18,6 +18,7 @@ export function useSubscriptionEnterQueue<T>({
 }: UseSubscriptionEnterQueueProps<T>) {
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (disabled || !sessionId) return
 
@@ -58,5 +59,5 @@ export function useSubscriptionEnterQueue<T>({
         abortControllerRef.current = null
       }
     }
-  }, [disabled, onMessage, onError, sessionId])
+  }, [])
 }

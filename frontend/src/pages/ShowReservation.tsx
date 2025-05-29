@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { PageLayout } from "../layout/PageLayout"
 import SeatMap from "@/components/reservation/SeatMap"
 import { useUser } from "@/hooks/useUser"
@@ -128,6 +128,11 @@ export const ShowReservation = () => {
                     </span>
                   </div>
                 </>
+              )}
+              {waitInQueue.estimatedTime && (
+                <div className="text-lg text-gray-500">
+                  예상 대기 시간: {waitInQueue.estimatedTime}
+                </div>
               )}
             </div>
           )}
