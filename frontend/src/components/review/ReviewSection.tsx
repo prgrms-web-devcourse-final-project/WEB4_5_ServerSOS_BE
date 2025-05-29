@@ -1,43 +1,30 @@
-import { useState, useEffect } from "react"
-import { MoreVertical, Send } from "lucide-react"
+import { useState } from "react"
+import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useReviews } from "@/hooks/useReviews"
-
-interface Review {
-  id: number
-  userId: string
-  username: string
-  profileImage: string
-  content: string
-  createdAt: string
-  isMyReview: boolean
-}
+import { useCreateReview } from "@/hooks/useReviewMutation"
 
 export default function ReviewSection({ showId }: { showId: number }) {
   const { reviews } = useReviews({ performanceId: showId })
 
-  // const [reviews, setReviews] = useState<Review[]>([])
+  const { createReview, isPending } = useCreateReview({
+    performanceId: showId,
+  })
   const [newReview, setNewReview] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // 리뷰 작성 처리
   const handleSubmitReview = () => {
     if (!newReview.trim()) return
 
-    setIsSubmitting(true)
-  }
+    createReview({
+      postId: showId,
+      contents: newReview,
+    })
 
-  // 리뷰 삭제 처리
-  const handleDeleteReview = (reviewId: number) => {
-    // 실제 구현에서는 API 호출로 대체
+    setNewReview("")
   }
 
   return (
@@ -59,7 +46,7 @@ export default function ReviewSection({ showId }: { showId: number }) {
           <div className="flex justify-end">
             <Button
               onClick={handleSubmitReview}
-              disabled={!newReview.trim() || isSubmitting}
+              disabled={!newReview.trim() || isPending}
               size="sm"
               className="gap-1"
             >

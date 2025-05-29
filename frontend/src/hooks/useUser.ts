@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   getLoginInfo,
   setLoginInfo,
@@ -7,6 +7,7 @@ import {
 import { apiClient } from "@/api/apiClient"
 import type { LoginRequest } from "@/api/__generated__"
 import { getCookie } from "@/lib/cookie"
+import { useNavigate } from "react-router-dom"
 
 async function login(loginRequest: LoginRequest) {
   const response = await apiClient.member.login({ loginRequest })
@@ -20,13 +21,18 @@ async function login(loginRequest: LoginRequest) {
   })
 }
 
+const USER_QUERY_KEY = ["user"]
+
 export function useUser() {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const {
     data: user,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["user"],
+    queryKey: USER_QUERY_KEY,
     queryFn: async () => {
       const loginInfo = getLoginInfo()
 
@@ -77,11 +83,19 @@ export function useUser() {
   const isLogin = !!user && !error
   const checkLogin = () => !!getLoginInfo()?.token
 
+  const logout = () => {
+    removeLoginInfo()
+    queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY })
+
+    navigate("/")
+  }
+
   return {
     isLogin,
     user,
     checkLogin,
     login,
+    logout,
     isLoading,
   }
 }

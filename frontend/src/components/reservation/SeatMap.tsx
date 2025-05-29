@@ -17,6 +17,7 @@ import { useCreateReservation } from "@/hooks/useReservation"
 import type {
   PerformanceSessionResponse,
   PerformanceDetailResponse,
+  PerformanceAreaDetailResponse,
 } from "@/api/__generated__"
 
 // 좌석 영역 정의
@@ -41,13 +42,22 @@ const SECTIONS = {
 }
 
 // 좌석 상태 초기화 함수
-const initializeSeats = (rows: number, cols: number) => {
+const initializeSeats = (area: PerformanceAreaDetailResponse) => {
+  const rows = area.rowCount ?? 0
+  const cols = area.colCount ?? 0
+
   return Array(rows)
     .fill(null)
     .map(() =>
       Array(cols)
         .fill(null)
-        .map(() => ({ status: "available" })),
+        .map(() => ({
+          status: area.reservedSeats?.some(
+            (seat) => Number(seat.row) === rows && Number(seat.number) === cols,
+          )
+            ? "reserved"
+            : "available",
+        })),
     )
 }
 
@@ -89,10 +99,41 @@ export default function SeatMap({
 
   // 영역 선택 처리
   const handleSectionSelect = (section: keyof typeof SECTIONS) => {
+    if (!areas) {
+      toast({
+        title: "영역 정보를 찾을 수 없습니다",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (areas.length !== 5) {
+      toast({
+        title: "영역 정보가 올바르지 않습니다",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const [pArea, sLArea, rArea, sRArea, aArea] = areas
+
+    const area = (() => {
+      switch (section) {
+        case "P":
+          return pArea
+        case "S_LEFT":
+          return sLArea
+        case "R":
+          return rArea
+        case "S_RIGHT":
+          return sRArea
+        case "A":
+          return aArea
+      }
+    })()
+
     setSelectedSection(section)
-    setSectionSeats(
-      initializeSeats(SECTIONS[section].rows, SECTIONS[section].cols),
-    )
+    setSectionSeats(initializeSeats(area))
 
     setZoomLevel(1) // 다른 석은 기본 줌 레벨
 
@@ -738,6 +779,8 @@ export default function SeatMap({
                         </div>
                         <div className="flex gap-1">
                           {row.map((seat, colIndex) => {
+                            const isReserved = seat.status === "reserved"
+
                             const isSelected = selectedSeats.some(
                               (s) =>
                                 s.row === rowIndex &&
@@ -801,13 +844,22 @@ export default function SeatMap({
                                 key={colIndex}
                                 className={cn(
                                   "w-6 h-6 text-xs border rounded-md flex items-center justify-center transition-all duration-200",
-                                  isSelected
-                                    ? `${seatColor} ${textColor} shadow-sm`
-                                    : "bg-white hover:bg-gray-50 border-gray-200",
+                                  isReserved
+                                    ? "bg-gray-300 border-gray-400 cursor-not-allowed"
+                                    : isSelected
+                                      ? `${seatColor} ${textColor} shadow-sm`
+                                      : "bg-white hover:bg-gray-50 border-gray-200",
                                 )}
-                                onClick={() =>
-                                  handleSeatToggle(rowIndex, colIndex)
-                                }
+                                onClick={() => {
+                                  if (isReserved) {
+                                    toast({
+                                      title: "이미 예약된 좌석입니다",
+                                      variant: "destructive",
+                                    })
+                                  } else {
+                                    handleSeatToggle(rowIndex, colIndex)
+                                  }
+                                }}
                               >
                                 {colIndex + 1}
                               </button>

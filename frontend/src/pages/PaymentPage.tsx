@@ -141,7 +141,7 @@ export default function PaymentPage() {
           },
         )
 
-        const orderId = response.data?.id
+        const orderId = response.data?.orderId
 
         if (response.code !== 200 || !orderId) {
           throw new Error("결제 생성 실패")
