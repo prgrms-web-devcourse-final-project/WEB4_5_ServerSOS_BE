@@ -1,8 +1,12 @@
 package com.pickgo.domain.queue.scheduler;
 
-import com.pickgo.domain.queue.dto.WaitingState;
-import com.pickgo.domain.queue.service.QueueService;
-import com.pickgo.global.config.thread.ExecutorConfig;
+import static org.awaitility.Awaitility.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,12 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.domain.queue.policy.EntryCountDecider;
+import com.pickgo.domain.queue.service.QueueService;
+import com.pickgo.global.config.thread.ExecutorConfig;
 
-import static org.awaitility.Awaitility.await;
-import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class QueueProcessorSchedulerTest {
@@ -25,6 +29,9 @@ class QueueProcessorSchedulerTest {
 
     @Mock
     private ExecutorConfig executorConfig;
+
+    @Mock
+    private EntryCountDecider entryCountDecider;
 
     @InjectMocks
     private QueueProcessorScheduler scheduler;
@@ -52,6 +59,7 @@ class QueueProcessorSchedulerTest {
         when(queueService.getAllPerformanceSessionIds()).thenReturn(List.of(performanceSessionId));
         when(queueService.pollTopCount(eq(performanceSessionId), anyInt())).thenReturn(List.of());
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of());
+        when(entryCountDecider.decideEntryCount()).thenReturn(10);
 
         scheduler.process();
 
@@ -68,6 +76,7 @@ class QueueProcessorSchedulerTest {
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of(connectionId));
         when(queueService.getPosition(performanceSessionId, connectionId)).thenReturn(1);
         when(queueService.getSize(performanceSessionId)).thenReturn(1);
+        when(entryCountDecider.decideEntryCount()).thenReturn(10);
 
         scheduler.process();
 
@@ -89,6 +98,7 @@ class QueueProcessorSchedulerTest {
         when(queueService.getLine(performanceSessionId)).thenReturn(List.of(connectionId));
         when(queueService.getPosition(performanceSessionId, connectionId)).thenReturn(1);
         when(queueService.getSize(performanceSessionId)).thenReturn(1);
+        when(entryCountDecider.decideEntryCount()).thenReturn(10);
 
         scheduler.process();
 
