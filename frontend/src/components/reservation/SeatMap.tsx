@@ -41,24 +41,44 @@ const SECTIONS = {
   A: { rows: 15, cols: 30, name: "A석", price: 80000, color: "#FEE2E2" },
 }
 
+type Seat = {
+  areaId?: number
+  status: "available" | "reserved"
+  row: number
+  col: number
+}
+
+type Seats = Seat[][]
+
 // 좌석 상태 초기화 함수
-const initializeSeats = (area: PerformanceAreaDetailResponse) => {
+const initializeSeats = (area: PerformanceAreaDetailResponse): Seats => {
   const rows = area.rowCount ?? 0
   const cols = area.colCount ?? 0
 
-  return Array(rows)
+  const initSeats: Seats = Array(rows)
     .fill(null)
-    .map(() =>
+    .map((_, row) =>
       Array(cols)
         .fill(null)
-        .map(() => ({
-          status: area.reservedSeats?.some(
-            (seat) => Number(seat.row) === rows && Number(seat.number) === cols,
-          )
-            ? "reserved"
-            : "available",
+        .map((_, col) => ({
+          areaId: area.id,
+          status: "available",
+          row: row,
+          col: col,
         })),
     )
+
+  area.reservedSeats?.forEach((reservedSeat) => {
+    const row = convertRowToNumber(reservedSeat.row)
+    const col = reservedSeat.number
+
+    if (row && col) {
+      initSeats[row][col].status =
+        reservedSeat.status === "RELEASED" ? "available" : "reserved"
+    }
+  })
+
+  return initSeats
 }
 
 export default function SeatMap({
@@ -82,13 +102,14 @@ export default function SeatMap({
     {
       row: number
       col: number
+      areaId?: number
       section: keyof typeof SECTIONS | null
       sectionName: string
       rowLabel: string
       price: number
     }[]
   >([])
-  const [sectionSeats, setSectionSeats] = useState<{ status: string }[][]>([])
+  const [sectionSeats, setSectionSeats] = useState<Seats>([])
 
   const [zoomLevel, setZoomLevel] = useState(1)
   const [isDragging, setIsDragging] = useState(false)
@@ -142,13 +163,13 @@ export default function SeatMap({
   }
 
   // 좌석 선택 처리
-  const handleSeatToggle = (row: number, col: number) => {
+  const handleSeatToggle = (seat: Seat) => {
     if (!selectedSection) return
     const seatIndex = selectedSeats.findIndex(
-      (seat) =>
-        seat.row === row &&
-        seat.col === col &&
-        seat.section === selectedSection,
+      (selectedSeat) =>
+        selectedSeat.row === seat.row &&
+        selectedSeat.col === seat.col &&
+        selectedSeat.section === selectedSection,
     )
 
     if (seatIndex > -1) {
@@ -159,11 +180,12 @@ export default function SeatMap({
       setSelectedSeats([
         ...selectedSeats,
         {
-          row,
-          col,
+          row: seat.row,
+          col: seat.col,
+          areaId: seat.areaId,
           section: selectedSection,
           sectionName: SECTIONS[selectedSection].name,
-          rowLabel: getRowLabel(row),
+          rowLabel: getRowLabel(seat.row),
           price: SECTIONS[selectedSection].price,
         },
       ])
@@ -189,12 +211,32 @@ export default function SeatMap({
 
     try {
       const reservation = await reserveSeats({
-        seats: [], //TODO: 좌석 선택 시 좌석 정보 전달,
+        seats: selectedSeats
+          .filter((seat) => seat.areaId !== undefined)
+          .map((seat) => ({
+            areaId: seat.areaId,
+            row: seat.row,
+            column: seat.col,
+          })),
         sessionId: session.id,
         entryToken,
       })
 
       reservationId = reservation?.id ?? 0
+
+      // 결제 페이지로 이동하면서 선택된 좌석과 세션 정보 전달
+      navigate("/show/payment", {
+        state: {
+          selectedSeats,
+          session,
+          performance,
+          reservationId,
+          entryToken,
+        },
+      })
+
+      setDetailOpen(false)
+      setSelectedSeats([])
     } catch (error) {
       console.error(error)
       toast({
@@ -202,20 +244,6 @@ export default function SeatMap({
         variant: "destructive",
       })
     }
-
-    // 결제 페이지로 이동하면서 선택된 좌석과 세션 정보 전달
-    navigate("/show/payment", {
-      state: {
-        selectedSeats,
-        session,
-        performance,
-        reservationId,
-        entryToken,
-      },
-    })
-
-    setDetailOpen(false)
-    setSelectedSeats([])
   }
 
   // 확대/축소 처리
@@ -765,7 +793,7 @@ export default function SeatMap({
 
                   {/* 좌석 배치 - 직사각형 형태로 표현 */}
                   <div className="flex flex-col items-center">
-                    {sectionSeats.map((row, rowIndex) => (
+                    {sectionSeats.map((seatRow, rowIndex) => (
                       <div
                         key={rowIndex}
                         className="flex items-center mb-1"
@@ -778,8 +806,8 @@ export default function SeatMap({
                           {getRowLabel(rowIndex)}
                         </div>
                         <div className="flex gap-1">
-                          {row.map((seat, colIndex) => {
-                            const isReserved = seat.status === "reserved"
+                          {seatRow.map((seat, colIndex) => {
+                            const isReserved = seat.status !== "available"
 
                             const isSelected = selectedSeats.some(
                               (s) =>
@@ -791,21 +819,27 @@ export default function SeatMap({
                             // 통로 표시
                             if (
                               (selectedSection === "P" &&
-                                (colIndex === Math.floor(row.length / 2) - 1 ||
-                                  colIndex === Math.floor(row.length / 2))) ||
+                                (colIndex ===
+                                  Math.floor(seatRow.length / 2) - 1 ||
+                                  colIndex ===
+                                    Math.floor(seatRow.length / 2))) ||
                               (selectedSection === "R" &&
-                                (colIndex === Math.floor(row.length / 2) - 1 ||
-                                  colIndex === Math.floor(row.length / 2))) ||
+                                (colIndex ===
+                                  Math.floor(seatRow.length / 2) - 1 ||
+                                  colIndex ===
+                                    Math.floor(seatRow.length / 2))) ||
                               (selectedSection === "S_LEFT" &&
-                                colIndex === row.length - 1) ||
+                                colIndex === seatRow.length - 1) ||
                               (selectedSection === "S_RIGHT" &&
                                 colIndex === 0) ||
                               (selectedSection === "A" &&
-                                (colIndex === Math.floor(row.length / 2) - 1 ||
-                                  colIndex === Math.floor(row.length / 2) ||
-                                  colIndex === Math.floor(row.length / 4) - 1 ||
+                                (colIndex ===
+                                  Math.floor(seatRow.length / 2) - 1 ||
+                                  colIndex === Math.floor(seatRow.length / 2) ||
                                   colIndex ===
-                                    Math.floor((row.length * 3) / 4)))
+                                    Math.floor(seatRow.length / 4) - 1 ||
+                                  colIndex ===
+                                    Math.floor((seatRow.length * 3) / 4)))
                             ) {
                               return (
                                 <div key={colIndex} className="w-2 h-6"></div>
@@ -857,7 +891,7 @@ export default function SeatMap({
                                       variant: "destructive",
                                     })
                                   } else {
-                                    handleSeatToggle(rowIndex, colIndex)
+                                    handleSeatToggle(seat)
                                   }
                                 }}
                               >
@@ -915,4 +949,10 @@ export default function SeatMap({
       </Dialog>
     </div>
   )
+}
+
+const convertRowToNumber = (row?: string) => {
+  if (!row) return
+
+  return row.toUpperCase().charCodeAt(0) - 65 // 'A'의 ASCII 코드는 65
 }

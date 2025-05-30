@@ -17,12 +17,12 @@ const customFetch = async (url: string, init?: RequestInit) => {
 
   // 기존 헤더와 새로운 Authorization 헤더를 병합
   const headers = {
-    ...init?.headers,
     ...(loginInfo?.token
       ? {
           Authorization: `Bearer ${loginInfo.token}`,
         }
       : {}),
+    ...init?.headers,
   }
 
   // 새로운 init 객체 생성

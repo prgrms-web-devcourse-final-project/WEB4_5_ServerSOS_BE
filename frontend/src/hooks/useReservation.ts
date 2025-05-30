@@ -18,6 +18,7 @@ export const useCreateReservation = () => {
         },
         {
           headers: {
+            "Content-Type": "application/json",
             EntryAuth: `Bearer ${entryToken}`,
           },
         },
