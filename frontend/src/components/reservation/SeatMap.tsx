@@ -69,11 +69,12 @@ const initializeSeats = (area: PerformanceAreaDetailResponse): Seats => {
     )
 
   area.reservedSeats?.forEach((reservedSeat) => {
+    console.log(reservedSeat)
     const row = convertRowToNumber(reservedSeat.row)
     const col = reservedSeat.number
 
-    if (row && col) {
-      initSeats[row][col].status =
+    if (row !== undefined && col !== undefined) {
+      initSeats[row][col - 1].status =
         reservedSeat.status === "RELEASED" ? "available" : "reserved"
     }
   })
