@@ -816,36 +816,6 @@ export default function SeatMap({
                                 s.section === selectedSection,
                             )
 
-                            // 통로 표시
-                            if (
-                              (selectedSection === "P" &&
-                                (colIndex ===
-                                  Math.floor(seatRow.length / 2) - 1 ||
-                                  colIndex ===
-                                    Math.floor(seatRow.length / 2))) ||
-                              (selectedSection === "R" &&
-                                (colIndex ===
-                                  Math.floor(seatRow.length / 2) - 1 ||
-                                  colIndex ===
-                                    Math.floor(seatRow.length / 2))) ||
-                              (selectedSection === "S_LEFT" &&
-                                colIndex === seatRow.length - 1) ||
-                              (selectedSection === "S_RIGHT" &&
-                                colIndex === 0) ||
-                              (selectedSection === "A" &&
-                                (colIndex ===
-                                  Math.floor(seatRow.length / 2) - 1 ||
-                                  colIndex === Math.floor(seatRow.length / 2) ||
-                                  colIndex ===
-                                    Math.floor(seatRow.length / 4) - 1 ||
-                                  colIndex ===
-                                    Math.floor((seatRow.length * 3) / 4)))
-                            ) {
-                              return (
-                                <div key={colIndex} className="w-2 h-6"></div>
-                              )
-                            }
-
                             // 좌석 색상 설정
                             let seatColor = ""
                             let textColor = ""
