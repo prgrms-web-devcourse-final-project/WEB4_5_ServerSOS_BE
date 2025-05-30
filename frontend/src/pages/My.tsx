@@ -76,7 +76,7 @@ export const My = () => {
           <li className="p-6 border-b">
             <Link
               // to="/mypage/edit-profile"
-              to="./#"
+              to="/my/edit-profile"
               className="flex justify-between items-center hover:text-blue-600"
             >
               <span>내 정보 수정</span>
