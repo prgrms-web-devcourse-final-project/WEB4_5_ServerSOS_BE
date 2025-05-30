@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,6 +7,7 @@ import { Calendar, MapPin, Clock, Ticket } from "lucide-react"
 import type {
   PerformanceSessionResponse,
   PerformanceDetailResponse,
+  PaymentDetailResponse,
 } from "@/api/__generated__"
 import { apiClient } from "@/api/apiClient"
 import {
@@ -50,6 +51,8 @@ export default function PaymentPage() {
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null)
+
+  const paymentDetailRef = useRef<PaymentDetailResponse | null>(null)
 
   useEffect(() => {
     async function fetchPaymentWidgets() {
@@ -101,12 +104,51 @@ export default function PaymentPage() {
     widgets.setAmount(amount)
   }, [widgets, amount])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    async function createPayment() {
+      const response = await apiClient.payment.createPayment(
+        {
+          paymentCreateRequest: {
+            amount: totalAmount,
+            reservationId,
+          },
+        },
+        {
+          headers: {
+            EntryAuth: `Bearer ${entryToken}`,
+            "Content-Type": "application/json",
+          },
+        },
+      )
+
+      const orderId = response.data?.orderId
+
+      if (!response.data || !orderId) {
+        throw new Error("결제 생성 실패")
+      }
+
+      paymentDetailRef.current = response.data
+    }
+
+    createPayment()
+  }, [])
+
   // 결제 처리 함수 (구현은 나중에)
   const handlePayment = async () => {
     if (selectedSeats.length === 0) {
       toast({
         title: "선택된 좌석이 없습니다",
         description: "좌석을 선택한 후 결제를 진행해주세요.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!paymentDetailRef.current || !paymentDetailRef.current.orderId) {
+      toast({
+        title: "결제 생성 실패",
+        description: "결제 생성 실패",
         variant: "destructive",
       })
       return
@@ -127,31 +169,11 @@ export default function PaymentPage() {
       })
 
       try {
-        const response = await apiClient.payment.createPayment(
-          {
-            paymentCreateRequest: {
-              amount: totalAmount,
-              reservationId,
-            },
-          },
-          {
-            headers: {
-              EntryAuth: `Bearer ${entryToken}`,
-            },
-          },
-        )
-
-        const orderId = response.data?.orderId
-
-        if (response.code !== 200 || !orderId) {
-          throw new Error("결제 생성 실패")
-        }
-
         // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
         // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
         // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
         await widgets.requestPayment({
-          orderId: orderId.toString(),
+          orderId: paymentDetailRef.current.orderId,
           orderName: `${performance?.name} 예매`,
           successUrl: `${window.location.origin}/payment/success`,
           failUrl: `${window.location.origin}/payment/fail`,
