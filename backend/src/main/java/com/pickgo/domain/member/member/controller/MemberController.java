@@ -98,7 +98,7 @@ public class MemberController {
     }
 
     @Operation(summary = "프로필 이미지 수정")
-    @PutMapping("/me/profile")
+    @PutMapping(value = "/me/profile", consumes = "multipart/form-data")
     public RsData<String> updateProfileImage(
             @AuthenticationPrincipal MemberPrincipal principal,
             @RequestParam MultipartFile image
