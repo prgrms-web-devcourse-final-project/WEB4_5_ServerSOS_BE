@@ -215,8 +215,8 @@ export default function SeatMap({
           .filter((seat) => seat.areaId !== undefined)
           .map((seat) => ({
             areaId: seat.areaId,
-            row: seat.row,
-            column: seat.col,
+            row: seat.row + 1,
+            column: seat.col + 1,
           })),
         sessionId: session.id,
         entryToken,
