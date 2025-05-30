@@ -65,6 +65,9 @@ export function ReservationDetailModal({
               <strong>주소:</strong> {data.venue.address}
             </p>
             <p>
+              <strong>공연일:</strong> {data.session.performanceTime?.toLocaleString()}
+            </p>
+            <p>
               <strong>총 가격:</strong> {data.totalPrice?.toLocaleString()}원
             </p>
             <div>
