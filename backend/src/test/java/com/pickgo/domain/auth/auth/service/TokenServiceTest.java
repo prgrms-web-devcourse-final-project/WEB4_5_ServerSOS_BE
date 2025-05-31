@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.pickgo.domain.auth.token.dto.TokenDetailResponse;
+import com.pickgo.domain.auth.token.repository.redis.RedisRefreshTokenRepository;
 import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
@@ -42,6 +43,9 @@ class TokenServiceTest {
 	@Mock
 	private HttpServletResponse response;
 
+	@Mock
+	private RedisRefreshTokenRepository redisRefreshTokenRepository;
+
 	private final String refreshToken = "refresh-token";
 	private final String accessToken = "access-token";
 
@@ -56,12 +60,13 @@ class TokenServiceTest {
 		given(memberRepository.findById(mockMember.getId())).willReturn(Optional.of(mockMember));
 		given(jwtProvider.generateToken(eq(mockMember.getId().toString()), any(), eq(claims))).willReturn(accessToken);
 		given(jwtProvider.isValidToken(refreshToken)).willReturn(true);
+		given(redisRefreshTokenRepository.findByUserId(mockMember.getId())).willReturn(refreshToken);
 
 		// when
-		TokenDetailResponse response = tokenService.createAccessToken(refreshToken);
+		TokenDetailResponse tokenResponse = tokenService.createAccessToken(refreshToken, response);
 
 		// then
-		assertThat(response.accessToken()).isEqualTo(accessToken);
+		assertThat(tokenResponse.accessToken()).isEqualTo(accessToken);
 	}
 
 	@Test
@@ -73,9 +78,10 @@ class TokenServiceTest {
 		given(jwtProvider.getUserId(refreshToken)).willReturn(userId);
 		given(memberRepository.findById(userId)).willReturn(Optional.empty());
 		given(jwtProvider.isValidToken(refreshToken)).willReturn(true);
+		given(redisRefreshTokenRepository.findByUserId(userId)).willReturn(refreshToken);
 
 		// when & then
-		assertThatThrownBy(() -> tokenService.createAccessToken(refreshToken))
+		assertThatThrownBy(() -> tokenService.createAccessToken(refreshToken, response))
 			.isInstanceOf(BusinessException.class)
 			.hasMessage(NOT_FOUND.getMessage());
 	}
