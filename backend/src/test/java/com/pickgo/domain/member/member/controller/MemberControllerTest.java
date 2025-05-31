@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,75 +40,80 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class MemberControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Autowired
-	private TestToken token;
+    @Autowired
+    private TestToken token;
 
-	@Autowired
-	private JwtProvider jwtProvider;
+    @Autowired
+    private JwtProvider jwtProvider;
 
-	@Autowired
-	private MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private HistorySaveService historySaveService;
+    @Autowired
+    private HistorySaveService historySaveService;
 
-	@Autowired
-	private MemberHistoryRepository memberHistoryRepository;
+    @Autowired
+    private MemberHistoryRepository memberHistoryRepository;
 
-	// 회원가입된 기존 유저
-	private final String testEmail = "test@example.com";
-	private final String testPassword = "test_password";
-	private final String testNickname = "test_user";
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
-	private Member getTestMember() {
-		return Member.builder()
-			.id(jwtProvider.getUserId(token.userToken))
-			.email(testEmail)
-			.password(passwordEncoder.encode(testPassword))
-			.nickname(testNickname)
-			.profile("profile.jpg")
-			.authority(USER)
-			.socialProvider(SocialProvider.NONE)
-			.build();
-	}
+    // 회원가입된 기존 유저
+    private final String testEmail = "test@example.com";
+    private final String testPassword = "test_password";
+    private final String testNickname = "test_user";
 
-	@BeforeEach
-	void setUp() {
-		Member member = getTestMember();
-		memberRepository.save(member);
-	}
+    private Member getTestMember() {
+        return Member.builder()
+                .id(jwtProvider.getUserId(token.userToken))
+                .email(testEmail)
+                .password(passwordEncoder.encode(testPassword))
+                .nickname(testNickname)
+                .profile("profile.jpg")
+                .authority(USER)
+                .socialProvider(SocialProvider.NONE)
+                .build();
+    }
 
-	@AfterEach
-	void tearDown() {
-		memberRepository.deleteAll();
-	}
+    @BeforeEach
+    void setUp() {
+        Member member = getTestMember();
+        memberRepository.save(member);
+    }
 
-	@Test
-	@DisplayName("회원가입 성공")
-	void signup_성공() throws Exception {
-		final String NEW_EMAIL = "new@example.com";
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAll();
+    }
 
-		MemberCreateRequest request = new MemberCreateRequest(
-			NEW_EMAIL,
-			testPassword,
-			testNickname
-		);
+    @Test
+    @DisplayName("회원가입 성공")
+    void signup_성공() throws Exception {
+        final String NEW_EMAIL = "new@example.com";
 
-		mockMvc.perform(post("/api/members")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
-			.andExpect(jsonPath("$.data.email").value(NEW_EMAIL));
+        MemberCreateRequest request = new MemberCreateRequest(
+                NEW_EMAIL,
+                testPassword,
+                testNickname
+        );
+
+        redisTemplate.opsForValue().set("email:verify:success:" + NEW_EMAIL, "true");
+
+        mockMvc.perform(post("/api/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.email").value(NEW_EMAIL));
 
 //		MemberHistory history = memberHistoryRepository.findAll().get(0);
 //		assertThat(history.getEmail()).isEqualTo(NEW_EMAIL);
@@ -115,88 +121,90 @@ public class MemberControllerTest {
 //		assertThat(history.getActorType()).isEqualTo(ActorType.GUEST);
 	}
 
-	@Test
-	@DisplayName("로그인 성공")
-	void login_성공() throws Exception {
-		MemberCreateRequest request = new MemberCreateRequest(
-			testEmail,
-			testPassword,
-			testNickname
-		);
-		mockMvc.perform(post("/api/members")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(request)));
+    @Test
+    @DisplayName("로그인 성공")
+    void login_성공() throws Exception {
+        redisTemplate.opsForValue().set("email:verify:success:" + testEmail, "true");
 
-		String loginPayload = """
-			{
-				"email": "%s",
-				"password": "%s"
-			}
-			""".formatted(testEmail, testPassword);
+        MemberCreateRequest request = new MemberCreateRequest(
+                testEmail,
+                testPassword,
+                testNickname
+        );
+        mockMvc.perform(post("/api/members")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
-		mockMvc.perform(post("/api/members/login")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(loginPayload))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
-			.andExpect(jsonPath("$.data.accessToken").exists());
+        String loginPayload = """
+                {
+                	"email": "%s",
+                	"password": "%s"
+                }
+                """.formatted(testEmail, testPassword);
 
-		MemberHistory history = memberHistoryRepository.findAll().get(0);
-		assertThat(history.getAction()).isEqualTo(ActionType.MEMBER_SIGNUP);
-		assertThat(history.getActorType()).isEqualTo(ActorType.GUEST);
-	}
+        mockMvc.perform(post("/api/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginPayload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.accessToken").exists());
 
-	@Test
-	@DisplayName("내 정보 조회 - 인증 성공")
-	void myInfo_성공() throws Exception {
-		mockMvc.perform(get("/api/members/me")
-				.header("Authorization", "Bearer " + token.userToken)
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
-			.andExpect(jsonPath("$.data.email").exists());
-	}
+        MemberHistory history = memberHistoryRepository.findAll().get(0);
+        assertThat(history.getAction()).isEqualTo(ActionType.MEMBER_SIGNUP);
+        assertThat(history.getActorType()).isEqualTo(ActorType.GUEST);
+    }
 
-	@Test
-	@DisplayName("내 정보 조회 - 인증 실패")
-	void myInfo_인증없음_실패() throws Exception {
-		mockMvc.perform(get("/api/members/me")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isUnauthorized());
-	}
+    @Test
+    @DisplayName("내 정보 조회 - 인증 성공")
+    void myInfo_성공() throws Exception {
+        mockMvc.perform(get("/api/members/me")
+                        .header("Authorization", "Bearer " + token.userToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data.email").exists());
+    }
 
-	@Test
-	@DisplayName("비밀번호 변경 성공")
-	void updatePassword_성공() throws Exception {
-		MemberPasswordUpdateRequest request = new MemberPasswordUpdateRequest("newPassword123");
+    @Test
+    @DisplayName("내 정보 조회 - 인증 실패")
+    void myInfo_인증없음_실패() throws Exception {
+        mockMvc.perform(get("/api/members/me")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
 
-		mockMvc.perform(put("/api/members/me/password")
-				.header("Authorization", "Bearer " + token.userToken)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(SUCCESS.getCode()));
-	}
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void updatePassword_성공() throws Exception {
+        MemberPasswordUpdateRequest request = new MemberPasswordUpdateRequest("newPassword123");
 
-	@Test
-	@DisplayName("프로필 이미지 수정 성공")
-	void updateProfileImage_성공() throws Exception {
-		MockMultipartFile profileImage = new MockMultipartFile(
-				"image",
-				"newProfile.jpg",
-				MediaType.IMAGE_JPEG_VALUE,
-				"fake-image-content".getBytes()
-		);
+        mockMvc.perform(put("/api/members/me/password")
+                        .header("Authorization", "Bearer " + token.userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(SUCCESS.getCode()));
+    }
 
-		mockMvc.perform(multipart("/api/members/me/profile")
-						.file(profileImage)
-						.with(request -> {
-							request.setMethod("PUT");
-							return request;
-						})
-						.header("Authorization", "Bearer " + token.userToken))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
-				.andExpect(jsonPath("$.data").value("https://mock-s3.com/profile/newProfile.jpg"));
-	}
+    @Test
+    @DisplayName("프로필 이미지 수정 성공")
+    void updateProfileImage_성공() throws Exception {
+        MockMultipartFile profileImage = new MockMultipartFile(
+                "image",
+                "newProfile.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-content".getBytes()
+        );
+
+        mockMvc.perform(multipart("/api/members/me/profile")
+                        .file(profileImage)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
+                        .header("Authorization", "Bearer " + token.userToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(SUCCESS.getCode()))
+                .andExpect(jsonPath("$.data").value("https://mock-s3.com/profile/newProfile.jpg"));
+    }
 }

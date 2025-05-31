@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class BaseInitData {
     private final PerformanceService performanceService;
     private final PerformanceRepository performanceRepository;
     private final MemberService memberService;
+    private final StringRedisTemplate redisTemplate;
 
 
     @Bean
@@ -32,8 +34,17 @@ public class BaseInitData {
             String password = "1234";
             String nickname = "test1234";
             if (!memberService.existsByEmail(testEmail)) {
+                // 이메일 인증 통과하도록 설정
+                redisTemplate.opsForValue().set("email:verify:success:" + testEmail, "true");
                 memberService.save(new MemberCreateRequest(testEmail, password, nickname));
                 System.out.println("회원가입이 완료되었습니다");
+            }
+
+            String adminEmail = "admin@example.com";
+            String adminNickname = "admin1234";
+            if (!memberService.existsByEmail(adminEmail)) {
+                memberService.saveAdmin(new MemberCreateRequest(adminEmail, password, adminNickname));
+                System.out.println("관리자 회원가입이 완료되었습니다");
             }
         };
     }
