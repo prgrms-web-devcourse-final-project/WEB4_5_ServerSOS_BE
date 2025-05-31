@@ -1,10 +1,7 @@
 package com.pickgo.global.config;
 
-import com.pickgo.global.exception.jwt.JwtAccessDeniedHandler;
-import com.pickgo.global.exception.jwt.JwtAuthenticationEntryPoint;
-import com.pickgo.global.jwt.EntryAuthenticationFilter;
-import com.pickgo.global.jwt.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,7 +17,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.pickgo.global.exception.jwt.JwtAccessDeniedHandler;
+import com.pickgo.global.exception.jwt.JwtAuthenticationEntryPoint;
+import com.pickgo.global.jwt.EntryAuthenticationFilter;
+import com.pickgo.global.jwt.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -45,8 +47,6 @@ public class SecurityConfig {
                 .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 처리 비활성화
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/monitoring/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // 권한 검증
                         .anyRequest().permitAll()) // 그 외는 jwt 필터로 인증 검증
                 .sessionManagement(configurer ->
