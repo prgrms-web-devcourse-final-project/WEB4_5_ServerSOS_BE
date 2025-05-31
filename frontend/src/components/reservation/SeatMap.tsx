@@ -158,23 +158,49 @@ export default function SeatMap({
         setDetailOpen(true)
     }
 
-    // 좌석 선택 처리
+    // 다이얼로그 내부에서 선택된 좌석을 임시로 저장할 상태 추가
+    const [tempSelectedSeats, setTempSelectedSeats] = useState<
+        {
+            row: number
+            col: number
+            areaId?: number
+            section: keyof typeof SECTIONS | null
+            sectionName: string
+            rowLabel: string
+            price: number
+        }[]
+    >([])
+
+    // 좌석 선택 처리 (다이얼로그 내부)
     const handleSeatToggle = (seat: Seat) => {
         if (!selectedSection) return
-        const seatIndex = selectedSeats.findIndex(
+
+        // tempSelectedSeats에서 좌석 찾기
+        const tempSeatIndex = tempSelectedSeats.findIndex(
             (selectedSeat) =>
                 selectedSeat.row === seat.row &&
                 selectedSeat.col === seat.col &&
                 selectedSeat.section === selectedSection,
         )
 
-        if (seatIndex > -1) {
-            // 이미 선택된 좌석이면 선택 취소
-            setSelectedSeats(selectedSeats.filter((_, i) => i !== seatIndex))
+        // selectedSeats에서 좌석 찾기
+        const selectedSeatIndex = selectedSeats.findIndex(
+            (selectedSeat) =>
+                selectedSeat.row === seat.row &&
+                selectedSeat.col === seat.col &&
+                selectedSeat.section === selectedSection,
+        )
+
+        if (tempSeatIndex > -1) {
+            // tempSelectedSeats에 이미 있으면 선택 취소
+            setTempSelectedSeats(tempSelectedSeats.filter((_, i) => i !== tempSeatIndex))
+        } else if (selectedSeatIndex > -1) {
+            // selectedSeats에 이미 있으면 선택 취소
+            setSelectedSeats(selectedSeats.filter((_, i) => i !== selectedSeatIndex))
         } else {
-            // 새로운 좌석 선택
-            setSelectedSeats([
-                ...selectedSeats,
+            // 새 좌석 추가
+            setTempSelectedSeats([
+                ...tempSelectedSeats,
                 {
                     row: seat.row,
                     col: seat.col,
@@ -186,6 +212,19 @@ export default function SeatMap({
                 },
             ])
         }
+    }
+
+    // 다이얼로그 확인 버튼 클릭 시 처리
+    const handleDialogConfirm = () => {
+        setSelectedSeats([...selectedSeats, ...tempSelectedSeats])
+        setTempSelectedSeats([]) // 임시 상태 초기화
+        setDetailOpen(false) // 다이얼로그 닫기
+    }
+
+// 다이얼로그 취소 버튼 클릭 시 처리
+    const handleDialogCancel = () => {
+        setTempSelectedSeats([]) // 임시 상태 초기화
+        setDetailOpen(false) // 다이얼로그 닫기
     }
 
     // 예약 처리
@@ -818,7 +857,13 @@ export default function SeatMap({
                                                                 s.row === rowIndex &&
                                                                 s.col === colIndex &&
                                                                 s.section === selectedSection,
-                                                        )
+                                                        ) ||
+                                                            tempSelectedSeats.some(
+                                                                (s) =>
+                                                                    s.row === rowIndex &&
+                                                                    s.col === colIndex &&
+                                                                    s.section === selectedSection,
+                                                            )
 
                                                         // 좌석 색상 설정
                                                         let seatColor = ""
@@ -885,20 +930,20 @@ export default function SeatMap({
                                     <p className="text-sm text-gray-500">
                                         선택된 좌석:{" "}
                                         {
-                                            selectedSeats.filter(
+                                            [...tempSelectedSeats, ...selectedSeats].filter(
                                                 (seat) => seat.section === selectedSection,
                                             ).length
                                         }
                                         석
                                     </p>
-                                    {selectedSeats.filter(
+                                    {[...tempSelectedSeats, ...selectedSeats].filter(
                                         (seat) => seat.section === selectedSection,
                                     ).length > 0 && (
                                         <p className="font-medium">
                                             섹션 가격:{" "}
                                             {(
                                                 SECTIONS[selectedSection].price *
-                                                selectedSeats.filter(
+                                                [...tempSelectedSeats, ...selectedSeats].filter(
                                                     (seat) => seat.section === selectedSection,
                                                 ).length
                                             ).toLocaleString()}
@@ -909,12 +954,12 @@ export default function SeatMap({
                                 <div className="flex gap-2">
                                     <Button
                                         variant="outline"
-                                        onClick={() => setDetailOpen(false)}
+                                        onClick={handleDialogCancel}
                                         className="border-gray-200"
                                     >
                                         취소
                                     </Button>
-                                    <Button onClick={() => setDetailOpen(false)}>확인</Button>
+                                    <Button onClick={handleDialogConfirm}>확인</Button>
                                 </div>
                             </div>
                         </div>
