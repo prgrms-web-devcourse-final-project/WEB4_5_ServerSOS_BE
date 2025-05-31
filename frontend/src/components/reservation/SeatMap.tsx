@@ -744,7 +744,15 @@ export default function SeatMap({
             </div>
 
             {/* 좌석 선택 다이얼로그 */}
-            <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+            <Dialog
+                open={detailOpen}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) {
+                        setTempSelectedSeats([]) // 다이얼로그 닫힐 때 temp 초기화
+                    }
+                    setDetailOpen(isOpen)
+                }}
+            >
                 <DialogContent className="max-[100vw]">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
