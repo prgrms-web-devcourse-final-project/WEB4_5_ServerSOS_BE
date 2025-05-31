@@ -162,14 +162,14 @@ export function Join() {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border ${
+                  className={`flex-1 w-full px-3 py-2 border ${
                     errors.email ? "border-red-500" : "border-gray-300"
                   } rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900`}
                 />
                 <button
                   type="button"
                   onClick={handleSendEmailCode}
-                  className="px-3 py-2 text-sm bg-gray-800 text-white rounded-md hover:bg-gray-700"
+                  className="px-3 py-2 text-sm bg-black text-white rounded-md"
                 >
                   인증요청
                 </button>
@@ -194,12 +194,12 @@ export function Join() {
                   type="text"
                   value={formData.code}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900"
+                  className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900"
                 />
                 <button
                   type="button"
                   onClick={handleVerifyEmailCode}
-                  className="px-3 py-2 text-sm bg-gray-800 text-white rounded-md hover:bg-gray-700"
+                  className="px-3 py-2 text-sm bg-black text-white rounded-md"
                 >
                   인증확인
                 </button>
