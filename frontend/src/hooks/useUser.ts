@@ -37,20 +37,22 @@ export function useUser() {
       const loginInfo = getLoginInfo()
       const accessToken = loginInfo?.token
       let response = null
-      
+
       if (accessToken) {
         response = await fetchMyInfo(accessToken)
       }
 
       if (!accessToken || response.code !== 200) {
-        const tokenResponse = await apiClient.token.renewToken({ refreshToken: "dummy" })
-  
+        const tokenResponse = await apiClient.token.renewToken({
+          refreshToken: "dummy",
+        })
+
         if (tokenResponse.code !== 201 || !tokenResponse.data?.accessToken) {
           throw new Error("Failed to renew token")
         }
 
         const newAccessToken = tokenResponse.data.accessToken
-  
+
         setLoginInfo({
           token: newAccessToken,
         })
@@ -60,7 +62,7 @@ export function useUser() {
 
       return response.data
     },
-    throwOnError: false
+    throwOnError: false,
   })
 
   const isLogin = !!user && !error
@@ -78,7 +80,7 @@ export function useUser() {
       console.error("Logout API 호출 중 오류:", e)
       // API 실패하더라도 클라이언트 로그아웃은 계속 진행
     }
-    
+
     removeLoginInfo()
     queryClient.removeQueries({ queryKey: USER_QUERY_KEY })
     navigate("/")

@@ -1,9 +1,9 @@
-import { useMyReservationList } from "@/hooks/useMyReservationList";
-import { useReservationCancel } from "@/hooks/useReservationCancel";
-import { ReservationDetailModal } from "./ReservationDetailModal";
-import { PageLayout } from "@/layout/PageLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useMyReservationList } from "@/hooks/useMyReservationList"
+import { useReservationCancel } from "@/hooks/useReservationCancel"
+import { ReservationDetailModal } from "./ReservationDetailModal"
+import { PageLayout } from "@/layout/PageLayout"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -12,11 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
-import { useCallback, useRef, useState } from "react";
-import { Calendar, MapPin, Receipt, User, Trash2 } from "lucide-react";
+} from "@/components/ui/dialog"
+import { useToast } from "@/components/ui/use-toast"
+import { format } from "date-fns"
+import { useCallback, useRef, useState } from "react"
+import { Calendar, MapPin, Receipt, User, Trash2 } from "lucide-react"
 
 export const MyReservationList = () => {
   const {
@@ -26,46 +26,46 @@ export const MyReservationList = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useMyReservationList();
+  } = useMyReservationList()
 
-  const { cancelReservation, isPending: isCancelling } = useReservationCancel();
-  const { toast } = useToast();
+  const { cancelReservation, isPending: isCancelling } = useReservationCancel()
+  const { toast } = useToast()
   const [selectedReservationId, setSelectedReservationId] = useState<
     number | null
-  >(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  >(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedReservationIdForModal, setSelectedReservationIdForModal] =
-    useState<number | null>(null);
+    useState<number | null>(null)
 
   const openDetailModal = (reservationId: number) => {
-    setSelectedReservationIdForModal(reservationId);
-  };
+    setSelectedReservationIdForModal(reservationId)
+  }
 
   const closeDetailModal = () => {
-    setSelectedReservationIdForModal(null);
-  };
+    setSelectedReservationIdForModal(null)
+  }
 
-  const observer = useRef<IntersectionObserver | null>(null);
+  const observer = useRef<IntersectionObserver | null>(null)
   const lastReservationElementRef = useCallback(
     (node: HTMLDivElement) => {
-      if (isLoading) return;
-      if (observer.current) observer.current.disconnect();
+      if (isLoading) return
+      if (observer.current) observer.current.disconnect()
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
+          fetchNextPage()
         }
-      });
-      if (node) observer.current.observe(node);
+      })
+      if (node) observer.current.observe(node)
     },
-    [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage]
-  );
+    [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage],
+  )
 
   const handleDeleteClick = (reservationId: number | undefined) => {
     if (reservationId) {
-      setSelectedReservationId(reservationId);
-      setIsDeleteModalOpen(true);
+      setSelectedReservationId(reservationId)
+      setIsDeleteModalOpen(true)
     }
-  };
+  }
 
   const handleDeleteConfirm = () => {
     if (selectedReservationId) {
@@ -75,31 +75,31 @@ export const MyReservationList = () => {
             title: "예약이 취소되었습니다",
             description: "예약이 성공적으로 취소되었습니다.",
             variant: "default",
-          });
-          setIsDeleteModalOpen(false);
-          setSelectedReservationId(null);
+          })
+          setIsDeleteModalOpen(false)
+          setSelectedReservationId(null)
         },
         onError: (error) => {
           toast({
             title: "예약 취소 실패",
             description: "예약 취소 중 오류가 발생했습니다. 다시 시도해주세요.",
             variant: "destructive",
-          });
-          console.error("예약 취소 오류:", error);
+          })
+          console.error("예약 취소 오류:", error)
         },
-      });
+      })
     }
-  };
+  }
 
   const handleDeleteCancel = () => {
-    setIsDeleteModalOpen(false);
-    setSelectedReservationId(null);
-  };
+    setIsDeleteModalOpen(false)
+    setSelectedReservationId(null)
+  }
 
   // 취소 가능한 상태인지 확인하는 함수
   const isCancellable = (status?: string) => {
-    return status === "PAID" || status === "RESERVED";
-  };
+    return status === "PAID" || status === "RESERVED"
+  }
 
   if (isLoading && myReservationList.length === 0) {
     return (
@@ -114,7 +114,7 @@ export const MyReservationList = () => {
           </div>
         </div>
       </PageLayout>
-    );
+    )
   }
 
   if (error) {
@@ -127,38 +127,38 @@ export const MyReservationList = () => {
           </div>
         </div>
       </PageLayout>
-    );
+    )
   }
 
   const getStatusColor = (status?: string) => {
     switch (status) {
       case "PAID":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800"
       case "CANCELED":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800"
       case "RESERVED":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800"
       case "EXPIRED":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800"
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800"
     }
-  };
+  }
 
   const getStatusText = (status?: string) => {
     switch (status) {
       case "PAID":
-        return "결제완료";
+        return "결제완료"
       case "CANCELED":
-        return "취소됨";
+        return "취소됨"
       case "RESERVED":
-        return "예약됨";
+        return "예약됨"
       case "EXPIRED":
-        return "만료됨";
+        return "만료됨"
       default:
-        return "알 수 없음";
+        return "알 수 없음"
     }
-  };
+  }
 
   return (
     <PageLayout>
@@ -177,7 +177,7 @@ export const MyReservationList = () => {
         ) : (
           <div className="space-y-6">
             {myReservationList.map((reservation, index) => {
-              const isLast = index === myReservationList.length - 1;
+              const isLast = index === myReservationList.length - 1
               return (
                 <Card
                   key={`${reservation.id}-${index}`}
@@ -194,7 +194,7 @@ export const MyReservationList = () => {
                         <div className="flex items-center gap-2">
                           <span
                             className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                              reservation.status
+                              reservation.status,
                             )}`}
                           >
                             {getStatusText(reservation.status)}
@@ -211,8 +211,8 @@ export const MyReservationList = () => {
                               variant="destructive"
                               size="sm"
                               onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteClick(reservation.id);
+                                e.stopPropagation()
+                                handleDeleteClick(reservation.id)
                               }}
                               disabled={isCancelling}
                               className="flex items-center gap-2"
@@ -236,7 +236,7 @@ export const MyReservationList = () => {
                               {reservation.reservationTime
                                 ? format(
                                     reservation.reservationTime,
-                                    "yyyy년 MM월 dd일 HH:mm"
+                                    "yyyy년 MM월 dd일 HH:mm",
                                   )
                                 : "정보 없음"}
                             </p>
@@ -279,7 +279,7 @@ export const MyReservationList = () => {
                     </div>
                   </CardContent>
                 </Card>
-              );
+              )
             })}
 
             {/* 로딩 인디케이터 */}
@@ -353,5 +353,5 @@ export const MyReservationList = () => {
         />
       )}
     </PageLayout>
-  );
-};
+  )
+}
