@@ -1,12 +1,7 @@
 package com.pickgo.domain.auth.oauth.kakao.service;
 
-import static com.pickgo.domain.member.member.entity.enums.SocialProvider.KAKAO;
-import static com.pickgo.global.response.RsCode.*;
+import static com.pickgo.domain.member.member.entity.enums.SocialProvider.*;
 
-import java.net.URI;
-
-import com.pickgo.global.logging.dto.LogContext;
-import com.pickgo.global.logging.util.LogContextUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,16 +15,17 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.pickgo.domain.auth.oauth.kakao.dto.KakaoToken;
+import com.pickgo.domain.auth.oauth.kakao.dto.KakaoUserInfo;
 import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.log.enums.ActionType;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.service.MemberService;
-import com.pickgo.domain.auth.oauth.kakao.dto.KakaoToken;
-import com.pickgo.domain.auth.oauth.kakao.dto.KakaoUserInfo;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.logging.util.LogWriter;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +38,7 @@ public class KakaoService {
     private final MemberService memberService;
     private final LogWriter logWriter;
     private final LogContextUtil logContextUtil;
-    
+
     @Value("${custom.oauth.kakao.redirect-uri}")
     private String redirectUri;
     @Value("${custom.oauth.kakao.api-key}")
@@ -56,29 +52,29 @@ public class KakaoService {
     @Value("${custom.member.profile}")
     private String profile;
 
-    public RedirectView redirectToKakaoLogin() {
+    public RedirectView redirectToKakaoLogin(String origin) {
         String kakaoAuthUrl = UriComponentsBuilder.fromUriString(authorizeUri)
-            .queryParam("client_id", apiKey)
-            .queryParam("redirect_uri", redirectUri)
-            .queryParam("response_type", "code")
-            .build()
-            .toString();
+                .queryParam("client_id", apiKey)
+                .queryParam("redirect_uri", redirectUri)
+                .queryParam("response_type", "code")
+                .queryParam("state", origin)
+                .build()
+                .toString();
 
         return new RedirectView(kakaoAuthUrl);
     }
 
     @Transactional
-    public RedirectView login(String code, HttpServletRequest request, HttpServletResponse response) {
+    public RedirectView login(String code, String origin, HttpServletResponse response) {
         KakaoToken kakaoToken = getToken(code);
         KakaoUserInfo userInfo = getUserInfo(kakaoToken.accessToken());
 
         Member member = getOrCreateMember(userInfo);
         tokenService.createRefreshToken(member, response);
 
-        String origin = getOriginFromRequest(request);
         String homeUrl = UriComponentsBuilder.fromUriString(origin)
-            .build()
-            .toString();
+                .build()
+                .toString();
 
         LogContext logContext = logContextUtil.extract();
         logWriter.writeMemberLog(member, ActionType.MEMBER_LOGIN_KAKAO, logContext);
@@ -99,9 +95,9 @@ public class KakaoService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
         ResponseEntity<KakaoToken> response = restTemplate.postForEntity(
-            tokenUri,
-            request,
-            KakaoToken.class
+                tokenUri,
+                request,
+                KakaoToken.class
         );
 
         return response.getBody();
@@ -115,9 +111,9 @@ public class KakaoService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
 
         ResponseEntity<KakaoUserInfo> response = restTemplate.postForEntity(
-            userInfoUri,
-            request,
-            KakaoUserInfo.class
+                userInfoUri,
+                request,
+                KakaoUserInfo.class
         );
 
         return response.getBody();
@@ -132,22 +128,5 @@ public class KakaoService {
             Member newMember = userInfo.toEntity(profile);
             return memberService.saveEntity(newMember);
         }
-    }
-
-    private String getOriginFromRequest(HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        if (origin != null)
-            return origin;
-
-        String referer = request.getHeader("Referer");
-        if (referer == null)
-            throw new BusinessException(BAD_REQUEST);
-
-        URI uri = URI.create(referer);
-        String result = uri.getScheme() + "://" + uri.getHost();
-        if (uri.getPort() != -1) {
-            result += ":" + uri.getPort();
-        }
-        return result;
     }
 }
