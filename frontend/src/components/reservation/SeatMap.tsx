@@ -10,9 +10,9 @@ import {Slider} from "@/components/ui/slider"
 import {useAreas} from "@/hooks/useAreas"
 import {useCreateReservation} from "@/hooks/useReservation"
 import type {
-  PerformanceAreaDetailResponse,
-  PerformanceDetailResponse,
-  PerformanceSessionResponse,
+    PerformanceAreaDetailResponse,
+    PerformanceDetailResponse,
+    PerformanceSessionResponse,
 } from "@/api/__generated__"
 
 // 좌석 영역 정의
@@ -175,40 +175,60 @@ export default function SeatMap({
     const handleSeatToggle = (seat: Seat) => {
         if (!selectedSection) return
 
+        const sectionName = SECTIONS[selectedSection].name
+        const price = SECTIONS[selectedSection].price
+        const rowLabel = getRowLabel(seat.row)
+
         // tempSelectedSeats에서 좌석 찾기
-        const tempSeatIndex = tempSelectedSeats.findIndex(
-            (selectedSeat) =>
-                selectedSeat.row === seat.row &&
-                selectedSeat.col === seat.col &&
-                selectedSeat.section === selectedSection,
+        const isTempSelected = tempSelectedSeats.some(
+            (s) =>
+                s.row === seat.row &&
+                s.col === seat.col &&
+                s.section === selectedSection
         )
 
         // selectedSeats에서 좌석 찾기
-        const selectedSeatIndex = selectedSeats.findIndex(
-            (selectedSeat) =>
-                selectedSeat.row === seat.row &&
-                selectedSeat.col === seat.col &&
-                selectedSeat.section === selectedSection,
+        const isAlreadySelected = selectedSeats.some(
+            (s) =>
+                s.row === seat.row &&
+                s.col === seat.col &&
+                s.section === selectedSection
         )
 
-        if (tempSeatIndex > -1) {
-            // tempSelectedSeats에 이미 있으면 선택 취소
-            setTempSelectedSeats(tempSelectedSeats.filter((_, i) => i !== tempSeatIndex))
-        } else if (selectedSeatIndex > -1) {
-            // selectedSeats에 이미 있으면 선택 취소
-            setSelectedSeats(selectedSeats.filter((_, i) => i !== selectedSeatIndex))
-        } else {
-            // 새 좌석 추가
-            setTempSelectedSeats([
-                ...tempSelectedSeats,
+        if (isTempSelected) {
+            // 임시 선택된 좌석이면 → 선택 해제
+            setTempSelectedSeats((prev) =>
+                prev.filter(
+                    (s) =>
+                        !(s.row === seat.row && s.col === seat.col && s.section === selectedSection)
+                )
+            )
+        } else if (isAlreadySelected) {
+            // 이미 선택된 좌석이면 → temp에 "해제 요청"으로 넣는다
+            setTempSelectedSeats((prev) => [
+                ...prev,
                 {
                     row: seat.row,
                     col: seat.col,
                     areaId: seat.areaId,
                     section: selectedSection,
-                    sectionName: SECTIONS[selectedSection].name,
-                    rowLabel: getRowLabel(seat.row),
-                    price: SECTIONS[selectedSection].price,
+                    sectionName,
+                    rowLabel,
+                    price: -price, // 반영 시 제거 용도로 음수 부여
+                },
+            ])
+        } else {
+            // 새로 선택
+            setTempSelectedSeats((prev) => [
+                ...prev,
+                {
+                    row: seat.row,
+                    col: seat.col,
+                    areaId: seat.areaId,
+                    section: selectedSection,
+                    sectionName,
+                    rowLabel,
+                    price,
                 },
             ])
         }
@@ -216,12 +236,28 @@ export default function SeatMap({
 
     // 다이얼로그 확인 버튼 클릭 시 처리
     const handleDialogConfirm = () => {
-        setSelectedSeats([...selectedSeats, ...tempSelectedSeats])
+        const updated = [...selectedSeats]
+
+        tempSelectedSeats.forEach((seat) => {
+            const existingIndex = updated.findIndex(
+                (s) => s.row === seat.row && s.col === seat.col && s.section === seat.section
+            )
+
+            if (seat.price > 0 && existingIndex === -1) {
+                // 새 좌석 추가
+                updated.push(seat)
+            } else if (seat.price < 0 && existingIndex !== -1) {
+                // 기존 좌석 제거
+                updated.splice(existingIndex, 1)
+            }
+        })
+
+        setSelectedSeats(updated)
         setTempSelectedSeats([]) // 임시 상태 초기화
         setDetailOpen(false) // 다이얼로그 닫기
     }
 
-// 다이얼로그 취소 버튼 클릭 시 처리
+    // 다이얼로그 취소 버튼 클릭 시 처리
     const handleDialogCancel = () => {
         setTempSelectedSeats([]) // 임시 상태 초기화
         setDetailOpen(false) // 다이얼로그 닫기
@@ -859,19 +895,25 @@ export default function SeatMap({
                                                 <div className="flex gap-1">
                                                     {seatRow.map((seat, colIndex) => {
                                                         const isReserved = seat.status !== "available"
-
-                                                        const isSelected = selectedSeats.some(
-                                                            (s) =>
-                                                                s.row === rowIndex &&
-                                                                s.col === colIndex &&
-                                                                s.section === selectedSection,
-                                                        ) ||
-                                                            tempSelectedSeats.some(
-                                                                (s) =>
-                                                                    s.row === rowIndex &&
-                                                                    s.col === colIndex &&
-                                                                    s.section === selectedSection,
+                                                        
+                                                        const isSelected = (() => {
+                                                            const key = (s: any) => `${s.row}-${s.col}-${s.section}`
+                                                            const selectedMap = new Map(
+                                                                selectedSeats.map((s) => [key(s), true])
                                                             )
+
+                                                            tempSelectedSeats.forEach((s) => {
+                                                                const k = key(s)
+                                                                if (s.price < 0) {
+                                                                    selectedMap.delete(k)
+                                                                } else {
+                                                                    selectedMap.set(k, true)
+                                                                }
+                                                            })
+
+                                                            return selectedMap.has(`${rowIndex}-${colIndex}-${selectedSection}`)
+                                                        })()
+
 
                                                         // 좌석 색상 설정
                                                         let seatColor = ""
@@ -936,26 +978,60 @@ export default function SeatMap({
                             <div className="flex items-center justify-between w-full mt-4">
                                 <div>
                                     <p className="text-sm text-gray-500">
-                                        선택된 좌석:{" "}
-                                        {
-                                            [...tempSelectedSeats, ...selectedSeats].filter(
-                                                (seat) => seat.section === selectedSection,
-                                            ).length
-                                        }
-                                        석
+                                        선택된 좌석: {
+                                        (() => {
+                                            const key = (s: any) => `${s.row}-${s.col}-${s.section}`
+                                            const seatMap = new Map<string, typeof selectedSeats[0]>()
+
+                                            selectedSeats.forEach((s) => {
+                                                if (s.section === selectedSection) {
+                                                    seatMap.set(key(s), s)
+                                                }
+                                            })
+
+                                            tempSelectedSeats.forEach((s) => {
+                                                if (s.section !== selectedSection) return
+                                                const k = key(s)
+                                                if (s.price < 0) {
+                                                    seatMap.delete(k)
+                                                } else {
+                                                    seatMap.set(k, s)
+                                                }
+                                            })
+
+                                            return seatMap.size
+                                        })()
+                                    }석
                                     </p>
                                     {[...tempSelectedSeats, ...selectedSeats].filter(
                                         (seat) => seat.section === selectedSection,
                                     ).length > 0 && (
                                         <p className="font-medium">
-                                            섹션 가격:{" "}
-                                            {(
-                                                SECTIONS[selectedSection].price *
-                                                [...tempSelectedSeats, ...selectedSeats].filter(
-                                                    (seat) => seat.section === selectedSection,
-                                                ).length
-                                            ).toLocaleString()}
-                                            원
+                                            섹션 가격:{
+                                            (() => {
+                                                const key = (s: any) => `${s.row}-${s.col}-${s.section}`
+                                                const seatMap = new Map<string, typeof selectedSeats[0]>()
+
+                                                selectedSeats.forEach((s) => {
+                                                    if (s.section === selectedSection) {
+                                                        seatMap.set(key(s), s)
+                                                    }
+                                                })
+
+                                                tempSelectedSeats.forEach((s) => {
+                                                    if (s.section !== selectedSection) return
+                                                    const k = key(s)
+                                                    if (s.price < 0) {
+                                                        seatMap.delete(k)
+                                                    } else {
+                                                        seatMap.set(k, s)
+                                                    }
+                                                })
+
+                                                const total = Array.from(seatMap.values()).reduce((acc, s) => acc + s.price, 0)
+                                                return `${total.toLocaleString()}원`
+                                            })()
+                                        }
                                         </p>
                                     )}
                                 </div>
