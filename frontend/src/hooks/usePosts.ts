@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 const DEFAULT_SIZE = 20
 
 export const usePosts = ({
+  keyword = "",
   type,
   sort,
   page = 0,
@@ -15,13 +16,14 @@ export const usePosts = ({
   page?: number
 }) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["post", type, sort, page],
+    queryKey: ["post", type, sort, page, keyword],
     queryFn: () => {
       return apiClient.post.getPosts({
         size: DEFAULT_SIZE,
         page: page,
         type: type === "ALL" ? undefined : type,
         sort,
+        keyword,
       })
     },
   })

@@ -4,6 +4,7 @@ import { Home } from "./pages/Home"
 import { Login } from "./pages/Login"
 import { My } from "./pages/My"
 import { MyReservationList } from "./pages/MyReservationList"
+import { EditProfile } from "./pages/EditProfile"
 import { ShowDetail } from "./pages/ShowDetail"
 import { ShowReservation } from "./pages/ShowReservation"
 import Category from "./pages/Category"
@@ -28,6 +29,7 @@ function App() {
               <Route path="/join" element={<Join />} />
               <Route path="/my" element={<My />} />
               <Route path="/my/reservation" element={<MyReservationList />} />
+              <Route path="/my/edit-profile" element={<EditProfile />} />
               <Route path="/show/:id" element={<ShowDetail />} />
               <Route path="/category/:genre" element={<Category />} />
               <Route
