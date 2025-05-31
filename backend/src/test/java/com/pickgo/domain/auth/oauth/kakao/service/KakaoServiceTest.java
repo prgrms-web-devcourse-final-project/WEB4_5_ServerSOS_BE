@@ -1,17 +1,12 @@
 package com.pickgo.domain.auth.oauth.kakao.service;
 
-import com.pickgo.domain.auth.token.service.TokenService;
-import com.pickgo.domain.log.enums.ActorType;
-import com.pickgo.domain.member.member.entity.Member;
-import com.pickgo.domain.member.member.service.MemberService;
-import com.pickgo.domain.auth.oauth.kakao.dto.KakaoToken;
-import com.pickgo.domain.auth.oauth.kakao.dto.KakaoUserInfo;
-import com.pickgo.global.exception.BusinessException;
-import com.pickgo.global.logging.dto.LogContext;
-import com.pickgo.global.logging.util.LogContextUtil;
-import com.pickgo.global.logging.util.LogWriter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import static com.pickgo.domain.member.member.entity.enums.SocialProvider.*;
+import static com.pickgo.global.response.RsCode.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,12 +19,19 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.UUID;
+import com.pickgo.domain.auth.oauth.kakao.dto.KakaoToken;
+import com.pickgo.domain.auth.oauth.kakao.dto.KakaoUserInfo;
+import com.pickgo.domain.auth.token.service.TokenService;
+import com.pickgo.domain.log.enums.ActorType;
+import com.pickgo.domain.member.member.entity.Member;
+import com.pickgo.domain.member.member.service.MemberService;
+import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
+import com.pickgo.global.logging.util.LogWriter;
 
-import static com.pickgo.domain.member.member.entity.enums.SocialProvider.KAKAO;
-import static com.pickgo.global.response.RsCode.MEMBER_NOT_FOUND;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
 class KakaoServiceTest {
@@ -101,12 +103,10 @@ class KakaoServiceTest {
 		when(memberService.getEntity(email)).thenThrow(new BusinessException(MEMBER_NOT_FOUND));
 		when(memberService.saveEntity(any(Member.class))).thenReturn(member); // 기존 회원 없음 → 신규 저장
 
-		when(request.getHeader("Origin")).thenReturn(frontendUrl); // 요청 헤더에 origin 정보 존재
-
 		when(logContextUtil.extract()).thenReturn(mockLogContext);
 
 		// when
-		RedirectView redirectView = kakaoService.login(code, request, response);
+		RedirectView redirectView = kakaoService.login(code, frontendUrl, response);
 
 		// then
 		assertThat(redirectView.getUrl()).isEqualTo(frontendUrl);

@@ -179,7 +179,11 @@ export const Login = () => {
             <button
               type="button"
               onClick={() =>
-                (window.location.href = `${BACKEND_API}/api/oauth/kakao/login`)
+                {
+                  const origin = window.location.origin;
+                  const url = `${BACKEND_API}/api/oauth/kakao/login?state=${encodeURIComponent(origin)}`;
+                  window.location.href = url;
+                }
               }
               className="w-full bg-yellow-300 text-black py-3 rounded-md hover:bg-yellow-400 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
             >
