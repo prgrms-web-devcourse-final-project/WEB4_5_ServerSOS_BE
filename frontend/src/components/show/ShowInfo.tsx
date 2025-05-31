@@ -4,8 +4,6 @@ interface ShowInfoProps {
 }
 
 export default function ShowInfo({ description, detailImages }: ShowInfoProps) {
-  console.log("#description", description)
-
   return (
     <div className="space-y-8">
       {/* 공연 설명 */}

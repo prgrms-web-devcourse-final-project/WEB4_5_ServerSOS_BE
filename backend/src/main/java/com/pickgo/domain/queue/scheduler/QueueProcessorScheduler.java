@@ -1,19 +1,22 @@
 package com.pickgo.domain.queue.scheduler;
 
-import com.pickgo.domain.queue.dto.WaitingState;
-import com.pickgo.domain.queue.service.QueueService;
-import com.pickgo.global.config.thread.ExecutorConfig;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
+
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
+import com.pickgo.domain.queue.dto.WaitingState;
+import com.pickgo.domain.queue.policy.EntryCountDecider;
+import com.pickgo.domain.queue.service.QueueService;
+import com.pickgo.global.config.thread.ExecutorConfig;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 대기열 입장 처리 및 상태 publish 스케줄러 (동적 스케줄러 기반)
@@ -24,12 +27,13 @@ import java.util.concurrent.ScheduledFuture;
 public class QueueProcessorScheduler {
 
     private static long intervalMillis = 1000; // 주기(ms)
-    private static int entryCount = 10; // 주기마다 입장할 인원 수
+    private static volatile int entryCount = 10; // 주기마다 입장할 인원 수
     private final QueueService queueService;
     private ScheduledFuture<?> scheduledTask;
     private final TaskScheduler taskScheduler;
     private final ExecutorConfig executorConfig;
     private final Environment environment;
+    private final EntryCountDecider entryCountDecider;
 
     /**
      * 애플리케이션 시작 시 스케줄러 자동 시작
@@ -74,6 +78,9 @@ public class QueueProcessorScheduler {
      * 전체 대기열을 병렬로 처리
      */
     public void process() {
+        // 입장 수 설정
+        entryCount = entryCountDecider.decideEntryCount();
+
         // 전체 대기열 목록 조회
         List<Long> performanceSessionIds = queueService.getAllPerformanceSessionIds();
 
