@@ -1,6 +1,7 @@
 package com.pickgo.global.response;
 
 import com.pickgo.global.exception.BusinessException;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +18,8 @@ public enum RsCode {
     INTERNAL_SERVER(RsConstant.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
     UNAUTHENTICATED(RsConstant.UNAUTHORIZED, "인증이 실패했습니다."),
     UNAUTHORIZED(RsConstant.FORBIDDEN, "접근 권한이 없습니다."),
+    TOO_MANY_REQUESTS(RsConstant.TOO_MANY_REQUESTS, "너무 많은 요청입니다."),
+
     //Performance
     PERFORMANCE_NOT_FOUND(RsConstant.NOT_FOUND, "공연 정보가 없습니다."),
 
@@ -50,6 +53,7 @@ public enum RsCode {
     // S3
     FILE_UPLOAD_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
     FILE_DELETE_FAILED(RsConstant.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다."),
+
     // SEAT
     SEAT_CONFLICT(RsConstant.CONFLICT, "이미 예약된 좌석이 포함되어 있습니다."),
     INVALID_SEAT_POSITION(RsConstant.BAD_REQUEST, "유효하지 않은 좌석입니다."),
