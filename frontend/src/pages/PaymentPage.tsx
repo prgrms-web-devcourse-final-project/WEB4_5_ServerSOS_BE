@@ -216,6 +216,31 @@ export default function PaymentPage() {
 
   return (
     <PageLayout>
+      <Button
+        variant="outline"
+        onClick={async () => {
+          const confirmed = window.confirm("이전 페이지로 이동하면 예약이 취소됩니다. 돌아가시겠습니까?")
+          if (confirmed) {
+            try {
+              await apiClient.reservation.deleteReservation(
+                {id : reservationId}, 
+                {headers: { EntryAuth: `Bearer ${entryToken}` }} 
+              )
+              window.history.back()
+            } catch (error) {
+              toast({
+                title: "예약 취소 실패",
+                description: "잠시 후 다시 시도해주세요.",
+                variant: "destructive",
+              })
+            }
+          }
+        }}
+        className="mb-4"
+      >
+        ← 돌아가기
+      </Button>
+
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">결제하기</h1>
