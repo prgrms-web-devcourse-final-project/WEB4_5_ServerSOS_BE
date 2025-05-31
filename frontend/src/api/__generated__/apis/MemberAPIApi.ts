@@ -23,7 +23,6 @@ import type {
   RsDataMemberDetailResponse,
   RsDataObject,
   RsDataString,
-  UpdateProfileImageRequest,
 } from '../models/index';
 import {
     LoginRequestFromJSON,
@@ -42,12 +41,14 @@ import {
     RsDataObjectToJSON,
     RsDataStringFromJSON,
     RsDataStringToJSON,
-    UpdateProfileImageRequestFromJSON,
-    UpdateProfileImageRequestToJSON,
 } from '../models/index';
 
 export interface LoginOperationRequest {
     loginRequest: LoginRequest;
+}
+
+export interface SendCodeRequest {
+    email: string;
 }
 
 export interface SignupRequest {
@@ -62,8 +63,13 @@ export interface UpdatePasswordRequest {
     memberPasswordUpdateRequest: MemberPasswordUpdateRequest;
 }
 
-export interface UpdateProfileImageOperationRequest {
-    updateProfileImageRequest?: UpdateProfileImageRequest;
+export interface UpdateProfileImageRequest {
+    image: Blob;
+}
+
+export interface VerifyEmailCodeRequest {
+    email: string;
+    code: string;
 }
 
 /**
@@ -180,6 +186,51 @@ export class MemberAPIApi extends runtime.BaseAPI {
      */
     async myInfo(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataMemberDetailResponse> {
         const response = await this.myInfoRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * 인증 이메일 요청
+     */
+    async sendCodeRaw(requestParameters: SendCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataObject>> {
+        if (requestParameters['email'] == null) {
+            throw new runtime.RequiredError(
+                'email',
+                'Required parameter "email" was null or undefined when calling sendCode().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['email'] != null) {
+            queryParameters['email'] = requestParameters['email'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Authorization", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/members/email/send-code`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataObjectFromJSON(jsonValue));
+    }
+
+    /**
+     * 인증 이메일 요청
+     */
+    async sendCode(requestParameters: SendCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataObject> {
+        const response = await this.sendCodeRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -352,12 +403,94 @@ export class MemberAPIApi extends runtime.BaseAPI {
     /**
      * 프로필 이미지 수정
      */
-    async updateProfileImageRaw(requestParameters: UpdateProfileImageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataString>> {
+    async updateProfileImageRaw(requestParameters: UpdateProfileImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataString>> {
+        if (requestParameters['image'] == null) {
+            throw new runtime.RequiredError(
+                'image',
+                'Required parameter "image" was null or undefined when calling updateProfileImage().'
+            );
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        headerParameters['Content-Type'] = 'application/json';
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Authorization", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['image'] != null) {
+            formParams.append('image', requestParameters['image'] as any);
+        }
+
+        const response = await this.request({
+            path: `/api/members/me/profile`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataStringFromJSON(jsonValue));
+    }
+
+    /**
+     * 프로필 이미지 수정
+     */
+    async updateProfileImage(requestParameters: UpdateProfileImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataString> {
+        const response = await this.updateProfileImageRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * 이메일 인증 코드 검증
+     */
+    async verifyEmailCodeRaw(requestParameters: VerifyEmailCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RsDataObject>> {
+        if (requestParameters['email'] == null) {
+            throw new runtime.RequiredError(
+                'email',
+                'Required parameter "email" was null or undefined when calling verifyEmailCode().'
+            );
+        }
+
+        if (requestParameters['code'] == null) {
+            throw new runtime.RequiredError(
+                'code',
+                'Required parameter "code" was null or undefined when calling verifyEmailCode().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['email'] != null) {
+            queryParameters['email'] = requestParameters['email'];
+        }
+
+        if (requestParameters['code'] != null) {
+            queryParameters['code'] = requestParameters['code'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
@@ -368,21 +501,20 @@ export class MemberAPIApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/members/me/profile`,
-            method: 'PUT',
+            path: `/api/members/email/verify-code`,
+            method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdateProfileImageRequestToJSON(requestParameters['updateProfileImageRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataStringFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RsDataObjectFromJSON(jsonValue));
     }
 
     /**
-     * 프로필 이미지 수정
+     * 이메일 인증 코드 검증
      */
-    async updateProfileImage(requestParameters: UpdateProfileImageOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataString> {
-        const response = await this.updateProfileImageRaw(requestParameters, initOverrides);
+    async verifyEmailCode(requestParameters: VerifyEmailCodeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RsDataObject> {
+        const response = await this.verifyEmailCodeRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
