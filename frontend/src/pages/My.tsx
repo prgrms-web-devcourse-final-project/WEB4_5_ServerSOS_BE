@@ -1,20 +1,44 @@
-import { useUser } from "@/hooks/useUser"
-import { PageLayout } from "../layout/PageLayout"
-import { formatDate } from "date-fns"
-import { Link } from "react-router-dom"
+import { useUser } from "@/hooks/useUser";
+import { PageLayout } from "../layout/PageLayout";
+import { formatDate } from "date-fns";
+import { Link } from "react-router-dom";
+import { useRef, useState } from "react";
+import { apiClient } from "@/api/apiClient";
 
 export const My = () => {
-  const { user } = useUser()
+  const { user, refetch } = useUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   if (!user) {
-    return null
+    return null;
   }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      await apiClient.member.updateProfileImage({ image: file });
+      await refetch?.();
+    } catch (err) {
+      console.error("프로필 이미지 업로드 실패:", err);
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <PageLayout>
       <div className="flex flex-col md:flex-row gap-6 p-10">
-        <div className="flex-shrink-0">
-          <div className="w-32 h-32 rounded-full overflow-hidden ">
+        <div className="flex-shrink-0 flex flex-col items-center">
+          <div className="w-32 h-32 rounded-full overflow-hidden">
             <img
               src={
                 user.profile ||
@@ -26,6 +50,20 @@ export const My = () => {
               className="object-cover w-full h-full"
             />
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <button
+            onClick={triggerFileInput}
+            className="mt-2  px-3 py-1 text-sm rounded bg-black text-white disabled:opacity-50"
+            disabled={uploading}
+          >
+            {uploading ? "업로드 중..." : "변경"}
+          </button>
         </div>
 
         <div className="flex-grow">
@@ -86,5 +124,5 @@ export const My = () => {
         </ul>
       </div>
     </PageLayout>
-  )
-}
+  );
+};

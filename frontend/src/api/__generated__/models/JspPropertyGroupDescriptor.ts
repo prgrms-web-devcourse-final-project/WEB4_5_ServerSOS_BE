@@ -24,12 +24,6 @@ export interface JspPropertyGroupDescriptor {
      * @type {string}
      * @memberof JspPropertyGroupDescriptor
      */
-    defaultContentType?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof JspPropertyGroupDescriptor
-     */
     deferredSyntaxAllowedAsLiteral?: string;
     /**
      * 
@@ -90,6 +84,12 @@ export interface JspPropertyGroupDescriptor {
      * @type {string}
      * @memberof JspPropertyGroupDescriptor
      */
+    defaultContentType?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JspPropertyGroupDescriptor
+     */
     buffer?: string;
     /**
      * 
@@ -116,7 +116,6 @@ export function JspPropertyGroupDescriptorFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'defaultContentType': json['defaultContentType'] == null ? undefined : json['defaultContentType'],
         'deferredSyntaxAllowedAsLiteral': json['deferredSyntaxAllowedAsLiteral'] == null ? undefined : json['deferredSyntaxAllowedAsLiteral'],
         'elIgnored': json['elIgnored'] == null ? undefined : json['elIgnored'],
         'errorOnELNotFound': json['errorOnELNotFound'] == null ? undefined : json['errorOnELNotFound'],
@@ -127,6 +126,7 @@ export function JspPropertyGroupDescriptorFromJSONTyped(json: any, ignoreDiscrim
         'includeCodas': json['includeCodas'] == null ? undefined : json['includeCodas'],
         'trimDirectiveWhitespaces': json['trimDirectiveWhitespaces'] == null ? undefined : json['trimDirectiveWhitespaces'],
         'errorOnUndeclaredNamespace': json['errorOnUndeclaredNamespace'] == null ? undefined : json['errorOnUndeclaredNamespace'],
+        'defaultContentType': json['defaultContentType'] == null ? undefined : json['defaultContentType'],
         'buffer': json['buffer'] == null ? undefined : json['buffer'],
         'urlPatterns': json['urlPatterns'] == null ? undefined : json['urlPatterns'],
     };
@@ -143,7 +143,6 @@ export function JspPropertyGroupDescriptorToJSONTyped(value?: JspPropertyGroupDe
 
     return {
         
-        'defaultContentType': value['defaultContentType'],
         'deferredSyntaxAllowedAsLiteral': value['deferredSyntaxAllowedAsLiteral'],
         'elIgnored': value['elIgnored'],
         'errorOnELNotFound': value['errorOnELNotFound'],
@@ -154,6 +153,7 @@ export function JspPropertyGroupDescriptorToJSONTyped(value?: JspPropertyGroupDe
         'includeCodas': value['includeCodas'],
         'trimDirectiveWhitespaces': value['trimDirectiveWhitespaces'],
         'errorOnUndeclaredNamespace': value['errorOnUndeclaredNamespace'],
+        'defaultContentType': value['defaultContentType'],
         'buffer': value['buffer'],
         'urlPatterns': value['urlPatterns'],
     };
