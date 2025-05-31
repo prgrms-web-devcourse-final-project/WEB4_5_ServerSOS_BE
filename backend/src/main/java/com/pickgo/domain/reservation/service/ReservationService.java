@@ -183,10 +183,14 @@ public class ReservationService {
         // 2. 좌석 활성화 및 SSE 이벤트 발행
         releaseSeatsAndPublishEvent(reservation);
 
-        // 3. 예약 삭제
+        // 3. 결제 삭제
+        paymentRepository.findByReservation(reservation)
+                .ifPresent(paymentRepository::delete);
+
+        // 4. 예약 삭제
         reservationRepository.delete(reservation);
 
-        // 4. 로깅
+        // 5. 로깅
         LogContext logContext = logContextUtil.extract();
         logWriter.writeReservationLog(reservation, ActionType.RESERVATION_DELETED, logContext);
     }

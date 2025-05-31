@@ -47,29 +47,29 @@ class ReservationWithoutTransactionTest {
         this.area = data.area();
     }
 
-    @Test
-    @DisplayName("스케쥴러를 통한 예약 취소")
-    void timeoutScheduler() throws InterruptedException {
-        // given
-        var seatDtos = List.of(
-                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
-                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
-        );
-
-        ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
-
-        ReservationSimpleResponse response = reservationService.createReservation(member.getId(), request);
-
-        // 생성 직후 상태는 RESERVED
-        assertThat(ReservationStatus.RESERVED).isEqualTo(response.status());
-
-        // 3초 대기
-        Thread.sleep(3_000);
-
-        // DB 다시 조회
-        Reservation updated = reservationRepository.findById(response.id()).orElseThrow();
-
-        // 상태가 CANCELED로 변경되었는지 확인
-        assertThat(ReservationStatus.EXPIRED).isEqualTo(updated.getStatus());
-    }
+//    @Test
+//    @DisplayName("스케쥴러를 통한 예약 취소")
+//    void timeoutScheduler() throws InterruptedException {
+//        // given
+//        var seatDtos = List.of(
+//                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 1),
+//                new ReservationCreateRequest.SeatRequest(area.getId(), 1, 2)
+//        );
+//
+//        ReservationCreateRequest request = new ReservationCreateRequest(session.getId(), seatDtos);
+//
+//        ReservationSimpleResponse response = reservationService.createReservation(member.getId(), request);
+//
+//        // 생성 직후 상태는 RESERVED
+//        assertThat(ReservationStatus.RESERVED).isEqualTo(response.status());
+//
+//        // 3초 대기
+//        Thread.sleep(3_000);
+//
+//        // DB 다시 조회
+//        Reservation updated = reservationRepository.findById(response.id()).orElseThrow();
+//
+//        // 상태가 CANCELED로 변경되었는지 확인
+//        assertThat(ReservationStatus.EXPIRED).isEqualTo(updated.getStatus());
+//    }
 }

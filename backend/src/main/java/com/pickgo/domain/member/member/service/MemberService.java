@@ -4,13 +4,9 @@ import static com.pickgo.global.response.RsCode.*;
 
 import java.util.UUID;
 
-import com.pickgo.global.logging.dto.LogContext;
-import com.pickgo.global.logging.util.LogContextUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +14,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.pickgo.domain.auth.token.service.TokenService;
 import com.pickgo.domain.log.enums.ActionType;
-import com.pickgo.domain.member.member.dto.*;
+import com.pickgo.domain.member.member.dto.LoginRequest;
+import com.pickgo.domain.member.member.dto.LoginResponse;
+import com.pickgo.domain.member.member.dto.MemberCreateRequest;
+import com.pickgo.domain.member.member.dto.MemberDetailResponse;
+import com.pickgo.domain.member.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.member.dto.MemberSimpleResponse;
+import com.pickgo.domain.member.member.dto.MemberUpdateRequest;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.entity.enums.Authority;
 import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
+import com.pickgo.global.logging.dto.LogContext;
+import com.pickgo.global.logging.util.LogContextUtil;
 import com.pickgo.global.logging.util.LogWriter;
 import com.pickgo.global.response.PageResponse;
 import com.pickgo.global.s3.S3Uploader;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -94,11 +99,11 @@ public class MemberService {
         return LoginResponse.of(newAccessToken);
     }
 
-    public void logout(HttpServletResponse response) {
+    public void logout(HttpServletResponse response, UUID id) {
         tokenService.removeRefreshTokenCookie(response);
 
         LogContext logContext = logContextUtil.extract();
-        logWriter.writeMemberLog(getCurrentMember(), ActionType.MEMBER_LOGOUT, logContext);
+        logWriter.writeMemberLog(getEntity(id), ActionType.MEMBER_LOGOUT, logContext);
     }
 
     @Transactional
@@ -168,13 +173,6 @@ public class MemberService {
 
     public Member getEntity(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
-    }
-
-    private Member getCurrentMember() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID memberId = UUID.fromString(auth.getName());
-        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(MEMBER_NOT_FOUND));
     }
 
