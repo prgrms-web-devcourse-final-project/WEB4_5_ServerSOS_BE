@@ -1,59 +1,57 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 
-import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { format } from "date-fns"
+import { ko } from "date-fns/locale"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import type { CATEGORY_TYPES } from "../category/constants";
-import { usePosts } from "@/hooks/usePosts";
-import { getDurationStr } from "@/lib/date";
-import { GetPostsSortEnum } from "@/api/__generated__";
+} from "@/components/ui/select"
+import { Link } from "react-router-dom"
+import type { CATEGORY_TYPES } from "../category/constants"
+import { usePosts } from "@/hooks/usePosts"
+import { getDurationStr } from "@/lib/date"
+import { GetPostsSortEnum } from "@/api/__generated__"
 
 interface Show {
-  id: number;
-  title: string;
-  venue: string;
-  startDate: string;
-  endDate: string;
-  poster: string;
+  id: number
+  title: string
+  venue: string
+  startDate: string
+  endDate: string
+  poster: string
 }
 
 export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortOption, setSortOption] = useState<GetPostsSortEnum>("ID_DESC");
-  const [searchInput, setSearchInput] = useState("");
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1)
+  const [sortOption, setSortOption] = useState<GetPostsSortEnum>("ID_DESC")
+  const [searchInput, setSearchInput] = useState("")
+  const [searchKeyword, setSearchKeyword] = useState("")
 
   useEffect(() => {
-    setSearchInput("");
-    setSearchKeyword("");
-    setCurrentPage(1);
-  }, [genre]);
+    setSearchInput("")
+    setSearchKeyword("")
+    setCurrentPage(1)
+  }, [genre])
 
   const { posts, error, isLoading, totalPages } = usePosts({
     sort: sortOption,
     type: genre,
     page: currentPage,
     keyword: searchKeyword,
-  });
+  })
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    if (page < 1 || page > totalPages) return
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   if (error) {
-    return (
-      <div className="text-center py-10 text-red-500">{error.message}</div>
-    );
+    return <div className="text-center py-10 text-red-500">{error.message}</div>
   }
 
   return (
@@ -67,8 +65,8 @@ export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setSearchKeyword(searchInput);
-                setCurrentPage(1);
+                setSearchKeyword(searchInput)
+                setCurrentPage(1)
               }
             }}
             placeholder="공연명을 입력하세요"
@@ -76,8 +74,8 @@ export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
           />
           <button
             onClick={() => {
-              setSearchKeyword(searchInput);
-              setCurrentPage(1);
+              setSearchKeyword(searchInput)
+              setCurrentPage(1)
             }}
             className="bg-black text-white px-4 py-2 rounded-md transition"
           >
@@ -87,7 +85,7 @@ export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
         <Select
           value={sortOption}
           onValueChange={(value) => {
-            setSortOption(value as GetPostsSortEnum);
+            setSortOption(value as GetPostsSortEnum)
           }}
         >
           <SelectTrigger className="w-[180px]">
@@ -172,5 +170,5 @@ export default function ShowList({ genre }: { genre: CATEGORY_TYPES }) {
         </nav>
       </div>
     </div>
-  );
+  )
 }

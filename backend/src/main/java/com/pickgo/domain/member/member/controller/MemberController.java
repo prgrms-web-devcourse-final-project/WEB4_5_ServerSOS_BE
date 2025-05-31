@@ -1,19 +1,33 @@
 package com.pickgo.domain.member.member.controller;
 
-import com.pickgo.domain.member.member.dto.*;
+import static com.pickgo.global.response.RsCode.*;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.pickgo.domain.member.member.dto.LoginRequest;
+import com.pickgo.domain.member.member.dto.LoginResponse;
+import com.pickgo.domain.member.member.dto.MemberCreateRequest;
+import com.pickgo.domain.member.member.dto.MemberDetailResponse;
+import com.pickgo.domain.member.member.dto.MemberPasswordUpdateRequest;
+import com.pickgo.domain.member.member.dto.MemberPrincipal;
+import com.pickgo.domain.member.member.dto.MemberUpdateRequest;
 import com.pickgo.domain.member.member.service.EmailAuthService;
 import com.pickgo.domain.member.member.service.MemberService;
 import com.pickgo.global.response.RsData;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import static com.pickgo.global.response.RsCode.EMAIL_VERIFICATION_FAILED;
-import static com.pickgo.global.response.RsCode.SUCCESS;
 
 @RestController
 @RequestMapping("/api/members")
@@ -57,8 +71,11 @@ public class MemberController {
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public RsData<?> logout(HttpServletResponse response) {
-        memberService.logout(response);
+    public RsData<?> logout(
+            @AuthenticationPrincipal MemberPrincipal principal,
+            HttpServletResponse response
+    ) {
+        memberService.logout(response, principal.id());
         return RsData.from(SUCCESS);
     }
 

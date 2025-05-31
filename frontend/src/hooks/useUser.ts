@@ -35,58 +35,54 @@ export function useUser() {
     queryKey: USER_QUERY_KEY,
     queryFn: async () => {
       const loginInfo = getLoginInfo()
+      const accessToken = loginInfo?.token
+      let response = null
 
-      if (!loginInfo?.token) {
-        throw new Error("No auth token")
+      if (accessToken) {
+        response = await fetchMyInfo(accessToken)
       }
 
-      const response = await apiClient.member.myInfo({
-        headers: {
-          Authorization: `Bearer ${loginInfo.token}`,
-        },
-      })
-
-      if (response.code !== 200) {
-        const refreshToken = getCookie("refreshToken")
-
-        if (!refreshToken) {
-          throw new Error("No refresh token")
-        }
-
+      if (!accessToken || response.code !== 200) {
         const tokenResponse = await apiClient.token.renewToken({
-          refreshToken,
+          refreshToken: "dummy",
         })
 
-        if (tokenResponse.code !== 200 || !tokenResponse.data?.accessToken) {
+        if (tokenResponse.code !== 201 || !tokenResponse.data?.accessToken) {
           throw new Error("Failed to renew token")
         }
 
+        const newAccessToken = tokenResponse.data.accessToken
+
         setLoginInfo({
-          token: tokenResponse.data.accessToken,
+          token: newAccessToken,
         })
 
-        throw new Error("Failed to fetch user info")
+        response = await fetchMyInfo(newAccessToken)
       }
 
       return response.data
     },
-    throwOnError(error, query) {
-      removeLoginInfo()
-
-      return false
-    },
-
-    // 로그인 정보가 없을 때는 쿼리를 실행하지 않음
-    enabled: !!getLoginInfo()?.token,
+    throwOnError: false,
   })
 
   const isLogin = !!user && !error
   const checkLogin = () => !!getLoginInfo()?.token
 
-  const logout = () => {
-    removeLoginInfo()
-    queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY })
+  const logout = async () => {
+    const loginInfo = getLoginInfo()
 
+    try {
+      if (loginInfo?.token) {
+        // API 요청: 로그아웃
+        await apiClient.member.logout()
+      }
+    } catch (e) {
+      console.error("Logout API 호출 중 오류:", e)
+      // API 실패하더라도 클라이언트 로그아웃은 계속 진행
+    }
+
+    removeLoginInfo()
+    queryClient.removeQueries({ queryKey: USER_QUERY_KEY })
     navigate("/")
   }
 
@@ -98,4 +94,12 @@ export function useUser() {
     logout,
     isLoading,
   }
+}
+
+async function fetchMyInfo(token: string) {
+  return apiClient.member.myInfo({
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
 }
