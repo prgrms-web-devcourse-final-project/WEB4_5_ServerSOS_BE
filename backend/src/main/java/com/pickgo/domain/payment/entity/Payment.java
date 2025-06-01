@@ -1,11 +1,13 @@
 package com.pickgo.domain.payment.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.entity.BaseEntity;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,7 +52,8 @@ public class Payment extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String orderId; // 주문 ID (UUID로 생성)
 
-    @OneToOne(optional = false, cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne
     @JoinColumn(name = "reservation_id", unique = true, nullable = false)
     private Reservation reservation;
 

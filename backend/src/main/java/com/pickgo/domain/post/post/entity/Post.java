@@ -3,6 +3,9 @@ package com.pickgo.domain.post.post.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.pickgo.domain.performance.performance.entity.Performance;
 import com.pickgo.domain.post.review.entity.Review;
 import com.pickgo.global.entity.BaseEntity;
@@ -48,7 +51,8 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Long views;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
     private Performance performance;
 
