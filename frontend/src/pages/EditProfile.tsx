@@ -5,9 +5,8 @@ import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-
 export const EditProfile = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const { user, refetch } = useUser()
   const [nickname, setNickname] = useState(user?.nickname || "")
   const [password, setPassword] = useState("")
@@ -55,7 +54,12 @@ export const EditProfile = () => {
   }
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return
+    if (
+      !window.confirm(
+        "정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+      )
+    )
+      return
     try {
       await apiClient.member.signout()
       alert("회원 탈퇴가 완료되었습니다.")
@@ -97,7 +101,11 @@ export const EditProfile = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
           </div>
@@ -117,7 +125,11 @@ export const EditProfile = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
-                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
           </div>

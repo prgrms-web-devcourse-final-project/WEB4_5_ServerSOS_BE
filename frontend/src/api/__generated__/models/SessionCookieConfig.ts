@@ -33,28 +33,16 @@ export interface SessionCookieConfig {
     domain?: string;
     /**
      * 
-     * @type {boolean}
+     * @type {string}
      * @memberof SessionCookieConfig
      */
-    httpOnly?: boolean;
+    name?: string;
     /**
      * 
      * @type {string}
      * @memberof SessionCookieConfig
      */
     path?: string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof SessionCookieConfig
-     */
-    secure?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionCookieConfig
-     */
-    name?: string;
     /**
      * 
      * @type {{ [key: string]: string; }}
@@ -68,6 +56,18 @@ export interface SessionCookieConfig {
      * @deprecated
      */
     comment?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SessionCookieConfig
+     */
+    secure?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SessionCookieConfig
+     */
+    httpOnly?: boolean;
 }
 
 /**
@@ -89,12 +89,12 @@ export function SessionCookieConfigFromJSONTyped(json: any, ignoreDiscriminator:
         
         'maxAge': json['maxAge'] == null ? undefined : json['maxAge'],
         'domain': json['domain'] == null ? undefined : json['domain'],
-        'httpOnly': json['httpOnly'] == null ? undefined : json['httpOnly'],
-        'path': json['path'] == null ? undefined : json['path'],
-        'secure': json['secure'] == null ? undefined : json['secure'],
         'name': json['name'] == null ? undefined : json['name'],
+        'path': json['path'] == null ? undefined : json['path'],
         'attributes': json['attributes'] == null ? undefined : json['attributes'],
         'comment': json['comment'] == null ? undefined : json['comment'],
+        'secure': json['secure'] == null ? undefined : json['secure'],
+        'httpOnly': json['httpOnly'] == null ? undefined : json['httpOnly'],
     };
 }
 
@@ -111,12 +111,12 @@ export function SessionCookieConfigToJSONTyped(value?: SessionCookieConfig | nul
         
         'maxAge': value['maxAge'],
         'domain': value['domain'],
-        'httpOnly': value['httpOnly'],
-        'path': value['path'],
-        'secure': value['secure'],
         'name': value['name'],
+        'path': value['path'],
         'attributes': value['attributes'],
         'comment': value['comment'],
+        'secure': value['secure'],
+        'httpOnly': value['httpOnly'],
     };
 }
 

@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
 import { useUser } from "@/hooks/useUser"
+import { BACKEND_API } from "@/api/apiClient"
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -172,6 +173,21 @@ export const Login = () => {
               className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:opacity-70"
             >
               {isSubmitting ? "처리 중..." : "로그인"}
+            </button>
+
+            {/* 카카오 로그인 버튼 */}
+            <button
+              type="button"
+              onClick={() =>
+                {
+                  const origin = window.location.origin;
+                  const url = `${BACKEND_API}/api/oauth/kakao/login?state=${encodeURIComponent(origin)}`;
+                  window.location.href = url;
+                }
+              }
+              className="w-full bg-yellow-300 text-black py-3 rounded-md hover:bg-yellow-400 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            >
+              카카오 로그인
             </button>
           </form>
 

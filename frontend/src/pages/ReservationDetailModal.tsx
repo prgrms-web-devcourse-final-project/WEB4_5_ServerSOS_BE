@@ -1,31 +1,31 @@
-import { useEffect, useState } from "react";
-import { apiClient } from "@/api/apiClient";
+import { useEffect, useState } from "react"
+import { apiClient } from "@/api/apiClient"
 
 export function ReservationDetailModal({
   id,
   onClose,
 }: {
-  id: number;
-  onClose: () => void;
+  id: number
+  onClose: () => void
 }) {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await apiClient.reservation.getReservation({ id });
-        setData(res.data);
+        const res = await apiClient.reservation.getReservation({ id })
+        setData(res.data)
       } catch (e) {
-        setError(true);
-        console.error("예약 상세 조회 오류:", e);
+        setError(true)
+        console.error("예약 상세 조회 오류:", e)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetch();
-  }, [id]);
+    }
+    fetch()
+  }, [id])
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
@@ -65,7 +65,8 @@ export function ReservationDetailModal({
               <strong>주소:</strong> {data.venue.address}
             </p>
             <p>
-              <strong>공연일:</strong> {data.session.performanceTime?.toLocaleString()}
+              <strong>공연일:</strong>{" "}
+              {data.session.performanceTime?.toLocaleString()}
             </p>
             <p>
               <strong>총 가격:</strong> {data.totalPrice?.toLocaleString()}원
@@ -84,5 +85,5 @@ export function ReservationDetailModal({
         )}
       </div>
     </div>
-  );
+  )
 }

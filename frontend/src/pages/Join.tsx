@@ -1,79 +1,98 @@
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { Eye, EyeOff } from "lucide-react"
-import { PageLayout } from "@/layout/PageLayout"
-import { apiClient } from "@/api/apiClient"
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { PageLayout } from "@/layout/PageLayout";
+import { apiClient } from "@/api/apiClient";
 
 export function Join() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     confirmPassword: "",
     nickname: "",
     email: "",
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+    code: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [sendCodeCooldown, setSendCodeCooldown] = useState(0);
+
+  // 쿨다운 타이머 효과
+  useEffect(() => {
+    if (sendCodeCooldown === 0) return;
+
+    const timer = setInterval(() => {
+      setSendCodeCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [sendCodeCooldown]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     // 입력 시 해당 필드의 에러 메시지 제거
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
-      })
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
-  }
+  };
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    // 아이디 검증
-    if (!formData.username.trim()) {
-      newErrors.username = "아이디를 입력해주세요."
-    }
+    const newErrors: Record<string, string> = {};
 
     // 비밀번호 검증
     if (!formData.password) {
-      newErrors.password = "비밀번호를 입력해주세요."
+      newErrors.password = "비밀번호를 입력해주세요.";
     }
 
     // 비밀번호 확인 검증
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다."
+      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
     }
 
     // 닉네임 검증
     if (!formData.nickname.trim()) {
-      newErrors.nickname = "닉네임을 입력해주세요."
+      newErrors.nickname = "닉네임을 입력해주세요.";
     }
 
     // 이메일 검증
     if (!formData.email.trim()) {
-      newErrors.email = "이메일을 입력해주세요."
+      newErrors.email = "이메일을 입력해주세요.";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식이 아닙니다."
+      newErrors.email = "올바른 이메일 형식이 아닙니다.";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    if (!isEmailVerified) {
+      newErrors.email = "이메일 인증을 완료해주세요.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       console.log("회원가입 데이터:", {
@@ -81,7 +100,7 @@ export function Join() {
         password: formData.password,
         nickname: formData.nickname,
         email: formData.email,
-      })
+      });
 
       const response = await apiClient.member.signup({
         memberCreateRequest: {
@@ -89,22 +108,53 @@ export function Join() {
           password: formData.password,
           nickname: formData.nickname,
         },
-      })
+      });
 
       if (response.code !== 200) {
-        throw new Error("회원가입에 실패했습니다.")
+        throw new Error("회원가입에 실패했습니다.");
       }
 
       // 성공 시 로그인 페이지로 이동
-      alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.")
-      navigate("/login")
+      alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+      navigate("/login");
     } catch (error) {
-      console.error("회원가입 오류:", error)
-      alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.")
+      console.error("회원가입 오류:", error);
+      alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
+
+  // 인증번호 요청
+  const handleSendEmailCode = async () => {
+    if (sendCodeCooldown > 0) return; // 쿨다운 중이면 무시
+    try {
+      await apiClient.member.sendCode({ email: formData.email });
+      alert("이메일로 인증번호가 발송되었습니다.");
+      setSendCodeCooldown(60); // 60초 쿨다운 시작
+    } catch (err) {
+      alert("인증번호 발송에 실패했습니다.");
+    }
+  };
+
+  // 이메일 인증번호 확인
+  const handleVerifyEmailCode = async () => {
+    try {
+      const result = await apiClient.member.verifyEmailCode({
+        email: formData.email,
+        code: formData.code,
+      });
+      if (result.code === 200) {
+        alert("이메일 인증이 완료되었습니다.");
+        setIsEmailVerified(true);
+      } else {
+        alert("인증번호가 올바르지 않습니다.");
+        setIsEmailVerified(false);
+      }
+    } catch {
+      alert("이메일 인증 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <PageLayout>
@@ -117,27 +167,63 @@ export function Join() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 아이디 입력 */}
+            {/* 이메일 입력 */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                이메일
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`flex-1 w-full px-3 py-2 border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900`}
+                />
+                <button
+                  type="button"
+                  onClick={handleSendEmailCode}
+                  disabled={sendCodeCooldown > 0}
+                  className={`px-3 py-2 text-sm rounded-md text-white ${
+                    sendCodeCooldown > 0 ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+                  }`}
+                >
+                  {sendCodeCooldown > 0 ? `${sendCodeCooldown}초 후 재요청` : "인증요청"}
+                </button>
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
+            </div>
+
+            {/* 인증코드 입력 */}
             <div>
               <label
-                htmlFor="username"
+                htmlFor="emailCode"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                아이디
+                인증번호
               </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                value={formData.username}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border ${
-                  errors.username ? "border-red-500" : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900`}
-              />
-              {errors.username && (
-                <p className="mt-1 text-sm text-red-500">{errors.username}</p>
-              )}
+              <div className="flex gap-2">
+                <input
+                  id="code"
+                  name="code"
+                  type="text"
+                  value={formData.code}
+                  onChange={handleChange}
+                  className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900"
+                />
+                <button
+                  type="button"
+                  onClick={handleVerifyEmailCode}
+                  className="px-3 py-2 text-sm bg-black text-white rounded-md"
+                >
+                  인증확인
+                </button>
+              </div>
             </div>
 
             {/* 비밀번호 입력 */}
@@ -239,29 +325,6 @@ export function Join() {
               )}
             </div>
 
-            {/* 이메일 입력 */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                이메일
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-1 focus:ring-gray-900`}
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-              )}
-            </div>
-
             {/* 회원가입 버튼 */}
             <button
               type="submit"
@@ -284,5 +347,5 @@ export function Join() {
         </div>
       </div>
     </PageLayout>
-  )
+  );
 }

@@ -99,7 +99,6 @@ models/SessionCookieConfig.ts
 models/SseEmitter.ts
 models/TaglibDescriptor.ts
 models/TokenDetailResponse.ts
-models/UpdateProfileImageRequest.ts
 models/VenueInfo.ts
 models/VenueRequest.ts
 models/VenueResponse.ts

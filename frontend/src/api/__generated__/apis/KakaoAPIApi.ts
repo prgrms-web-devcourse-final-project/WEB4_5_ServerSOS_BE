@@ -24,6 +24,11 @@ import {
 
 export interface Login1Request {
     code: string;
+    origin: string;
+}
+
+export interface RedirectToKakaoLoginRequest {
+    origin: string;
 }
 
 /**
@@ -41,10 +46,21 @@ export class KakaoAPIApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['origin'] == null) {
+            throw new runtime.RequiredError(
+                'origin',
+                'Required parameter "origin" was null or undefined when calling login1().'
+            );
+        }
+
         const queryParameters: any = {};
 
         if (requestParameters['code'] != null) {
             queryParameters['code'] = requestParameters['code'];
+        }
+
+        if (requestParameters['origin'] != null) {
+            queryParameters['origin'] = requestParameters['origin'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -76,8 +92,19 @@ export class KakaoAPIApi extends runtime.BaseAPI {
 
     /**
      */
-    async redirectToKakaoLoginRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RedirectView>> {
+    async redirectToKakaoLoginRaw(requestParameters: RedirectToKakaoLoginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RedirectView>> {
+        if (requestParameters['origin'] == null) {
+            throw new runtime.RequiredError(
+                'origin',
+                'Required parameter "origin" was null or undefined when calling redirectToKakaoLogin().'
+            );
+        }
+
         const queryParameters: any = {};
+
+        if (requestParameters['origin'] != null) {
+            queryParameters['origin'] = requestParameters['origin'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -101,8 +128,8 @@ export class KakaoAPIApi extends runtime.BaseAPI {
 
     /**
      */
-    async redirectToKakaoLogin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RedirectView> {
-        const response = await this.redirectToKakaoLoginRaw(initOverrides);
+    async redirectToKakaoLogin(requestParameters: RedirectToKakaoLoginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RedirectView> {
+        const response = await this.redirectToKakaoLoginRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

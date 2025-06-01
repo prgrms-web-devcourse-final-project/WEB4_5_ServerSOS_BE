@@ -86,7 +86,6 @@ export * from './SessionCookieConfig';
 export * from './SseEmitter';
 export * from './TaglibDescriptor';
 export * from './TokenDetailResponse';
-export * from './UpdateProfileImageRequest';
 export * from './VenueInfo';
 export * from './VenueRequest';
 export * from './VenueResponse';

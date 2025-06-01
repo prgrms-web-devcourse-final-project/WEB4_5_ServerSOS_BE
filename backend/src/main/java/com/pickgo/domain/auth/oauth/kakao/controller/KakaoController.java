@@ -9,7 +9,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.pickgo.domain.auth.oauth.kakao.service.KakaoService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -22,16 +21,16 @@ public class KakaoController {
     private final KakaoService kakaoService;
 
     @GetMapping("/login")
-    public RedirectView redirectToKakaoLogin() {
-        return kakaoService.redirectToKakaoLogin();
+    public RedirectView redirectToKakaoLogin(@RequestParam("state") String origin) {
+        return kakaoService.redirectToKakaoLogin(origin);
     }
 
     @GetMapping("/login/redirect")
     public RedirectView login(
-        @RequestParam("code") String code,
-        HttpServletRequest request,
-        HttpServletResponse response
+            @RequestParam("code") String code,
+            @RequestParam("state") String origin,
+            HttpServletResponse response
     ) {
-        return kakaoService.login(code, request, response);
+        return kakaoService.login(code, origin, response);
     }
 }

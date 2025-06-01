@@ -163,12 +163,6 @@ export interface RedirectView {
     propagateQueryProperties?: boolean;
     /**
      * 
-     * @type {{ [key: string]: object; }}
-     * @memberof RedirectView
-     */
-    attributesMap?: { [key: string]: object; };
-    /**
-     * 
      * @type {{ [key: string]: string; }}
      * @memberof RedirectView
      */
@@ -179,6 +173,12 @@ export interface RedirectView {
      * @memberof RedirectView
      */
     attributesCSV?: string;
+    /**
+     * 
+     * @type {{ [key: string]: object; }}
+     * @memberof RedirectView
+     */
+    attributesMap?: { [key: string]: object; };
 }
 
 /**
@@ -218,9 +218,9 @@ export function RedirectViewFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'hosts': json['hosts'] == null ? undefined : json['hosts'],
         'redirectView': json['redirectView'] == null ? undefined : json['redirectView'],
         'propagateQueryProperties': json['propagateQueryProperties'] == null ? undefined : json['propagateQueryProperties'],
-        'attributesMap': json['attributesMap'] == null ? undefined : json['attributesMap'],
         'attributes': json['attributes'] == null ? undefined : json['attributes'],
         'attributesCSV': json['attributesCSV'] == null ? undefined : json['attributesCSV'],
+        'attributesMap': json['attributesMap'] == null ? undefined : json['attributesMap'],
     };
 }
 
@@ -255,9 +255,9 @@ export function RedirectViewToJSONTyped(value?: RedirectView | null, ignoreDiscr
         'hosts': value['hosts'],
         'redirectView': value['redirectView'],
         'propagateQueryProperties': value['propagateQueryProperties'],
-        'attributesMap': value['attributesMap'],
         'attributes': value['attributes'],
         'attributesCSV': value['attributesCSV'],
+        'attributesMap': value['attributesMap'],
     };
 }
 

@@ -24,19 +24,7 @@ export interface JspPropertyGroupDescriptor {
      * @type {string}
      * @memberof JspPropertyGroupDescriptor
      */
-    defaultContentType?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof JspPropertyGroupDescriptor
-     */
-    deferredSyntaxAllowedAsLiteral?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof JspPropertyGroupDescriptor
-     */
-    elIgnored?: string;
+    buffer?: string;
     /**
      * 
      * @type {string}
@@ -57,12 +45,6 @@ export interface JspPropertyGroupDescriptor {
     scriptingInvalid?: string;
     /**
      * 
-     * @type {string}
-     * @memberof JspPropertyGroupDescriptor
-     */
-    isXml?: string;
-    /**
-     * 
      * @type {Array<string>}
      * @memberof JspPropertyGroupDescriptor
      */
@@ -78,6 +60,36 @@ export interface JspPropertyGroupDescriptor {
      * @type {string}
      * @memberof JspPropertyGroupDescriptor
      */
+    defaultContentType?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JspPropertyGroupDescriptor
+     */
+    elIgnored?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JspPropertyGroupDescriptor
+     */
+    isXml?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof JspPropertyGroupDescriptor
+     */
+    urlPatterns?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof JspPropertyGroupDescriptor
+     */
+    deferredSyntaxAllowedAsLiteral?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JspPropertyGroupDescriptor
+     */
     trimDirectiveWhitespaces?: string;
     /**
      * 
@@ -85,18 +97,6 @@ export interface JspPropertyGroupDescriptor {
      * @memberof JspPropertyGroupDescriptor
      */
     errorOnUndeclaredNamespace?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof JspPropertyGroupDescriptor
-     */
-    buffer?: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof JspPropertyGroupDescriptor
-     */
-    urlPatterns?: Array<string>;
 }
 
 /**
@@ -116,19 +116,19 @@ export function JspPropertyGroupDescriptorFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'defaultContentType': json['defaultContentType'] == null ? undefined : json['defaultContentType'],
-        'deferredSyntaxAllowedAsLiteral': json['deferredSyntaxAllowedAsLiteral'] == null ? undefined : json['deferredSyntaxAllowedAsLiteral'],
-        'elIgnored': json['elIgnored'] == null ? undefined : json['elIgnored'],
+        'buffer': json['buffer'] == null ? undefined : json['buffer'],
         'errorOnELNotFound': json['errorOnELNotFound'] == null ? undefined : json['errorOnELNotFound'],
         'pageEncoding': json['pageEncoding'] == null ? undefined : json['pageEncoding'],
         'scriptingInvalid': json['scriptingInvalid'] == null ? undefined : json['scriptingInvalid'],
-        'isXml': json['isXml'] == null ? undefined : json['isXml'],
         'includePreludes': json['includePreludes'] == null ? undefined : json['includePreludes'],
         'includeCodas': json['includeCodas'] == null ? undefined : json['includeCodas'],
+        'defaultContentType': json['defaultContentType'] == null ? undefined : json['defaultContentType'],
+        'elIgnored': json['elIgnored'] == null ? undefined : json['elIgnored'],
+        'isXml': json['isXml'] == null ? undefined : json['isXml'],
+        'urlPatterns': json['urlPatterns'] == null ? undefined : json['urlPatterns'],
+        'deferredSyntaxAllowedAsLiteral': json['deferredSyntaxAllowedAsLiteral'] == null ? undefined : json['deferredSyntaxAllowedAsLiteral'],
         'trimDirectiveWhitespaces': json['trimDirectiveWhitespaces'] == null ? undefined : json['trimDirectiveWhitespaces'],
         'errorOnUndeclaredNamespace': json['errorOnUndeclaredNamespace'] == null ? undefined : json['errorOnUndeclaredNamespace'],
-        'buffer': json['buffer'] == null ? undefined : json['buffer'],
-        'urlPatterns': json['urlPatterns'] == null ? undefined : json['urlPatterns'],
     };
 }
 
@@ -143,19 +143,19 @@ export function JspPropertyGroupDescriptorToJSONTyped(value?: JspPropertyGroupDe
 
     return {
         
-        'defaultContentType': value['defaultContentType'],
-        'deferredSyntaxAllowedAsLiteral': value['deferredSyntaxAllowedAsLiteral'],
-        'elIgnored': value['elIgnored'],
+        'buffer': value['buffer'],
         'errorOnELNotFound': value['errorOnELNotFound'],
         'pageEncoding': value['pageEncoding'],
         'scriptingInvalid': value['scriptingInvalid'],
-        'isXml': value['isXml'],
         'includePreludes': value['includePreludes'],
         'includeCodas': value['includeCodas'],
+        'defaultContentType': value['defaultContentType'],
+        'elIgnored': value['elIgnored'],
+        'isXml': value['isXml'],
+        'urlPatterns': value['urlPatterns'],
+        'deferredSyntaxAllowedAsLiteral': value['deferredSyntaxAllowedAsLiteral'],
         'trimDirectiveWhitespaces': value['trimDirectiveWhitespaces'],
         'errorOnUndeclaredNamespace': value['errorOnUndeclaredNamespace'],
-        'buffer': value['buffer'],
-        'urlPatterns': value['urlPatterns'],
     };
 }
 

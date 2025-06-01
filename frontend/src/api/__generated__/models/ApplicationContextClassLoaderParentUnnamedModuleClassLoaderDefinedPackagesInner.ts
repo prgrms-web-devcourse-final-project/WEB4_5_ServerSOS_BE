@@ -27,12 +27,6 @@ export interface ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefi
     name?: string;
     /**
      * 
-     * @type {boolean}
-     * @memberof ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefinedPackagesInner
-     */
-    sealed?: boolean;
-    /**
-     * 
      * @type {Array<object>}
      * @memberof ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefinedPackagesInner
      */
@@ -43,6 +37,12 @@ export interface ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefi
      * @memberof ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefinedPackagesInner
      */
     declaredAnnotations?: Array<object>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefinedPackagesInner
+     */
+    sealed?: boolean;
     /**
      * 
      * @type {string}
@@ -99,9 +99,9 @@ export function ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefin
     return {
         
         'name': json['name'] == null ? undefined : json['name'],
-        'sealed': json['sealed'] == null ? undefined : json['sealed'],
         'annotations': json['annotations'] == null ? undefined : json['annotations'],
         'declaredAnnotations': json['declaredAnnotations'] == null ? undefined : json['declaredAnnotations'],
+        'sealed': json['sealed'] == null ? undefined : json['sealed'],
         'specificationTitle': json['specificationTitle'] == null ? undefined : json['specificationTitle'],
         'specificationVersion': json['specificationVersion'] == null ? undefined : json['specificationVersion'],
         'specificationVendor': json['specificationVendor'] == null ? undefined : json['specificationVendor'],
@@ -123,9 +123,9 @@ export function ApplicationContextClassLoaderParentUnnamedModuleClassLoaderDefin
     return {
         
         'name': value['name'],
-        'sealed': value['sealed'],
         'annotations': value['annotations'],
         'declaredAnnotations': value['declaredAnnotations'],
+        'sealed': value['sealed'],
         'specificationTitle': value['specificationTitle'],
         'specificationVersion': value['specificationVersion'],
         'specificationVendor': value['specificationVendor'],
