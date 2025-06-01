@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisServerRegistry implements ServerRegistry {
 
-    private static final String SERVER_PREFIX = "connection-server"; // 커넥션 서버
+    private static final String SERVER_PREFIX = "connection_server"; // 커넥션 서버
     private final StringRedisTemplate redisTemplate;
 
     @Override
@@ -40,7 +40,7 @@ public class RedisServerRegistry implements ServerRegistry {
     }
 
     private String getServerKey(String connectionId) {
-        return SERVER_PREFIX + ":connection-id:" + connectionId;
+        return SERVER_PREFIX + ":connection_id:" + connectionId;
     }
 
     @Override

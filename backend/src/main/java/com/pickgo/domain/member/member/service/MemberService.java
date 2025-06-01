@@ -100,7 +100,7 @@ public class MemberService {
     }
 
     public void logout(HttpServletResponse response, UUID id) {
-        tokenService.removeRefreshTokenCookie(response);
+        tokenService.removeRefreshToken(id, response);
 
         LogContext logContext = logContextUtil.extract();
         logWriter.writeMemberLog(getEntity(id), ActionType.MEMBER_LOGOUT, logContext);
@@ -109,7 +109,7 @@ public class MemberService {
     @Transactional
     public void delete(UUID id, HttpServletResponse response) {
         Member member = getEntity(id);
-        tokenService.removeRefreshTokenCookie(response);
+        tokenService.removeRefreshToken(id, response);
         memberRepository.delete(member);
 
         LogContext logContext = logContextUtil.extract();

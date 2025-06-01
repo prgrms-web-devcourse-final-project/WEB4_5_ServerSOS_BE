@@ -13,6 +13,7 @@ import com.pickgo.global.response.RsData;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,7 +26,10 @@ public class TokenController {
 
     @Operation(summary = "액세스 토큰 재발급")
     @PostMapping
-    public RsData<TokenDetailResponse> renewToken(@CookieValue(value = "refreshToken") String refreshToken) {
-        return RsData.from(CREATED, tokenService.createAccessToken(refreshToken));
+    public RsData<TokenDetailResponse> renewToken(
+            @CookieValue(value = "refreshToken") String refreshToken,
+            HttpServletResponse response
+    ) {
+        return RsData.from(CREATED, tokenService.createAccessToken(refreshToken, response));
     }
 }
