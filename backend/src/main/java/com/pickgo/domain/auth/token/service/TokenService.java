@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pickgo.domain.auth.token.dto.TokenDetailResponse;
+import com.pickgo.domain.auth.token.repository.redis.RedisRefreshTokenRepository;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.repository.MemberRepository;
 import com.pickgo.global.exception.BusinessException;
@@ -27,6 +28,7 @@ public class TokenService {
 
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
+    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     @Value("${custom.jwt.access_token.expiration_minutes}")
     private long accessTokenExpirationMinutes;
     @Value("${custom.jwt.refresh_token.expiration_minutes}")
@@ -37,21 +39,35 @@ public class TokenService {
     private boolean secure;
 
     @Transactional(readOnly = true)
-    public TokenDetailResponse createAccessToken(String refreshToken) {
+    public TokenDetailResponse createAccessToken(String refreshToken, HttpServletResponse response) {
         if (!jwtProvider.isValidToken(refreshToken)) {
             throw new BusinessException(UNAUTHENTICATED);
         }
 
         UUID userId = jwtProvider.getUserId(refreshToken);
+        String savedRefreshToken = redisRefreshTokenRepository.findByUserId(userId);
+        if (!refreshToken.equals(savedRefreshToken)) {
+            throw new BusinessException(UNAUTHENTICATED);
+        }
+
         Member member = memberRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(NOT_FOUND));
+
+        createRefreshToken(member, response);
 
         return TokenDetailResponse.of(genAccessToken(member));
     }
 
     public void createRefreshToken(Member member, HttpServletResponse response) {
         String newRefreshToken = genRefreshToken(member);
+        redisRefreshTokenRepository.save(member.getId(), newRefreshToken,
+                Duration.ofMinutes(refreshTokenExpirationMinutes));
         addRefreshTokenCookie(response, newRefreshToken);
+    }
+
+    public void removeRefreshToken(UUID userId, HttpServletResponse response) {
+        redisRefreshTokenRepository.deleteByUserId(userId);
+        removeRefreshTokenCookie(response);
     }
 
     public String genAccessToken(Member member) {
@@ -81,7 +97,7 @@ public class TokenService {
         response.setHeader("Set-Cookie", cookie.toString());
     }
 
-    public void removeRefreshTokenCookie(HttpServletResponse response) {
+    private void removeRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
             .secure(secure)

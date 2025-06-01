@@ -4,6 +4,8 @@ import static com.pickgo.global.response.RsCode.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.pickgo.domain.auth.token.repository.redis.RedisRefreshTokenRepository;
 import com.pickgo.domain.log.repository.MemberHistoryRepository;
 import com.pickgo.domain.member.member.entity.Member;
 import com.pickgo.domain.member.member.entity.enums.Authority;
@@ -46,6 +49,9 @@ public class TokenControllerTest {
 
 	@Autowired
 	private MemberHistoryRepository memberHistoryRepository;
+
+	@Autowired
+	private RedisRefreshTokenRepository redisRefreshTokenRepository;
 
 	@Autowired
 	private TestToken token;
@@ -80,6 +86,9 @@ public class TokenControllerTest {
 	@Test
 	@DisplayName("refreshToken 쿠키로 accessToken 발급 성공")
 	void createToken_성공() throws Exception {
+		Member member = getTestMember();
+		redisRefreshTokenRepository.save(member.getId(), token.userToken, Duration.ofMinutes(86400));
+
 		mockMvc.perform(post("/api/tokens")
 				.cookie(new Cookie("refreshToken", token.userToken))
 				.contentType(MediaType.APPLICATION_JSON))
