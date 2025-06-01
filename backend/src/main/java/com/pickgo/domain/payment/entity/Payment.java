@@ -1,11 +1,30 @@
 package com.pickgo.domain.payment.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.pickgo.domain.reservation.entity.Reservation;
 import com.pickgo.global.entity.BaseEntity;
 import com.pickgo.global.exception.BusinessException;
 import com.pickgo.global.response.RsCode;
-import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +52,7 @@ public class Payment extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String orderId; // 주문 ID (UUID로 생성)
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToOne
     @JoinColumn(name = "reservation_id", unique = true, nullable = false)
     private Reservation reservation;

@@ -1,14 +1,31 @@
 package com.pickgo.domain.performance.performance.entity;
 
-import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
-import com.pickgo.domain.performance.venue.entity.Venue;
-import com.pickgo.global.entity.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.pickgo.domain.performance.area.area.entity.PerformanceArea;
+import com.pickgo.domain.performance.venue.entity.Venue;
+import com.pickgo.global.entity.BaseEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -51,7 +68,7 @@ public class Performance extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PerformanceType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "venue_id")
     private Venue venue;
 
