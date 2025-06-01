@@ -158,8 +158,7 @@ export default function SeatMap({
     setSectionSeats(initializeSeats(area))
 
     setZoomLevel(1) // 다른 석은 기본 줌 레벨
-
-    setSelectedSeats([])
+    
     setDetailOpen(true)
   }
 
