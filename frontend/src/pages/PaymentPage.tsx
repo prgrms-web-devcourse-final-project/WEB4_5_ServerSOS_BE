@@ -219,12 +219,14 @@ export default function PaymentPage() {
       <Button
         variant="outline"
         onClick={async () => {
-          const confirmed = window.confirm("이전 페이지로 이동하면 예약이 취소됩니다. 돌아가시겠습니까?")
+          const confirmed = window.confirm(
+            "이전 페이지로 이동하면 예약이 취소됩니다. 돌아가시겠습니까?",
+          )
           if (confirmed) {
             try {
               await apiClient.reservation.deleteReservation(
-                {id : reservationId}, 
-                {headers: { EntryAuth: `Bearer ${entryToken}` }} 
+                { id: reservationId },
+                { headers: { EntryAuth: `Bearer ${entryToken}` } },
               )
               window.history.back()
             } catch (error) {

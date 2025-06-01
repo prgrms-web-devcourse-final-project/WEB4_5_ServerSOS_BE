@@ -1,38 +1,38 @@
-import { useUser } from "@/hooks/useUser";
-import { PageLayout } from "../layout/PageLayout";
-import { formatDate } from "date-fns";
-import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
-import { apiClient } from "@/api/apiClient";
+import { useUser } from "@/hooks/useUser"
+import { PageLayout } from "../layout/PageLayout"
+import { formatDate } from "date-fns"
+import { Link } from "react-router-dom"
+import { useRef, useState } from "react"
+import { apiClient } from "@/api/apiClient"
 
 export const My = () => {
-  const { user, refetch } = useUser();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
+  const { user, refetch } = useUser()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
 
   if (!user) {
-    return null;
+    return null
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
     try {
-      setUploading(true);
-      await apiClient.member.updateProfileImage({ image: file });
-      await refetch?.();
+      setUploading(true)
+      await apiClient.member.updateProfileImage({ image: file })
+      await refetch?.()
     } catch (err) {
-      console.error("프로필 이미지 업로드 실패:", err);
-      alert("이미지 업로드에 실패했습니다.");
+      console.error("프로필 이미지 업로드 실패:", err)
+      alert("이미지 업로드에 실패했습니다.")
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   return (
     <PageLayout>
@@ -124,5 +124,5 @@ export const My = () => {
         </ul>
       </div>
     </PageLayout>
-  );
-};
+  )
+}

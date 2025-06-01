@@ -6,7 +6,6 @@ import {
 } from "../lib/storage/loginStorage"
 import { apiClient } from "@/api/apiClient"
 import type { LoginRequest } from "@/api/__generated__"
-import { getCookie } from "@/lib/cookie"
 import { useNavigate } from "react-router-dom"
 
 async function login(loginRequest: LoginRequest) {
@@ -42,7 +41,7 @@ export function useUser() {
         response = await fetchMyInfo(accessToken)
       }
 
-      if (!accessToken || response.code !== 200) {
+      if (!accessToken || response?.code !== 200) {
         const tokenResponse = await apiClient.token.renewToken({
           refreshToken: "dummy",
         })

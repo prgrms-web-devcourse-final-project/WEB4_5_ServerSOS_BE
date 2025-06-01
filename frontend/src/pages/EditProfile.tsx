@@ -4,10 +4,11 @@ import { apiClient } from "@/api/apiClient"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { removeLoginInfo } from "@/lib/storage/loginStorage"
 
 export const EditProfile = () => {
   const navigate = useNavigate()
-  const { user, refetch } = useUser()
+  const { user } = useUser()
   const [nickname, setNickname] = useState(user?.nickname || "")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -62,6 +63,7 @@ export const EditProfile = () => {
       return
     try {
       await apiClient.member.signout()
+      removeLoginInfo()
       alert("회원 탈퇴가 완료되었습니다.")
       window.location.href = "/"
     } catch (err) {
