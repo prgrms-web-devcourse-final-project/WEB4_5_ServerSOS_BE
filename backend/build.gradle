@@ -58,6 +58,11 @@ dependencies {
     // thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+    // Rate Limiter
+    implementation 'com.bucket4j:bucket4j-core:8.10.1'
+
+    // Cache
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.0'
 
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

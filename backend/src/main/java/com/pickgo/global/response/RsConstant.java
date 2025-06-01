@@ -39,5 +39,10 @@ public class RsConstant {
      */
     public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
+    /**
+     * 너무 많은 요청 시 사용합니다.
+     */
+    public static Integer TOO_MANY_REQUESTS = HttpStatus.TOO_MANY_REQUESTS.value();
+
     public static Integer CONFLICT = HttpStatus.CONFLICT.value();
 }
