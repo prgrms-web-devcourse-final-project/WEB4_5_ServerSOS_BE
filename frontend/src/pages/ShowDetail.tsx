@@ -49,12 +49,12 @@ export function ShowDetail() {
       const selectedDateOnly = new Date(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
-        selectedDate.getDate()
+        selectedDate.getDate(),
       )
       const sessionDateOnly = new Date(
         sessionDate.getFullYear(),
         sessionDate.getMonth(),
-        sessionDate.getDate()
+        sessionDate.getDate(),
       )
 
       return selectedDateOnly.getTime() === sessionDateOnly.getTime()
@@ -117,7 +117,7 @@ export function ShowDetail() {
                   <div className="col-span-2">
                     {getDurationStr(
                       showData.performance?.startDate,
-                      showData.performance?.endDate
+                      showData.performance?.endDate,
                     )}
                   </div>
                 </div>
@@ -146,8 +146,13 @@ export function ShowDetail() {
                         </thead>
                         <tbody>
                           {showData.performance.areas.map((area, index) => (
-                            <tr key={index} className="border-b border-gray-100">
-                              <td className="py-1">{area.name || `구역 ${index + 1}`}</td>
+                            <tr
+                              key={index}
+                              className="border-b border-gray-100"
+                            >
+                              <td className="py-1">
+                                {area.name || `구역 ${index + 1}`}
+                              </td>
                               <td className="text-right py-1">
                                 {area.price
                                   ? `${area.price.toLocaleString()}원`
@@ -164,7 +169,9 @@ export function ShowDetail() {
                 </div>
                 <div className="grid grid-cols-3 gap-2 border-b pb-2">
                   <div className="font-medium">상태</div>
-                  <div className="col-span-2">{showData.performance?.state}</div>
+                  <div className="col-span-2">
+                    {showData.performance?.state}
+                  </div>
                 </div>
               </div>
 
@@ -177,10 +184,14 @@ export function ShowDetail() {
 
                 {selectedDate && filteredSessions.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="text-sm font-medium mb-2 text-center">공연 시간 선택</h4>
+                    <h4 className="text-sm font-medium mb-2 text-center">
+                      공연 시간 선택
+                    </h4>
                     <div className="grid grid-cols-2 gap-2">
                       {filteredSessions.map((session) => {
-                        const sessionTime = session.time ? new Date(session.time) : null
+                        const sessionTime = session.time
+                          ? new Date(session.time)
+                          : null
                         const isPast = sessionTime
                           ? sessionTime.getTime() < new Date().getTime()
                           : true
@@ -196,16 +207,19 @@ export function ShowDetail() {
                               isPast
                                 ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
                                 : selectedSession?.id === session.id
-                                ? "bg-slate-900 text-white border-slate-900"
-                                : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
+                                  ? "bg-slate-900 text-white border-slate-900"
+                                  : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
                             }`}
                           >
                             {session.time
-                              ? new Date(session.time).toLocaleTimeString("ko-KR", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                })
+                              ? new Date(session.time).toLocaleTimeString(
+                                  "ko-KR",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false,
+                                  },
+                                )
                               : "시간 미정"}
                           </button>
                         )
@@ -236,7 +250,9 @@ export function ShowDetail() {
                       disabled
                       className="w-full inline-flex justify-center items-center h-11 px-8 py-2 rounded-md text-sm font-medium bg-slate-300 text-slate-500 cursor-not-allowed"
                     >
-                      {selectedDate ? "시간을 선택해주세요" : "날짜를 선택해주세요"}
+                      {selectedDate
+                        ? "시간을 선택해주세요"
+                        : "날짜를 선택해주세요"}
                     </button>
                   )}
                 </div>
