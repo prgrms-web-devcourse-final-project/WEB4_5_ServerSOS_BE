@@ -11,7 +11,10 @@ export default function SimpleCalendar({
   onSelectDate,
   selectedDate,
 }: SimpleCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date("2025-05-01"))
+  const [currentMonth, setCurrentMonth] =  useState(() => {
+    const today = new Date()
+    return new Date(today.getFullYear(), today.getMonth(), 1)
+  })
 
   // 현재 월의 첫 날과 마지막 날 계산
   const firstDayOfMonth = new Date(
