@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { PageLayout } from "@/layout/PageLayout";
@@ -21,6 +21,24 @@ export function Join() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [sendCodeCooldown, setSendCodeCooldown] = useState(0);
+
+  // 쿨다운 타이머 효과
+  useEffect(() => {
+    if (sendCodeCooldown === 0) return;
+
+    const timer = setInterval(() => {
+      setSendCodeCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [sendCodeCooldown]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -109,9 +127,11 @@ export function Join() {
 
   // 인증번호 요청
   const handleSendEmailCode = async () => {
+    if (sendCodeCooldown > 0) return; // 쿨다운 중이면 무시
     try {
       await apiClient.member.sendCode({ email: formData.email });
       alert("이메일로 인증번호가 발송되었습니다.");
+      setSendCodeCooldown(60); // 60초 쿨다운 시작
     } catch (err) {
       alert("인증번호 발송에 실패했습니다.");
     }
@@ -149,10 +169,7 @@ export function Join() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* 이메일 입력 */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 이메일
               </label>
               <div className="flex gap-2">
@@ -169,9 +186,12 @@ export function Join() {
                 <button
                   type="button"
                   onClick={handleSendEmailCode}
-                  className="px-3 py-2 text-sm bg-black text-white rounded-md"
+                  disabled={sendCodeCooldown > 0}
+                  className={`px-3 py-2 text-sm rounded-md text-white ${
+                    sendCodeCooldown > 0 ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+                  }`}
                 >
-                  인증요청
+                  {sendCodeCooldown > 0 ? `${sendCodeCooldown}초 후 재요청` : "인증요청"}
                 </button>
               </div>
               {errors.email && (
