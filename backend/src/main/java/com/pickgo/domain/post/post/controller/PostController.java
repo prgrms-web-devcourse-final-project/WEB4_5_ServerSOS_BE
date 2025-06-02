@@ -1,6 +1,5 @@
 package com.pickgo.domain.post.post.controller;
 
-import com.pickgo.domain.member.member.dto.MemberPrincipal;
 import com.pickgo.domain.performance.performance.entity.PerformanceType;
 import com.pickgo.domain.post.post.dto.PostDetailResponse;
 import com.pickgo.domain.post.post.dto.PostSimpleResponse;
@@ -12,8 +11,6 @@ import com.pickgo.global.response.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +22,8 @@ import static com.pickgo.global.response.RsCode.SUCCESS;
 @RequestMapping("/api/posts")
 public class PostController {
     private final PostService postService;
+    private final IdentifierResolver identifierResolver;
+
 
     @Operation(
             summary = "게시글 목록 조회",
@@ -64,13 +63,12 @@ public class PostController {
     @GetMapping("/{id}")
     public RsData<PostDetailResponse> getPost(
             @PathVariable Long id,
-            @AuthenticationPrincipal MemberPrincipal principal,
             HttpServletRequest request
     ) {
         // 게시물 상세 조회
         PostDetailResponse response = postService.getPost(id);
         // 조회수 증가
-        String identifier = IdentifierResolver.resolve(principal, request);
+        String identifier = identifierResolver.resolve(request);
         postService.increaseViewCount(identifier, id);
 
         return RsData.from(SUCCESS, response);
