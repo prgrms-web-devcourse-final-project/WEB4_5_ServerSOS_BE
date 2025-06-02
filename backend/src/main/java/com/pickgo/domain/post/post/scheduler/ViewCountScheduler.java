@@ -17,7 +17,7 @@ public class ViewCountScheduler {
 
     // 3분 간격으로 DB에 조회수 반영
     @Transactional
-    @Scheduled(fixedRate = 180_000)
+    @Scheduled(fixedRate = 180000)
     public void updateViewCounts() {
         Set<String> keys = redisTemplate.keys("view_count:*");
 
