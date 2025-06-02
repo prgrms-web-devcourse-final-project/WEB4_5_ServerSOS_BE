@@ -69,7 +69,6 @@ public class PostController {
         PostDetailResponse response = postService.getPost(id);
         // 조회수 증가
         String identifier = identifierResolver.resolve(request);
-        System.out.println(response.views());
         postService.increaseViewCount(identifier, id);
 
         return RsData.from(SUCCESS, response);
